@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.PropertySource
 import org.springframework.stereotype.Service
 
-@PropertySource("classpath:application.yaml")
+@PropertySource("classpath:application.yml")
 @Service
 class GreetingService {
     // pri ispolzovanii kotlin nuzhno ekranirovat znak $
