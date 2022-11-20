@@ -28,6 +28,9 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+//    testImplementation("oi.mockk:mockk:1.10.4")
+    testImplementation("com.ninja-squad:springmockk:3.1.1")
 }
 
 tasks.withType<KotlinCompile> {
@@ -39,4 +42,15 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+sourceSets {
+    test {
+        // after GRADLE 7.1
+        java.setSrcDirs(listOf("src/test/integrationtest", "src/test/unittest"))
+        // before GRADLE 7.1
+        /*withConvention(KotlinSourceSet::class) {
+            kotlin.setSrcDirs(listOf("src/test/integrationtest", "src/test/unittest"))
+        }*/
+    }
 }
