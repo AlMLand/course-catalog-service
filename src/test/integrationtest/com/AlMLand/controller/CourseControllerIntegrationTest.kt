@@ -9,13 +9,14 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
-import org.springframework.test.context.jdbc.SqlGroup
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebTestClient) {
 
@@ -32,15 +33,9 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
         assertThat(response).isEqualTo(listOf<CourseDTO>())
     }
 
-    @SqlGroup(
-        Sql(
-            scripts = ["/db/test-data.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            scripts = ["/db/clean-up.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
+    @Sql(
+        scripts = ["/db/test-data.sql"],
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Test
     fun `getAllCourses - return list with size 2`() {
@@ -60,15 +55,9 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
         assertThat(expectedList).isEqualTo(response)
     }
 
-    @SqlGroup(
-        Sql(
-            scripts = ["/db/test-data.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            scripts = ["/db/clean-up.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
+    @Sql(
+        scripts = ["/db/test-data.sql"],
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Test
     fun `getCourse - get course with id - 1`() {
@@ -100,15 +89,9 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
         Assertions.assertTrue(response == null)
     }
 
-    @SqlGroup(
-        Sql(
-            scripts = ["/db/test-data.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            scripts = ["/db/clean-up.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
+    @Sql(
+        scripts = ["/db/test-data.sql"],
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Test
     fun `Update course, should have status 404, body with the same data, id = null`() {
@@ -127,15 +110,9 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
         assertThat(courseDTO).isEqualTo(response)
     }
 
-    @SqlGroup(
-        Sql(
-            scripts = ["/db/test-data.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            scripts = ["/db/clean-up.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
+    @Sql(
+        scripts = ["/db/test-data.sql"],
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Test
     fun `Update course, should have status 200, body with the another data, id is the same, header location`() {
@@ -157,15 +134,9 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
         assertThat(expectedCourseDTO).isEqualTo(response)
     }
 
-    @SqlGroup(
-        Sql(
-            scripts = ["/db/test-data.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            scripts = ["/db/clean-up.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
+    @Sql(
+        scripts = ["/db/test-data.sql"],
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Test
     fun `Delete course, should have status 200`() {
@@ -177,15 +148,9 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
             .expectStatus().isOk
     }
 
-    @SqlGroup(
-        Sql(
-            scripts = ["/db/test-data.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            scripts = ["/db/clean-up.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
+    @Sql(
+        scripts = ["/db/test-data.sql"],
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Test
     fun `Delete course, should have status 404`() {
@@ -197,15 +162,9 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
             .expectStatus().isNotFound
     }
 
-    @SqlGroup(
-        Sql(
-            scripts = ["/db/test-data.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            scripts = ["/db/clean-up.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
+    @Sql(
+        scripts = ["/db/test-data.sql"],
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Test
     fun `Create new course, should have status 409(conflict), body with the same data, id = null`() {
@@ -222,10 +181,6 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
         assertThat(courseDTO).isEqualTo(response)
     }
 
-    @Sql(
-        scripts = ["/db/clean-up.sql"],
-        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-    )
     @Test
     fun `Create new course, should have status 201, header location, body with the same data, id != null`() {
         val courseDTO = CourseDTO("testName", "testCategory", null)
