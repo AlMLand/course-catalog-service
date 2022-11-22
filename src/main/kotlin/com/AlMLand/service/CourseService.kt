@@ -65,4 +65,7 @@ class CourseService(private val courseRepository: CourseRepository) {
             false
     }
 
+    fun findCourseByNameLike(name: String): List<CourseDTO> =
+        courseRepository.findByNameContainingIgnoreCase(name).map { CourseDTO(it.name, it.category, it.id) }
+
 }

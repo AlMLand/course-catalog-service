@@ -5,17 +5,20 @@ import com.AlMLand.service.CourseService
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
+@ActiveProfiles("test")
 @AutoConfigureWebTestClient
 @WebMvcTest(controllers = [CourseController::class])
 class CourseControllerUnitTest2(
@@ -24,6 +27,144 @@ class CourseControllerUnitTest2(
 ) {
     @MockBean
     private lateinit var courseService: CourseService
+
+    @Test
+    fun `getCourseByNameLike - when no courses founded than status 204`() {
+        val name = "NaMe"
+
+        `when`(courseService.findCourseByNameLike(name)).thenReturn(listOf())
+
+        val response = mockMvc.perform(
+            get("/v1/courses/names/{name}", name)
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isNoContent)
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["NaMe", "tes"])
+    fun `getCourseByNameLike - when courses founded than status 200`(name: String) {
+        val expectedCourses = listOf(
+            CourseDTO("testName1", "testCategory1", 1),
+            CourseDTO("testName2", "testCategory2", 2)
+        )
+        val coursesAsJson = objectMapper.writeValueAsString(expectedCourses)
+
+        `when`(courseService.findCourseByNameLike(name)).thenReturn(expectedCourses)
+
+        val response = mockMvc.perform(
+            get("/v1/courses/names/{name}", name)
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk)
+            .andReturn().response.contentAsString
+
+        assertThat(response).isEqualTo(coursesAsJson)
+    }
+
+    @Test
+    fun `handleAllExceptions - check the controller advice`() {
+        val courseId = 1
+        `when`(courseService.deleteCourse(courseId)).thenThrow(IllegalArgumentException())
+
+        mockMvc.perform(delete("/v1/courses/{id}", courseId))
+            .andExpect(status().isInternalServerError)
+    }
+
+    @Test
+    fun `delete - when successful, than return status 200`() {
+        val courseId = 1
+        `when`(courseService.deleteCourse(courseId)).thenReturn(true)
+
+        mockMvc.perform(delete("/v1/courses/{id}", courseId))
+            .andExpect(status().isOk)
+    }
+
+    @Test
+    fun `delete - when course not found, than status 404`() {
+        val courseId = 1
+        `when`(courseService.deleteCourse(courseId)).thenReturn(false)
+
+        mockMvc.perform(delete("/v1/courses/{id}", courseId))
+            .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `updateCourse - update is successful - status 200, header has location to this course, updated course in body `() {
+        val courseId = 1
+        val courseDTO = CourseDTO("updatedName", "updatedCategory", null)
+        val updatedCourseDTO = CourseDTO("updatedName", "updatedCategory", 1)
+        val updatedCourseAsJson = objectMapper.writeValueAsString(updatedCourseDTO)
+
+        `when`(courseService.updateCourses(courseId, courseDTO)).thenReturn(updatedCourseDTO)
+
+        val response = mockMvc.perform(
+            put("/v1/courses/{id}", courseId)
+                .content(objectMapper.writeValueAsString(courseDTO))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk)
+            .andExpect(header().stringValues("Location", "v1/courses/1"))
+            .andReturn().response.contentAsString
+
+        assertThat(response).isEqualTo(updatedCourseAsJson)
+    }
+
+    @Test
+    fun `updateCourse - course by id is not found - status 404`() {
+        val courseId = 1
+        val courseDTO = CourseDTO("name", "category", null)
+        val courseDTOAsJson = objectMapper.writeValueAsString(courseDTO)
+
+        `when`(courseService.updateCourses(courseId, courseDTO)).thenReturn(courseDTO)
+
+        val response = mockMvc.perform(
+            put("/v1/courses/{id}", courseId)
+                .content(courseDTOAsJson)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound)
+            .andReturn().response.contentAsString
+
+        assertThat(courseDTOAsJson).isEqualTo(response)
+    }
+
+    @Test
+    fun `updateCourse - when name is blank, than status 400, body with the same data`() {
+        val courseId = 1
+        val courseDTO = CourseDTO("", "category", null)
+
+        val response = mockMvc.perform(
+            put("/v1/courses/{id}", courseId)
+                .content(objectMapper.writeValueAsString(courseDTO))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isBadRequest)
+            .andReturn().response.contentAsString
+
+        assertThat(response).isEqualTo("CourseDTO.name must not be blank")
+    }
+
+    @Test
+    fun `updateCourse - when category is blank, than status 400, body with the same data`() {
+        val courseId = 1
+        val courseDTO = CourseDTO("name", "", null)
+
+        val response = mockMvc.perform(
+            put("/v1/courses/{id}", courseId)
+                .content(objectMapper.writeValueAsString(courseDTO))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isBadRequest)
+            .andReturn().response.contentAsString
+
+        assertThat(response).isEqualTo("CourseDTO.category must not be blank")
+    }
 
     @Test
     fun `getAllCourses - when no courses are available, than return list with size 0`() {
@@ -89,7 +230,7 @@ class CourseControllerUnitTest2(
     }
 
     @Test
-    fun `addCourse - create new course, should give back the courseDTO with the same data, status 409, id = null`() {
+    fun `createCourse - create new course, should give back the courseDTO with the same data, status 409, id = null`() {
         val courseDTO = CourseDTO("testName", "testCategory", null)
         val requestBody = objectMapper.writeValueAsString(courseDTO)
 
@@ -108,7 +249,7 @@ class CourseControllerUnitTest2(
     }
 
     @Test
-    fun `addCourse - create new course, should give back the courseDTO with the same data, status 201, id = 1`() {
+    fun `createCourse - create new course, should give back the courseDTO with the same data, status 201, id = 1`() {
         val courseDTO = CourseDTO("testName", "testCategory", null)
         val expectedCourseDTO = CourseDTO("testName", "testCategory", 1)
         val expectedRedirectedUrl = "v1/courses/1"
@@ -131,5 +272,37 @@ class CourseControllerUnitTest2(
 
         val responseBody = response.response.contentAsString
         assertThat(objectMapper.writeValueAsString(expectedCourseDTO)).isEqualTo(responseBody)
+    }
+
+    @Test
+    fun `createCourse - create new course with category is blank, should give back the courseDTO with the same data, status 400`() {
+        val courseDTO = CourseDTO("testName", "", null)
+        val courseAsJson = objectMapper.writeValueAsString(courseDTO)
+
+        val response = mockMvc.perform(
+            post("/v1/courses")
+                .content(courseAsJson)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isBadRequest)
+            .andReturn().response.contentAsString
+
+        assertThat(response).isEqualTo(courseAsJson)
+    }
+
+    @Test
+    fun `createCourse - create new course with name is blank, should give back the courseDTO with the same data, status 400`() {
+        val courseDTO = CourseDTO("", "testCategory", null)
+        val courseAsJson = objectMapper.writeValueAsString(courseDTO)
+
+        val response = mockMvc.perform(
+            post("/v1/courses")
+                .content(courseAsJson)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isBadRequest)
+            .andReturn().response.contentAsString
+
+        assertThat(response).isEqualTo(courseAsJson)
     }
 }

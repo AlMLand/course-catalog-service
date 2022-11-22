@@ -9,10 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 
-@WebMvcTest(controllers = [GreetingController::class])
+@ActiveProfiles("test")
 @AutoConfigureWebTestClient
+@WebMvcTest(controllers = [GreetingController::class])
 class GreetingControllerUnitTest2 {
 
     @Autowired

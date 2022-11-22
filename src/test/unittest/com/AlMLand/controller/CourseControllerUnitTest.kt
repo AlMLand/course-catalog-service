@@ -6,19 +6,167 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 
+@ActiveProfiles("test")
 @AutoConfigureWebTestClient
 @WebMvcTest(controllers = [CourseController::class])
 class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClient) {
 
     @MockkBean
     private lateinit var courseService: CourseService
+
+    @ParameterizedTest
+    @ValueSource(strings = ["NaMe", "tes"])
+    fun `getCourseByNameLike - when courses founded than status 200`(name: String) {
+        val expectedCourses = listOf(
+            CourseDTO("testName1", "testCategory1", 1),
+            CourseDTO("testName2", "testCategory2", 2)
+        )
+        every { courseService.findCourseByNameLike(name) } returns expectedCourses
+
+        val response = webTestClient.get()
+            .uri("/v1/courses/names/{name}", name)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isOk
+            .expectBodyList(CourseDTO::class.java)
+            .returnResult().responseBody
+
+        assertThat(response).isEqualTo(expectedCourses)
+    }
+
+    @Test
+    fun `getCourseByNameLike - when no courses founded than status 204`() {
+        val name = "example"
+        val expectedCourses = listOf<CourseDTO>()
+        every { courseService.findCourseByNameLike(name) } returns expectedCourses
+
+        val response = webTestClient.get()
+            .uri("/v1/courses/names/{name}", name)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isNoContent
+    }
+
+    @Test
+    fun `handleAllExceptions - check the controller advice`() {
+        val courseId = 1
+        every { courseService.deleteCourse(courseId) } throws IllegalArgumentException()
+
+        webTestClient.delete()
+            .uri("/v1/courses/{id}", courseId)
+            .exchange()
+            .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @Test
+    fun `delete - when successful, than return status 200`() {
+        val courseId = 1
+        every { courseService.deleteCourse(courseId) } returns true
+
+        webTestClient.delete()
+            .uri("/v1/courses/{id}", courseId)
+            .exchange()
+            .expectStatus().isOk
+    }
+
+    @Test
+    fun `delete - when course not found, than status 404`() {
+        val courseId = 1
+        every { courseService.deleteCourse(courseId) } returns false
+
+        webTestClient.delete()
+            .uri("/v1/courses/{id}", courseId)
+            .exchange()
+            .expectStatus().isNotFound
+    }
+
+    @Test
+    fun `updateCourse - update is successful - status 200, header has location to this course, updated course in body `() {
+        val courseId = 1
+        val courseDTO = CourseDTO("updatedName", "updatedCategory", null)
+        val updatedCourseDTO = CourseDTO("updatedName", "updatedCategory", 1)
+        val expectedLocationHeader = "v1/courses/1"
+
+        every { courseService.updateCourses(courseId, courseDTO) } returns updatedCourseDTO
+
+        val response = webTestClient.put()
+            .uri("/v1/courses/{id}", courseId)
+            .bodyValue(courseDTO)
+            .exchange()
+            .expectStatus().isOk
+            .expectHeader().location(expectedLocationHeader)
+            .expectBody(courseDTO::class.java)
+            .returnResult().responseBody
+
+        assertThat(response).isEqualTo(updatedCourseDTO)
+    }
+
+    @Test
+    fun `updateCourse - course by id is not found - status 404`() {
+        val courseId = 1
+        val courseDTO = CourseDTO("name", "category", null)
+
+        every { courseService.updateCourses(courseId, courseDTO) } returns courseDTO
+
+        val response = webTestClient.put()
+            .uri("/v1/courses/{id}", courseId)
+            .accept(MediaType.APPLICATION_JSON)
+            .bodyValue(courseDTO)
+            .exchange()
+            .expectStatus().isNotFound
+            .expectBody(CourseDTO::class.java)
+            .returnResult().responseBody
+
+        assertThat(courseDTO).isEqualTo(response)
+    }
+
+
+    @Test
+    fun `updateCourse - when name is blank, than status 400, body with the same data`() {
+        val courseId = 1
+        val courseDTO = CourseDTO("", "category", null)
+
+        every { courseService.updateCourses(courseId, courseDTO) } returns courseDTO
+
+        val response = webTestClient.put()
+            .uri("/v1/courses/{id}", courseId)
+            .bodyValue(courseDTO)
+            .exchange()
+            .expectStatus().isBadRequest
+            .expectBody(String::class.java)
+            .returnResult().responseBody
+
+        assertThat(response).isEqualTo("CourseDTO.name must not be blank")
+    }
+
+    @Test
+    fun `updateCourse - when category is blank, than status 400, body with the same data`() {
+        val courseId = 1
+        val courseDTO = CourseDTO("name", "", null)
+
+        every { courseService.updateCourses(courseId, courseDTO) } returns courseDTO
+
+        val response = webTestClient.put()
+            .uri("/v1/courses/{id}", courseId)
+            .bodyValue(courseDTO)
+            .exchange()
+            .expectStatus().isBadRequest
+            .expectBody(String::class.java)
+            .returnResult().responseBody
+
+        assertThat(response).isEqualTo("CourseDTO.category must not be blank")
+    }
+
 
     @Test
     fun `getAllCourses - when no courses are available, than return list with size 0`() {
@@ -92,7 +240,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     }
 
     @Test
-    fun `addCourse - create new course, should give back the courseDTO with the same data, status 409, id = null`() {
+    fun `createCourse - create new course, should give back the courseDTO with the same data, status 409, id = null`() {
         val courseDTO = CourseDTO("testName", "testCategory", null)
         val expectedLocationHeader = "v1/courses/1"
 
@@ -111,7 +259,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     }
 
     @Test
-    fun `addCourse - create new course, should give back the courseDTO with the same data, status 201, id = 1`() {
+    fun `createCourse - create new course, should give back the courseDTO with the same data, status 201, id = 1`() {
         val courseDTO = CourseDTO("testName", "testCategory", null)
         val expectedCourseDTO = CourseDTO("testName", "testCategory", 1)
         val expectedLocationHeader = "v1/courses/1"
@@ -129,5 +277,37 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
             .returnResult()
 
         assertThat(expectedCourseDTO).isEqualTo(result.responseBody)
+    }
+
+    @Test
+    fun `createCourse - create new course with name = "", should give back the courseDTO with the same data, status 400`() {
+        val courseDTO = CourseDTO("", "testCategory", null)
+
+        val result = webTestClient.post()
+            .uri("/v1/courses")
+            .bodyValue(courseDTO)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isBadRequest
+            .expectBody(CourseDTO::class.java)
+            .returnResult()
+
+        assertThat(courseDTO).isEqualTo(result.responseBody)
+    }
+
+    @Test
+    fun `createCourse - create new course with category = "", should give back the courseDTO with the same data, status 400`() {
+        val courseDTO = CourseDTO("testName", "", null)
+
+        val result = webTestClient.post()
+            .uri("/v1/courses")
+            .bodyValue(courseDTO)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isBadRequest
+            .expectBody(CourseDTO::class.java)
+            .returnResult()
+
+        assertThat(courseDTO).isEqualTo(result.responseBody)
     }
 }
