@@ -37,10 +37,12 @@ class CourseService(private val courseRepository: CourseRepository) {
     }
 
 
-    fun findAllCourses(): List<CourseDTO> {
-        return courseRepository.findAll().map {
-            CourseDTO(it.name, it.category, it.id)
-        }
+    fun findAllCourses(name: String?): List<CourseDTO> {
+        val courses = name?.let {
+            courseRepository.findByNameContainingIgnoreCase(name)
+        } ?: courseRepository.findAll()
+
+        return courses.map { CourseDTO(it.name, it.category, it.id) }
     }
 
     fun updateCourses(id: Int, courseDTO: CourseDTO): CourseDTO {
@@ -65,7 +67,7 @@ class CourseService(private val courseRepository: CourseRepository) {
             false
     }
 
-    fun findCourseByNameLike(name: String): List<CourseDTO> =
-        courseRepository.findByNameContainingIgnoreCase(name).map { CourseDTO(it.name, it.category, it.id) }
+    fun findCourseByNameLike(category: String): List<CourseDTO> =
+        courseRepository.findByCategoryContainingIgnoreCase(category).map { CourseDTO(it.name, it.category, it.id) }
 
 }

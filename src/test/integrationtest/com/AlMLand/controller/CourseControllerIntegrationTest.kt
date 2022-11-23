@@ -16,6 +16,8 @@ import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.web.util.UriComponentsBuilder
+import java.net.URI
 import java.util.stream.Stream
 
 @ActiveProfiles("test")
@@ -23,20 +25,38 @@ import java.util.stream.Stream
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebTestClient) {
+    companion object TestUtil {
+        @JvmStatic
+        fun getArgumentsForGetCourseByCategoryLike(): Stream<Arguments> = Stream.of(
+            Arguments.arguments("testCat", 2),
+            Arguments.arguments("gory1", 1)
+        )
+
+        @JvmStatic
+        fun getArgumentsForGetAllCourses(): Stream<Arguments> = Stream.of(
+            Arguments.arguments(
+                "TnA", listOf(
+                    CourseDTO("testName1", "testCategory1", 1),
+                    CourseDTO("testName2", "testCategory2", 2)
+                )
+            ),
+            Arguments.arguments(
+                "tname1", listOf(
+                    CourseDTO("testName1", "testCategory1", 1)
+                )
+            )
+        )
+    }
 
     @Sql(
         scripts = ["/db/test-data.sql"],
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @ParameterizedTest
-    @MethodSource("getArguments")
-    fun `getCourseByNameLike - when courses founded than status 200`(name: String, expectedSize: Int) {
-        val expectedCourses = listOf(
-            CourseDTO("testName1", "testCategory1", 1),
-            CourseDTO("testName2", "testCategory2", 2)
-        )
+    @MethodSource("getArgumentsForGetCourseByCategoryLike")
+    fun `getCourseByCategoryLike - when courses founded than status 200`(name: String, expectedSize: Int) {
         val response = webTestClient.get()
-            .uri("/v1/courses/names/{name}", name)
+            .uri("/v1/courses/categories/{name}", name)
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus().isOk
@@ -46,23 +66,16 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
         assertThat(response!!.size).isEqualTo(expectedSize)
     }
 
-    companion object TestUtil {
-        @JvmStatic
-        fun getArguments(): Stream<Arguments> = Stream.of(
-            Arguments.arguments("NaMe", 2),
-            Arguments.arguments("ame2", 1)
-        )
-    }
 
     @Sql(
         scripts = ["/db/test-data.sql"],
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Test
-    fun `getCourseByNameLike - when no courses founded than status 204`() {
-        val name = "example"
+    fun `getCourseByCategoryLike - when no courses founded than status 204`() {
+        val category = "example"
         val response = webTestClient.get()
-            .uri("/v1/courses/names/{name}", name)
+            .uri("/v1/courses/categories/{name}", category)
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus().isNoContent
@@ -105,6 +118,30 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
             .returnResult().responseBody
 
         assertThat(expectedList).isEqualTo(response)
+    }
+
+    @Sql(
+        scripts = ["/db/test-data.sql"],
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @ParameterizedTest
+    @MethodSource("getArgumentsForGetAllCourses")
+    fun `getAllCourses with param name - first approach size is 2, second approach size is 1`(
+        name: String,
+        courses: List<CourseDTO>
+    ) {
+        val uri = UriComponentsBuilder.fromUri(URI("/v1/courses"))
+            .queryParam("name", name).toUriString()
+        
+        val response = webTestClient.get()
+            .uri(uri)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isOk
+            .expectBodyList(CourseDTO::class.java)
+            .returnResult().responseBody
+
+        assertThat(courses).isEqualTo(response)
     }
 
     @Sql(

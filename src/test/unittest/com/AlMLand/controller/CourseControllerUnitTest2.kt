@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import java.util.stream.Stream
 
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
@@ -29,31 +32,31 @@ class CourseControllerUnitTest2(
     private lateinit var courseService: CourseService
 
     @Test
-    fun `getCourseByNameLike - when no courses founded than status 204`() {
-        val name = "NaMe"
+    fun `getCourseByCategoryLike - when no courses founded than status 204`() {
+        val category = "example"
 
-        `when`(courseService.findCourseByNameLike(name)).thenReturn(listOf())
+        `when`(courseService.findCourseByNameLike(category)).thenReturn(listOf())
 
         val response = mockMvc.perform(
-            get("/v1/courses/names/{name}", name)
+            get("/v1/courses/categories/{name}", category)
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isNoContent)
     }
 
     @ParameterizedTest
-    @ValueSource(strings = ["NaMe", "tes"])
-    fun `getCourseByNameLike - when courses founded than status 200`(name: String) {
+    @ValueSource(strings = ["testCa", "Category"])
+    fun `getCourseByCategoryLike - when courses founded than status 200`(category: String) {
         val expectedCourses = listOf(
             CourseDTO("testName1", "testCategory1", 1),
             CourseDTO("testName2", "testCategory2", 2)
         )
         val coursesAsJson = objectMapper.writeValueAsString(expectedCourses)
 
-        `when`(courseService.findCourseByNameLike(name)).thenReturn(expectedCourses)
+        `when`(courseService.findCourseByNameLike(category)).thenReturn(expectedCourses)
 
         val response = mockMvc.perform(
-            get("/v1/courses/names/{name}", name)
+            get("/v1/courses/categories/{category}", category)
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isOk)
@@ -168,7 +171,7 @@ class CourseControllerUnitTest2(
 
     @Test
     fun `getAllCourses - when no courses are available, than return list with size 0`() {
-        `when`(courseService.findAllCourses()).thenReturn(listOf())
+        `when`(courseService.findAllCourses(null)).thenReturn(listOf())
 
         val response = mockMvc.perform(
             get("/v1/courses")
@@ -186,7 +189,7 @@ class CourseControllerUnitTest2(
             CourseDTO("name1", "category1", 1),
             CourseDTO("name2", "category2", 2)
         )
-        `when`(courseService.findAllCourses()).thenReturn(expectedResponse)
+        `when`(courseService.findAllCourses(null)).thenReturn(expectedResponse)
 
         val actualResponse = mockMvc.perform(
             get("/v1/courses")
@@ -196,6 +199,41 @@ class CourseControllerUnitTest2(
             .andReturn().response.contentAsString
 
         assertThat(actualResponse).isEqualTo(objectMapper.writeValueAsString(expectedResponse))
+    }
+
+    @ParameterizedTest
+    @MethodSource("getArguments")
+    fun `getAllCourses with param name - first approach size is 2, second approach size is 1`(
+        name: String,
+        courses: List<CourseDTO>
+    ) {
+        `when`(courseService.findAllCourses(name)).thenReturn(courses)
+
+        val response = mockMvc.perform(
+            get("/v1/courses")
+                .param("name", name)
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk)
+            .andReturn().response.contentAsString
+
+        assertThat(response).isEqualTo(objectMapper.writeValueAsString(courses))
+    }
+
+    companion object TestUtil {
+        @JvmStatic
+        fun getArguments(): Stream<Arguments> = Stream.of(
+            Arguments.arguments(
+                "na", listOf(
+                    CourseDTO("name1", "category1", 1),
+                    CourseDTO("name2", "category2", 2)
+                )
+            ), Arguments.arguments(
+                "em1", listOf(
+                    CourseDTO("name1", "category1", 1)
+                )
+            )
+        )
     }
 
     @Test

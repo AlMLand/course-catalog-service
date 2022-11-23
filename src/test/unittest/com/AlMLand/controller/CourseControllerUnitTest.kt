@@ -7,6 +7,8 @@ import io.mockk.every
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
@@ -15,6 +17,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
+import java.util.stream.Stream
 
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
@@ -25,16 +28,16 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     private lateinit var courseService: CourseService
 
     @ParameterizedTest
-    @ValueSource(strings = ["NaMe", "tes"])
-    fun `getCourseByNameLike - when courses founded than status 200`(name: String) {
+    @ValueSource(strings = ["test", "Category"])
+    fun `getCourseByCategoryLike - when courses founded than status 200`(category: String) {
         val expectedCourses = listOf(
             CourseDTO("testName1", "testCategory1", 1),
             CourseDTO("testName2", "testCategory2", 2)
         )
-        every { courseService.findCourseByNameLike(name) } returns expectedCourses
+        every { courseService.findCourseByNameLike(category) } returns expectedCourses
 
         val response = webTestClient.get()
-            .uri("/v1/courses/names/{name}", name)
+            .uri("/v1/courses/categories/{category}", category)
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus().isOk
@@ -45,13 +48,13 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     }
 
     @Test
-    fun `getCourseByNameLike - when no courses founded than status 204`() {
-        val name = "example"
+    fun `getCourseByCategoryLike - when no courses founded than status 204`() {
+        val category = "example"
         val expectedCourses = listOf<CourseDTO>()
-        every { courseService.findCourseByNameLike(name) } returns expectedCourses
+        every { courseService.findCourseByNameLike(category) } returns expectedCourses
 
         val response = webTestClient.get()
-            .uri("/v1/courses/names/{name}", name)
+            .uri("/v1/courses/categories/{name}", category)
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus().isNoContent
@@ -169,8 +172,8 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
 
 
     @Test
-    fun `getAllCourses - when no courses are available, than return list with size 0`() {
-        every { courseService.findAllCourses() } returns listOf()
+    fun `getAllCourses without param name - when no courses are available, than return list with size 0`() {
+        every { courseService.findAllCourses(null) } returns listOf()
 
         val response = webTestClient.get()
             .uri("/v1/courses")
@@ -184,13 +187,13 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     }
 
     @Test
-    fun `getAllCourses - return list with size 2`() {
+    fun `getAllCourses without param name - return list with size 2`() {
         val expectedList = listOf(
             CourseDTO("name1", "category1", 1),
             CourseDTO("name2", "category2", 2)
         )
 
-        every { courseService.findAllCourses() } returns expectedList
+        every { courseService.findAllCourses(null) } returns expectedList
 
         val actualList = webTestClient.get()
             .uri("/v1/courses")
@@ -201,6 +204,44 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
             .returnResult().responseBody
 
         assertThat(expectedList).isEqualTo(actualList)
+    }
+
+    @ParameterizedTest
+    @MethodSource("getArguments")
+    fun `getAllCourses with param name - first approach size is 2, second approach size is 1`(
+        name: String,
+        expectedSize: Int,
+        courses: List<CourseDTO>
+    ) {
+
+        every { courseService.findAllCourses(name) } returns courses
+
+        val response = webTestClient.get()
+            .uri("/v1/courses?name=$name")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isOk
+            .expectBodyList(CourseDTO::class.java)
+            .returnResult().responseBody
+
+        assertThat(response!!.size).isEqualTo(expectedSize)
+    }
+
+    companion object TestUtil {
+        @JvmStatic
+        fun getArguments(): Stream<Arguments> = Stream.of(
+            Arguments.arguments(
+                "am", 2, listOf(
+                    CourseDTO("name1", "category1", 1),
+                    CourseDTO("name2", "category2", 2)
+                )
+            ),
+            Arguments.arguments(
+                "e2", 1, listOf(
+                    CourseDTO("name2", "category2", 2)
+                )
+            )
+        )
     }
 
     @Test

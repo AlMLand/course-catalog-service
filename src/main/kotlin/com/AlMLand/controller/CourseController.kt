@@ -45,9 +45,9 @@ class CourseController(private val courseService: CourseService) {
         return ResponseEntity.created(URI("v1/courses/${savedCourseDTO.id}")).body(savedCourseDTO)
     }
 
-    @GetMapping("/names/{name}")
-    fun getCourseByNameLike(@PathVariable name: String): ResponseEntity<List<CourseDTO>> {
-        val courseDTOs = courseService.findCourseByNameLike(name)
+    @GetMapping("/categories/{category}")
+    fun getCourseByCategoryLike(@PathVariable category: String): ResponseEntity<List<CourseDTO>> {
+        val courseDTOs = courseService.findCourseByNameLike(category)
         return when (courseDTOs.size) {
             0 -> ResponseEntity.noContent().build()
             else -> ResponseEntity.ok(courseDTOs)
@@ -62,8 +62,8 @@ class CourseController(private val courseService: CourseService) {
     }
 
     @GetMapping
-    fun getAllCourses(): ResponseEntity<List<CourseDTO>> {
-        val courseDTOs = courseService.findAllCourses()
+    fun getAllCourses(@RequestParam(required = false) name: String?): ResponseEntity<List<CourseDTO>> {
+        val courseDTOs = courseService.findAllCourses(name)
         if (courseDTOs.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(listOf())
         return ResponseEntity.ok(courseDTOs)
     }
