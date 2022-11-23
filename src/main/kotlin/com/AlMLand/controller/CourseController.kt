@@ -47,7 +47,7 @@ class CourseController(private val courseService: CourseService) {
 
     @GetMapping("/categories/{category}")
     fun getCourseByCategoryLike(@PathVariable category: String): ResponseEntity<List<CourseDTO>> {
-        val courseDTOs = courseService.findCourseByNameLike(category)
+        val courseDTOs = courseService.findCourseByCategoryLike(category)
         return when (courseDTOs.size) {
             0 -> ResponseEntity.noContent().build()
             else -> ResponseEntity.ok(courseDTOs)

@@ -35,7 +35,7 @@ class CourseControllerUnitTest2(
     fun `getCourseByCategoryLike - when no courses founded than status 204`() {
         val category = "example"
 
-        `when`(courseService.findCourseByNameLike(category)).thenReturn(listOf())
+        `when`(courseService.findCourseByCategoryLike(category)).thenReturn(listOf())
 
         val response = mockMvc.perform(
             get("/v1/courses/categories/{name}", category)
@@ -48,12 +48,12 @@ class CourseControllerUnitTest2(
     @ValueSource(strings = ["testCa", "Category"])
     fun `getCourseByCategoryLike - when courses founded than status 200`(category: String) {
         val expectedCourses = listOf(
-            CourseDTO("testName1", "testCategory1", 1),
-            CourseDTO("testName2", "testCategory2", 2)
+            CourseDTO("testName1", "testCategory1", 1, 1),
+            CourseDTO("testName2", "testCategory2", 2, 1)
         )
         val coursesAsJson = objectMapper.writeValueAsString(expectedCourses)
 
-        `when`(courseService.findCourseByNameLike(category)).thenReturn(expectedCourses)
+        `when`(courseService.findCourseByCategoryLike(category)).thenReturn(expectedCourses)
 
         val response = mockMvc.perform(
             get("/v1/courses/categories/{category}", category)
@@ -95,8 +95,8 @@ class CourseControllerUnitTest2(
     @Test
     fun `updateCourse - update is successful - status 200, header has location to this course, updated course in body `() {
         val courseId = 1
-        val courseDTO = CourseDTO("updatedName", "updatedCategory", null)
-        val updatedCourseDTO = CourseDTO("updatedName", "updatedCategory", 1)
+        val courseDTO = CourseDTO("updatedName", "updatedCategory", null, 1)
+        val updatedCourseDTO = CourseDTO("updatedName", "updatedCategory", 1, 1)
         val updatedCourseAsJson = objectMapper.writeValueAsString(updatedCourseDTO)
 
         `when`(courseService.updateCourses(courseId, courseDTO)).thenReturn(updatedCourseDTO)
@@ -117,7 +117,7 @@ class CourseControllerUnitTest2(
     @Test
     fun `updateCourse - course by id is not found - status 404`() {
         val courseId = 1
-        val courseDTO = CourseDTO("name", "category", null)
+        val courseDTO = CourseDTO("name", "category", null, 1)
         val courseDTOAsJson = objectMapper.writeValueAsString(courseDTO)
 
         `when`(courseService.updateCourses(courseId, courseDTO)).thenReturn(courseDTO)
@@ -138,7 +138,7 @@ class CourseControllerUnitTest2(
     @Test
     fun `updateCourse - when name is blank, than status 400, body with the same data`() {
         val courseId = 1
-        val courseDTO = CourseDTO("", "category", null)
+        val courseDTO = CourseDTO("", "category", null, 1)
 
         val response = mockMvc.perform(
             put("/v1/courses/{id}", courseId)
@@ -155,7 +155,7 @@ class CourseControllerUnitTest2(
     @Test
     fun `updateCourse - when category is blank, than status 400, body with the same data`() {
         val courseId = 1
-        val courseDTO = CourseDTO("name", "", null)
+        val courseDTO = CourseDTO("name", "", null, 1)
 
         val response = mockMvc.perform(
             put("/v1/courses/{id}", courseId)
@@ -186,8 +186,8 @@ class CourseControllerUnitTest2(
     @Test
     fun `getAllCourses - return list with size 2`() {
         val expectedResponse = listOf(
-            CourseDTO("name1", "category1", 1),
-            CourseDTO("name2", "category2", 2)
+            CourseDTO("name1", "category1", 1, 1),
+            CourseDTO("name2", "category2", 2, 1)
         )
         `when`(courseService.findAllCourses(null)).thenReturn(expectedResponse)
 
@@ -225,12 +225,12 @@ class CourseControllerUnitTest2(
         fun getArguments(): Stream<Arguments> = Stream.of(
             Arguments.arguments(
                 "na", listOf(
-                    CourseDTO("name1", "category1", 1),
-                    CourseDTO("name2", "category2", 2)
+                    CourseDTO("name1", "category1", 1, 1),
+                    CourseDTO("name2", "category2", 2, 1)
                 )
             ), Arguments.arguments(
                 "em1", listOf(
-                    CourseDTO("name1", "category1", 1)
+                    CourseDTO("name1", "category1", 1, 1)
                 )
             )
         )
@@ -239,7 +239,7 @@ class CourseControllerUnitTest2(
     @Test
     fun `getCourse - get course with id - 1`() {
         val courseId = 1
-        val courseDTO = CourseDTO("testName", "testCategory", courseId)
+        val courseDTO = CourseDTO("testName", "testCategory", courseId, 1)
         `when`(courseService.findCourse(courseId)).thenReturn(courseDTO)
 
         val response = mockMvc.perform(
@@ -269,7 +269,7 @@ class CourseControllerUnitTest2(
 
     @Test
     fun `createCourse - create new course, should give back the courseDTO with the same data, status 409, id = null`() {
-        val courseDTO = CourseDTO("testName", "testCategory", null)
+        val courseDTO = CourseDTO("testName", "testCategory", null, 1)
         val requestBody = objectMapper.writeValueAsString(courseDTO)
 
         `when`(courseService.createCourse(courseDTO)).thenReturn(courseDTO)
@@ -288,8 +288,8 @@ class CourseControllerUnitTest2(
 
     @Test
     fun `createCourse - create new course, should give back the courseDTO with the same data, status 201, id = 1`() {
-        val courseDTO = CourseDTO("testName", "testCategory", null)
-        val expectedCourseDTO = CourseDTO("testName", "testCategory", 1)
+        val courseDTO = CourseDTO("testName", "testCategory", null, 1)
+        val expectedCourseDTO = CourseDTO("testName", "testCategory", 1, 1)
         val expectedRedirectedUrl = "v1/courses/1"
         val expectedLocationName = "Location"
         val expectedLocationValue = "v1/courses/1"
@@ -314,7 +314,7 @@ class CourseControllerUnitTest2(
 
     @Test
     fun `createCourse - create new course with category is blank, should give back the courseDTO with the same data, status 400`() {
-        val courseDTO = CourseDTO("testName", "", null)
+        val courseDTO = CourseDTO("testName", "", null, 1)
         val courseAsJson = objectMapper.writeValueAsString(courseDTO)
 
         val response = mockMvc.perform(
@@ -330,7 +330,7 @@ class CourseControllerUnitTest2(
 
     @Test
     fun `createCourse - create new course with name is blank, should give back the courseDTO with the same data, status 400`() {
-        val courseDTO = CourseDTO("", "testCategory", null)
+        val courseDTO = CourseDTO("", "testCategory", null, 1)
         val courseAsJson = objectMapper.writeValueAsString(courseDTO)
 
         val response = mockMvc.perform(

@@ -31,10 +31,10 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     @ValueSource(strings = ["test", "Category"])
     fun `getCourseByCategoryLike - when courses founded than status 200`(category: String) {
         val expectedCourses = listOf(
-            CourseDTO("testName1", "testCategory1", 1),
-            CourseDTO("testName2", "testCategory2", 2)
+            CourseDTO("testName1", "testCategory1", 1, 1),
+            CourseDTO("testName2", "testCategory2", 2, 1)
         )
-        every { courseService.findCourseByNameLike(category) } returns expectedCourses
+        every { courseService.findCourseByCategoryLike(category) } returns expectedCourses
 
         val response = webTestClient.get()
             .uri("/v1/courses/categories/{category}", category)
@@ -51,7 +51,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     fun `getCourseByCategoryLike - when no courses founded than status 204`() {
         val category = "example"
         val expectedCourses = listOf<CourseDTO>()
-        every { courseService.findCourseByNameLike(category) } returns expectedCourses
+        every { courseService.findCourseByCategoryLike(category) } returns expectedCourses
 
         val response = webTestClient.get()
             .uri("/v1/courses/categories/{name}", category)
@@ -96,8 +96,8 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     @Test
     fun `updateCourse - update is successful - status 200, header has location to this course, updated course in body `() {
         val courseId = 1
-        val courseDTO = CourseDTO("updatedName", "updatedCategory", null)
-        val updatedCourseDTO = CourseDTO("updatedName", "updatedCategory", 1)
+        val courseDTO = CourseDTO("updatedName", "updatedCategory", null, 1)
+        val updatedCourseDTO = CourseDTO("updatedName", "updatedCategory", 1, 1)
         val expectedLocationHeader = "v1/courses/1"
 
         every { courseService.updateCourses(courseId, courseDTO) } returns updatedCourseDTO
@@ -117,7 +117,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     @Test
     fun `updateCourse - course by id is not found - status 404`() {
         val courseId = 1
-        val courseDTO = CourseDTO("name", "category", null)
+        val courseDTO = CourseDTO("name", "category", null, 1)
 
         every { courseService.updateCourses(courseId, courseDTO) } returns courseDTO
 
@@ -137,7 +137,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     @Test
     fun `updateCourse - when name is blank, than status 400, body with the same data`() {
         val courseId = 1
-        val courseDTO = CourseDTO("", "category", null)
+        val courseDTO = CourseDTO("", "category", null, 1)
 
         every { courseService.updateCourses(courseId, courseDTO) } returns courseDTO
 
@@ -155,7 +155,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     @Test
     fun `updateCourse - when category is blank, than status 400, body with the same data`() {
         val courseId = 1
-        val courseDTO = CourseDTO("name", "", null)
+        val courseDTO = CourseDTO("name", "", null, 1)
 
         every { courseService.updateCourses(courseId, courseDTO) } returns courseDTO
 
@@ -189,8 +189,8 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     @Test
     fun `getAllCourses without param name - return list with size 2`() {
         val expectedList = listOf(
-            CourseDTO("name1", "category1", 1),
-            CourseDTO("name2", "category2", 2)
+            CourseDTO("name1", "category1", 1, 1),
+            CourseDTO("name2", "category2", 2, 1)
         )
 
         every { courseService.findAllCourses(null) } returns expectedList
@@ -232,13 +232,13 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
         fun getArguments(): Stream<Arguments> = Stream.of(
             Arguments.arguments(
                 "am", 2, listOf(
-                    CourseDTO("name1", "category1", 1),
-                    CourseDTO("name2", "category2", 2)
+                    CourseDTO("name1", "category1", 1, 1),
+                    CourseDTO("name2", "category2", 2, 1)
                 )
             ),
             Arguments.arguments(
                 "e2", 1, listOf(
-                    CourseDTO("name2", "category2", 2)
+                    CourseDTO("name2", "category2", 2, 1)
                 )
             )
         )
@@ -246,7 +246,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
 
     @Test
     fun `getCourse - get course with id - 1`() {
-        val expectedCourseDTO = CourseDTO("testName", "testCategory", 1)
+        val expectedCourseDTO = CourseDTO("testName", "testCategory", 1, 1)
         val courseId = 1
 
         every { courseService.findCourse(courseId) } returns expectedCourseDTO
@@ -264,7 +264,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
 
     @Test
     fun `getCourse - get course with id, what is not available in db - status not found`() {
-        val expectedCourseDTO = CourseDTO("testName", "defaultCategory", 1)
+        val expectedCourseDTO = CourseDTO("testName", "defaultCategory", 1, 1)
         val courseId = 1
 
         every { courseService.findCourse(courseId) } returns null
@@ -282,7 +282,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
 
     @Test
     fun `createCourse - create new course, should give back the courseDTO with the same data, status 409, id = null`() {
-        val courseDTO = CourseDTO("testName", "testCategory", null)
+        val courseDTO = CourseDTO("testName", "testCategory", null, 1)
         val expectedLocationHeader = "v1/courses/1"
 
         every { courseService.createCourse(any()) } returns courseDTO
@@ -301,8 +301,8 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
 
     @Test
     fun `createCourse - create new course, should give back the courseDTO with the same data, status 201, id = 1`() {
-        val courseDTO = CourseDTO("testName", "testCategory", null)
-        val expectedCourseDTO = CourseDTO("testName", "testCategory", 1)
+        val courseDTO = CourseDTO("testName", "testCategory", null, 1)
+        val expectedCourseDTO = CourseDTO("testName", "testCategory", 1, 1)
         val expectedLocationHeader = "v1/courses/1"
 
         every { courseService.createCourse(any()) } returns expectedCourseDTO
@@ -321,8 +321,8 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     }
 
     @Test
-    fun `createCourse - create new course with name = "", should give back the courseDTO with the same data, status 400`() {
-        val courseDTO = CourseDTO("", "testCategory", null)
+    fun `createCourse - create new course with name is blank, should give back the courseDTO with the same data, status 400`() {
+        val courseDTO = CourseDTO("", "testCategory", null, 1)
 
         val result = webTestClient.post()
             .uri("/v1/courses")
@@ -337,8 +337,8 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     }
 
     @Test
-    fun `createCourse - create new course with category = "", should give back the courseDTO with the same data, status 400`() {
-        val courseDTO = CourseDTO("testName", "", null)
+    fun `createCourse - create new course with category is blank, should give back the courseDTO with the same data, status 400`() {
+        val courseDTO = CourseDTO("testName", "", null, 1)
 
         val result = webTestClient.post()
             .uri("/v1/courses")

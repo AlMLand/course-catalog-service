@@ -2,26 +2,35 @@ package com.AlMLand.service
 
 import com.AlMLand.dto.CourseDTO
 import com.AlMLand.entity.Course
+import com.AlMLand.exception.InstructorNotValidException
 import com.AlMLand.repository.CourseRepository
+import com.AlMLand.repository.InstructorRepository
 import mu.KLogging
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 @Service
-class CourseService(private val courseRepository: CourseRepository) {
+class CourseService(
+    private val courseRepository: CourseRepository,
+    private val instructorRepository: InstructorRepository
+) {
 
     private companion object : KLogging()
 
     fun createCourse(courseDTO: CourseDTO): CourseDTO {
-        if (existsAlready(courseDTO)) {
-            return courseDTO
-        }
-        val savedCourse = courseRepository.save(courseDTO.let {
-            Course(it.name, it.category, null)
-        })
-        logger.info { "saved course: $savedCourse" }
-        return savedCourse.let {
-            CourseDTO(it.name, it.category, it.id)
+        return if (existsAlready(courseDTO)) {
+            courseDTO
+        } else {
+            val instructor = instructorRepository.findById(courseDTO.instructorId)
+                .orElseThrow { InstructorNotValidException("This instructor not exists, instructor id: ${courseDTO.instructorId}") }
+
+            val savedCourse = courseRepository.save(courseDTO.let {
+                Course(it.name, it.category, null, instructor)
+            })
+            logger.info { "saved course: $savedCourse" }
+            savedCourse.let {
+                CourseDTO(it.name, it.category, it.id, it.instructor.id!!)
+            }
         }
     }
 
@@ -30,7 +39,7 @@ class CourseService(private val courseRepository: CourseRepository) {
 
     fun findCourse(id: Int): CourseDTO? {
         val courseDTO = courseRepository.findByIdOrNull(id)?.let {
-            CourseDTO(it.name, it.category, it.id)
+            CourseDTO(it.name, it.category, it.id, it.instructor.id!!)
         }
         logger.info { "founded course as courseDTO: $courseDTO" }
         return courseDTO
@@ -42,7 +51,7 @@ class CourseService(private val courseRepository: CourseRepository) {
             courseRepository.findByNameContainingIgnoreCase(name)
         } ?: courseRepository.findAll()
 
-        return courses.map { CourseDTO(it.name, it.category, it.id) }
+        return courses.map { CourseDTO(it.name, it.category, it.id, it.instructor.id!!) }
     }
 
     fun updateCourses(id: Int, courseDTO: CourseDTO): CourseDTO {
@@ -52,7 +61,7 @@ class CourseService(private val courseRepository: CourseRepository) {
                 it.name = courseDTO.name
                 it.category = courseDTO.category
                 courseRepository.save(it)
-                CourseDTO(it.name, it.category, it.id)
+                CourseDTO(it.name, it.category, it.id, it.instructor.id!!)
             }
         } else {
             courseDTO
@@ -67,7 +76,8 @@ class CourseService(private val courseRepository: CourseRepository) {
             false
     }
 
-    fun findCourseByNameLike(category: String): List<CourseDTO> =
-        courseRepository.findByCategoryContainingIgnoreCase(category).map { CourseDTO(it.name, it.category, it.id) }
+    fun findCourseByCategoryLike(category: String): List<CourseDTO> =
+        courseRepository.findByCategoryContainingIgnoreCase(category)
+            .map { CourseDTO(it.name, it.category, it.id, it.instructor.id!!) }
 
 }

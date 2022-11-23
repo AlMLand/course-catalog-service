@@ -24,7 +24,9 @@ import java.util.stream.Stream
 @AutoConfigureWebTestClient
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebTestClient) {
+class CourseControllerIntegrationTest(
+    @Autowired private val webTestClient: WebTestClient
+) {
     companion object TestUtil {
         @JvmStatic
         fun getArgumentsForGetCourseByCategoryLike(): Stream<Arguments> = Stream.of(
@@ -36,13 +38,13 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
         fun getArgumentsForGetAllCourses(): Stream<Arguments> = Stream.of(
             Arguments.arguments(
                 "TnA", listOf(
-                    CourseDTO("testName1", "testCategory1", 1),
-                    CourseDTO("testName2", "testCategory2", 2)
+                    CourseDTO("testName1", "testCategory1", 1, 1),
+                    CourseDTO("testName2", "testCategory2", 2, 2)
                 )
             ),
             Arguments.arguments(
                 "tname1", listOf(
-                    CourseDTO("testName1", "testCategory1", 1)
+                    CourseDTO("testName1", "testCategory1", 1, 1)
                 )
             )
         )
@@ -105,8 +107,8 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     @Test
     fun `getAllCourses - return list with size 2`() {
         val expectedList = listOf(
-            CourseDTO("testName1", "testCategory1", 1),
-            CourseDTO("testName2", "testCategory2", 2)
+            CourseDTO("testName1", "testCategory1", 1, 1),
+            CourseDTO("testName2", "testCategory2", 2, 2)
         )
 
         val response = webTestClient.get()
@@ -132,7 +134,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     ) {
         val uri = UriComponentsBuilder.fromUri(URI("/v1/courses"))
             .queryParam("name", name).toUriString()
-        
+
         val response = webTestClient.get()
             .uri(uri)
             .accept(MediaType.APPLICATION_JSON)
@@ -151,7 +153,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     @Test
     fun `getCourse - get course with id - 1`() {
         val courseId = 1
-        val expectedCourseDTO = CourseDTO("testName1", "testCategory1", courseId)
+        val expectedCourseDTO = CourseDTO("testName1", "testCategory1", courseId, 1)
 
         val response = webTestClient.get()
             .uri("/v1/courses/{id}", courseId)
@@ -185,7 +187,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     @Test
     fun `updateCourse - should have status 404, body with the same data, id = null`() {
         val courseId = 10
-        val courseDTO = CourseDTO("testName1", "testCategory1", null)
+        val courseDTO = CourseDTO("testName1", "testCategory1", null, 1)
 
         val response = webTestClient.put()
             .uri("/v1/courses/{id}", courseId)
@@ -206,8 +208,8 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     @Test
     fun `updateCourse - should have status 200, body with the another data, id is the same, header location`() {
         val courseId = 1
-        val courseDTO = CourseDTO("testName1Changed", "testCategory1Changed", null)
-        val expectedCourseDTO = CourseDTO("testName1Changed", "testCategory1Changed", courseId)
+        val courseDTO = CourseDTO("testName1Changed", "testCategory1Changed", null, 1)
+        val expectedCourseDTO = CourseDTO("testName1Changed", "testCategory1Changed", courseId, 1)
         val expectedLocationHeader = "v1/courses/1"
 
         val response = webTestClient.put()
@@ -226,7 +228,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     @Test
     fun `updateCourse - when name is blank, than status 400, body with the same data`() {
         val courseId = 1
-        val courseDTO = CourseDTO("", "category", null)
+        val courseDTO = CourseDTO("", "category", null, 1)
 
         val response = webTestClient.put()
             .uri("/v1/courses/{id}", courseId)
@@ -243,7 +245,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     @Test
     fun `updateCourse - when category is blank, than status 400, body with the same data`() {
         val courseId = 1
-        val courseDTO = CourseDTO("name", "", null)
+        val courseDTO = CourseDTO("name", "", null, 1)
 
         val response = webTestClient.put()
             .uri("/v1/courses/{id}", courseId)
@@ -291,7 +293,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     )
     @Test
     fun `createCourse - should have status 409(conflict), body with the same data, id = null`() {
-        val courseDTO = CourseDTO("testName1", "testCategory1", null)
+        val courseDTO = CourseDTO("testName1", "testCategory1", null, 1)
         val response = webTestClient.post()
             .uri("/v1/courses")
             .contentType(MediaType.APPLICATION_JSON)
@@ -304,9 +306,13 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
         assertThat(courseDTO).isEqualTo(response)
     }
 
+    @Sql(
+        scripts = ["/db/test-data-course-create.sql"],
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
     @Test
     fun `createCourse - should have status 201, header location, body with the same data, id != null`() {
-        val courseDTO = CourseDTO("testName", "testCategory", null)
+        val courseDTO = CourseDTO("testName", "testCategory", null, 1)
         val expectedId = 1
         val expectedLocationHeader = "v1/courses/1"
 
@@ -327,7 +333,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
 
     @Test
     fun `createCourse - create new course with name is blank, should give back the courseDTO with the same data, status 400`() {
-        val courseDTO = CourseDTO("", "testCategory", null)
+        val courseDTO = CourseDTO("", "testCategory", null, 1)
 
         val response = webTestClient.post()
             .uri("v1/courses")
@@ -343,7 +349,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
 
     @Test
     fun `createCourse - create new course with category is blank, should give back the courseDTO with the same data, status 400`() {
-        val courseDTO = CourseDTO("testName", "", null)
+        val courseDTO = CourseDTO("testName", "", null, 1)
 
         val response = webTestClient.post()
             .uri("v1/courses")

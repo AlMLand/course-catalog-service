@@ -32,4 +32,10 @@ class GlobalErrorHandler : ResponseEntityExceptionHandler() {
         logger.error("Exception observed: ${exception.message}", exception)
         return ResponseEntity.internalServerError().body(exception.message)
     }
+
+    @ExceptionHandler(value = [InstructorNotValidException::class])
+    fun handleNotPresentOfInstructor(exception: InstructorNotValidException): ResponseEntity<Any> {
+        logger.error("InstructorNotValidException observed: ${exception.message}", exception)
+        return ResponseEntity.badRequest().body(exception.message)
+    }
 }
