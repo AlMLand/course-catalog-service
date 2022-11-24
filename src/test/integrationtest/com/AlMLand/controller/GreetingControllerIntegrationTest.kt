@@ -7,14 +7,38 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.DynamicPropertyRegistry
+import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.utility.DockerImageName
 
+@Testcontainers
 @ActiveProfiles("test")
-@AutoConfigureWebTestClient // for webTestClient: WebTestClient
+@AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class GreetingControllerIntegrationTest {
     @Autowired
     private lateinit var webTestClient: WebTestClient
+
+    private companion object TestContainer {
+        @Container
+        val postgresDB = PostgreSQLContainer<Nothing>(DockerImageName.parse("postgres:15.1-alpine")).apply {
+            withDatabaseName("testdb-for-kotlin-course")
+            withUsername("alex")
+            withPassword("secret")
+        }
+
+        @JvmStatic
+        @DynamicPropertySource
+        fun properties(registry: DynamicPropertyRegistry) {
+            registry.add("spring.datasource.url", postgresDB::getJdbcUrl)
+            registry.add("spring.datasource.username", postgresDB::getUsername)
+            registry.add("spring.datasource.password", postgresDB::getPassword)
+        }
+    }
 
     @Test
     fun retrieveGreetingTest() {

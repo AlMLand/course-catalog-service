@@ -14,20 +14,26 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.DynamicPropertyRegistry
+import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.context.jdbc.SqlGroup
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.util.UriComponentsBuilder
+import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.utility.DockerImageName
 import java.net.URI
 import java.util.stream.Stream
 
+@Testcontainers
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class CourseControllerIntegrationTest(
-    @Autowired private val webTestClient: WebTestClient
-) {
-    companion object TestUtil {
+class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebTestClient) {
+    private companion object TestUtil {
         @JvmStatic
         fun getArgumentsForGetCourseByCategoryLike(): Stream<Arguments> = Stream.of(
             Arguments.arguments("testCat", 2),
@@ -48,11 +54,26 @@ class CourseControllerIntegrationTest(
                 )
             )
         )
+
+        @Container
+        val postgresDB = PostgreSQLContainer<Nothing>(DockerImageName.parse("postgres:15.1-alpine")).apply {
+            withDatabaseName("testdb-for-kotlin-course")
+            withUsername("alex")
+            withPassword("secret")
+        }
+
+        @JvmStatic
+        @DynamicPropertySource
+        fun properties(registry: DynamicPropertyRegistry) {
+            registry.add("spring.datasource.url", postgresDB::getJdbcUrl)
+            registry.add("spring.datasource.username", postgresDB::getUsername)
+            registry.add("spring.datasource.password", postgresDB::getPassword)
+        }
     }
 
-    @Sql(
-        scripts = ["/db/test-data.sql"],
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    @SqlGroup(
+        Sql(scripts = ["/db/test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     )
     @ParameterizedTest
     @MethodSource("getArgumentsForGetCourseByCategoryLike")
@@ -69,9 +90,9 @@ class CourseControllerIntegrationTest(
     }
 
 
-    @Sql(
-        scripts = ["/db/test-data.sql"],
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    @SqlGroup(
+        Sql(scripts = ["/db/test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     )
     @Test
     fun `getCourseByCategoryLike - when no courses founded than status 204`() {
@@ -100,9 +121,9 @@ class CourseControllerIntegrationTest(
         assertThat(response).isEqualTo(listOf<CourseDTO>())
     }
 
-    @Sql(
-        scripts = ["/db/test-data.sql"],
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    @SqlGroup(
+        Sql(scripts = ["/db/test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     )
     @Test
     fun `getAllCourses - return list with size 2`() {
@@ -122,9 +143,9 @@ class CourseControllerIntegrationTest(
         assertThat(expectedList).isEqualTo(response)
     }
 
-    @Sql(
-        scripts = ["/db/test-data.sql"],
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    @SqlGroup(
+        Sql(scripts = ["/db/test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     )
     @ParameterizedTest
     @MethodSource("getArgumentsForGetAllCourses")
@@ -146,9 +167,9 @@ class CourseControllerIntegrationTest(
         assertThat(courses).isEqualTo(response)
     }
 
-    @Sql(
-        scripts = ["/db/test-data.sql"],
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    @SqlGroup(
+        Sql(scripts = ["/db/test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     )
     @Test
     fun `getCourse - get course with id - 1`() {
@@ -180,9 +201,9 @@ class CourseControllerIntegrationTest(
         Assertions.assertTrue(response == null)
     }
 
-    @Sql(
-        scripts = ["/db/test-data.sql"],
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    @SqlGroup(
+        Sql(scripts = ["/db/test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     )
     @Test
     fun `updateCourse - should have status 404, body with the same data, id = null`() {
@@ -201,9 +222,9 @@ class CourseControllerIntegrationTest(
         assertThat(courseDTO).isEqualTo(response)
     }
 
-    @Sql(
-        scripts = ["/db/test-data.sql"],
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    @SqlGroup(
+        Sql(scripts = ["/db/test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     )
     @Test
     fun `updateCourse - should have status 200, body with the another data, id is the same, header location`() {
@@ -259,9 +280,9 @@ class CourseControllerIntegrationTest(
         assertThat(response).isEqualTo("CourseDTO.category must not be blank")
     }
 
-    @Sql(
-        scripts = ["/db/test-data.sql"],
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    @SqlGroup(
+        Sql(scripts = ["/db/test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     )
     @Test
     fun `delete - should have status 200`() {
@@ -273,9 +294,9 @@ class CourseControllerIntegrationTest(
             .expectStatus().isOk
     }
 
-    @Sql(
-        scripts = ["/db/test-data.sql"],
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    @SqlGroup(
+        Sql(scripts = ["/db/test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     )
     @Test
     fun `delete - should have status 404`() {
@@ -287,9 +308,9 @@ class CourseControllerIntegrationTest(
             .expectStatus().isNotFound
     }
 
-    @Sql(
-        scripts = ["/db/test-data.sql"],
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    @SqlGroup(
+        Sql(scripts = ["/db/test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     )
     @Test
     fun `createCourse - should have status 409(conflict), body with the same data, id = null`() {
@@ -306,9 +327,9 @@ class CourseControllerIntegrationTest(
         assertThat(courseDTO).isEqualTo(response)
     }
 
-    @Sql(
-        scripts = ["/db/test-data-course-create.sql"],
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    @SqlGroup(
+        Sql(scripts = ["/db/test-data-course-create.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     )
     @Test
     fun `createCourse - should have status 201, header location, body with the same data, id != null`() {

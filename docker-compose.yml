@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  postgres_15:
+    image: postgres:15.1-alpine
+    container_name: postgres_15
+    restart: always
+    ports:
+      - 5438:5432
+    networks:
+      - postgres_network
+    environment:
+      POSTGRES_USER: alex
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: testdb-for-kotlin-course
+    volumes:
+      - postgres_15-testdb-for-kotlin-course:/var/lib/postgresql/data
+
+volumes:
+  postgres_15-testdb-for-kotlin-course:
+
+networks:
+  postgres_network:

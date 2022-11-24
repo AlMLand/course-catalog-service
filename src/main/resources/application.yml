@@ -2,22 +2,26 @@ spring:
   application:
     name: course-catalog-service
   datasource:
-    url: jdbc:h2:mem:testdb-for-kotlin-course
-    driver-class-name: org.h2.Driver
+    url: jdbc:postgresql://localhost:5438/testdb-for-kotlin-course
+    driver-class-name: org.postgresql.Driver
     username: alex
     password: secret
   jpa:
-    database: h2
-    database-platform: org.hibernate.dialect.H2Dialect
-    generate-ddl: true
+    database: POSTGRESQL
+    database-platform: org.hibernate.dialect.PostgreSQL82Dialect
+    hibernate:
+      ddl-auto: 'update'
     show-sql: true
+    # fix for the postgres db issue - not implemented method
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
   h2:
     console:
       enabled: true
-#  config: # wse budet aktivirovano tolko pri aktivnom profile(ili profiljah), kotorij propisan vnizu
-#    activate:
-#      on-profile:
-#        - prod
+      path: /h2
 
 # default profile message
 message: hallo from default profile
