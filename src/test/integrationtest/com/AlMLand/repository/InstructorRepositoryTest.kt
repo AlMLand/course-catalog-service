@@ -1,16 +1,20 @@
 package com.AlMLand.repository
 
+import com.AlMLand.util.PostgreSQLContainerInitializer
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlGroup
 
-@ActiveProfiles("test")
 @DataJpaTest
-class InstructorRepositoryTest(@Autowired private val instructorRepository: InstructorRepository) {
+@ActiveProfiles("test")
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+class InstructorRepositoryTest(@Autowired private val instructorRepository: InstructorRepository) :
+    PostgreSQLContainerInitializer() {
 
     @SqlGroup(
         Sql(
