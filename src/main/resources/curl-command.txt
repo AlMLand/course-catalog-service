@@ -1,0 +1,41 @@
+==================
+GreetingController
+==================
+GET:
+curl -i http://localhost:8080/v1/greetings/alex
+
+
+====================
+InstructorController
+====================
+CREATE -> createInstructor :
+curl -i -d '{ "name":"Alex", "id":null }' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/instructors
+
+
+================
+CourseController
+================
+CREATE -> createCourse :
+curl -i -d '{"id":null, "name":"Kotlin", "category":"DevelopmentFirst", "instructorId":"1"}' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/courses
+curl -i -d '{"id":null, "name":"Spring Boot", "category":"DevelopmentSecond", "instructorId":"2"}' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/courses
+
+CREATE with instructor :
+curl -i -d '{"id":null, "name":"Java", "category": "Development", "instructorId": 1}' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/courses
+
+GET -> getCourseByCategoryLike :
+curl -i http://localhost:8080/v1/courses/categories/first
+
+GET -> getCourse :
+curl -i http://localhost:8080/v1/courses/1
+
+GET -> getAllCourses :
+curl -i http://localhost:8080/v1/courses
+
+GET -> getAllCourses with parameter :
+curl -i http://localhost:8080/v1/courses?name=Kotlin
+
+UPDATE -> updateCourse :
+curl -i -d '{"id":null, "name":"Java", "category":"Development"}' -H "Content-Type: application/json" -X PUT http://localhost:8080/v1/courses/1
+
+DELETE -> deleteCourse :
+curl -i -X DELETE http://localhost:8080/v1/courses/1
