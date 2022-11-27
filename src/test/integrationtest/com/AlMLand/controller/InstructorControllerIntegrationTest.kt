@@ -67,6 +67,7 @@ class InstructorControllerIntegrationTest(@Autowired private val webTestClient: 
             .bodyValue(instructorDTO)
             .exchange()
             .expectStatus().isCreated
+            .expectHeader().location("/v1/instructors/1")
             .expectBody(InstructorDTO::class.java)
             .returnResult().responseBody
         Assertions.assertThat(response).isEqualTo(expectedInstructorDTO)
