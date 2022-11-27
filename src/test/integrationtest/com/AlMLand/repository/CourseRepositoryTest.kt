@@ -1,5 +1,8 @@
 package com.AlMLand.repository
 
+import com.AlMLand.dto.enums.Category.DEVELOPMENT
+import com.AlMLand.dto.enums.Category.MANAGEMENT
+import com.AlMLand.entity.CourseCategory
 import com.AlMLand.util.PostgreSQLContainerInitializer
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -9,40 +12,42 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD
 import org.springframework.test.context.jdbc.SqlGroup
 
+@SqlGroup(
+    Sql(scripts = ["/db/test-data.sql"], executionPhase = BEFORE_TEST_METHOD),
+    Sql(scripts = ["/db/clean-up.sql"], executionPhase = AFTER_TEST_METHOD)
+)
 @DataJpaTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class CourseRepositoryTest(@Autowired private val courseRepository: CourseRepository) :
     PostgreSQLContainerInitializer() {
 
-    @SqlGroup(
-        Sql(
-            scripts = ["/db/test-data.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            scripts = ["/db/clean-up.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
-    )
     @Test
-    fun `findByCategoryContainingIgnoreCase - should return list with size 2`() {
-        assertTrue(courseRepository.findByCategoryContainingIgnoreCase("tESt").size == 2)
-        assertTrue(courseRepository.findByCategoryContainingIgnoreCase("ory2").size == 1)
+    fun `findByNameContainingIgnoreCaseAndCategoryCategory - first approach size is 2, second approach size is 1`() {
+        assertTrue(
+            courseRepository.findByNameContainingIgnoreCaseAndCategoryCategory(
+                "tNam",
+                DEVELOPMENT
+            ).size == 2
+        )
+        assertTrue(
+            courseRepository.findByNameContainingIgnoreCaseAndCategoryCategory(
+                "name",
+                MANAGEMENT
+            ).size == 1
+        )
     }
 
-    @SqlGroup(
-        Sql(
-            scripts = ["/db/test-data.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            scripts = ["/db/clean-up.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
-    )
+    @Test
+    fun `findByCategoryCategory - should return list with size 2 and 1`() {
+        assertTrue(courseRepository.findByCategoryCategory(DEVELOPMENT).size == 2)
+        assertTrue(courseRepository.findByCategoryCategory(MANAGEMENT).size == 1)
+    }
+
     @Test
     fun `findByNameContainingIgnoreCase - should return list with size 2`() {
         assertTrue(courseRepository.findByNameContainingIgnoreCase("nAMe").size == 2)
@@ -51,22 +56,22 @@ class CourseRepositoryTest(@Autowired private val courseRepository: CourseReposi
 
     @Test
     fun `existsFirst1ByNameAndCategory - should return - false`() {
-        assertFalse(courseRepository.existsFirst1ByNameAndCategory("testName1", "testName1"))
+        assertFalse(
+            courseRepository.existsFirst1ByNameAndCategoryIn(
+                "testNameNotAvailable",
+                listOf(CourseCategory(DEVELOPMENT, 1, "testCategory1"))
+            )
+        )
     }
 
-    @SqlGroup(
-        Sql(
-            scripts = ["/db/test-data.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            scripts = ["/db/clean-up.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
-    )
     @Test
     fun `existsFirst1ByNameAndCategory - should return - true`() {
-        assertTrue(courseRepository.existsFirst1ByNameAndCategory("testName1", "testCategory1"))
+        assertTrue(
+            courseRepository.existsFirst1ByNameAndCategoryIn(
+                "testName1",
+                listOf(CourseCategory(DEVELOPMENT, 1, "testCategory1"))
+            )
+        )
     }
 
 }

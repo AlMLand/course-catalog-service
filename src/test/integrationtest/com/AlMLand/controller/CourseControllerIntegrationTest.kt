@@ -1,6 +1,9 @@
 package com.AlMLand.controller
 
+import com.AlMLand.dto.CourseCategoryDTO
 import com.AlMLand.dto.CourseDTO
+import com.AlMLand.dto.enums.Category
+import com.AlMLand.dto.enums.Category.*
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -17,6 +20,8 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD
 import org.springframework.test.context.jdbc.SqlGroup
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.util.UriComponentsBuilder
@@ -35,22 +40,71 @@ import java.util.stream.Stream
 class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebTestClient) {
     private companion object TestUtil {
         @JvmStatic
-        fun getArgumentsForGetCourseByCategoryLike(): Stream<Arguments> = Stream.of(
-            Arguments.arguments("testCat", 2),
-            Arguments.arguments("gory1", 1)
+        fun getAllCoursesWithParamsNameAndCategory(): Stream<Arguments> = Stream.of(
+            Arguments.arguments(
+                "tnam", DEVELOPMENT, listOf(
+                    CourseDTO("testName1", listOf(CourseCategoryDTO(DEVELOPMENT, 1, "testDescription1")), 1, 1),
+                    CourseDTO(
+                        "testName2", listOf(
+                            CourseCategoryDTO(DEVELOPMENT, 2, "testDescription2"),
+                            CourseCategoryDTO(MANAGEMENT, 3, "testDescription3")
+                        ), 2, 2
+                    )
+                )
+            ),
+            Arguments.arguments(
+                "name", MANAGEMENT, listOf(
+                    CourseDTO(
+                        "testName2", listOf(
+                            CourseCategoryDTO(DEVELOPMENT, 2, "testDescription2"),
+                            CourseCategoryDTO(MANAGEMENT, 3, "testDescription3")
+                        ), 2, 2
+                    )
+                )
+            )
         )
 
         @JvmStatic
-        fun getArgumentsForGetAllCourses(): Stream<Arguments> = Stream.of(
+        fun getAllCoursesWithParamCategory(): Stream<Arguments> = Stream.of(
+            Arguments.arguments(
+                DEVELOPMENT, listOf(
+                    CourseDTO("testName1", listOf(CourseCategoryDTO(DEVELOPMENT, 1, "testDescription1")), 1, 1),
+                    CourseDTO(
+                        "testName2", listOf(
+                            CourseCategoryDTO(DEVELOPMENT, 2, "testDescription2"),
+                            CourseCategoryDTO(MANAGEMENT, 3, "testDescription3")
+                        ), 2, 2
+                    )
+                )
+            ),
+            Arguments.arguments(
+                MANAGEMENT, listOf(
+                    CourseDTO(
+                        "testName2", listOf(
+                            CourseCategoryDTO(DEVELOPMENT, 2, "testDescription2"),
+                            CourseCategoryDTO(MANAGEMENT, 3, "testDescription3")
+                        ), 2, 2
+                    )
+                )
+            )
+        )
+
+        @JvmStatic
+        fun getAllCoursesWithParamName(): Stream<Arguments> = Stream.of(
             Arguments.arguments(
                 "TnA", listOf(
-                    CourseDTO("testName1", "testCategory1", 1, 1),
-                    CourseDTO("testName2", "testCategory2", 2, 2)
+                    CourseDTO("testName1", listOf(CourseCategoryDTO(DEVELOPMENT, 1, "testDescription1")), 1, 1),
+                    CourseDTO(
+                        "testName2", listOf(
+                            CourseCategoryDTO(DEVELOPMENT, 2, "testDescription2"),
+                            CourseCategoryDTO(MANAGEMENT, 3, "testDescription3")
+                        ), 2, 2
+                    )
                 )
             ),
             Arguments.arguments(
                 "tname1", listOf(
-                    CourseDTO("testName1", "testCategory1", 1, 1)
+                    CourseDTO("testName1", listOf(CourseCategoryDTO(DEVELOPMENT, 1, "testDescription1")), 1, 1)
                 )
             )
         )
@@ -71,43 +125,6 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
         }
     }
 
-    @SqlGroup(
-        Sql(scripts = ["/db/test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    )
-    @ParameterizedTest
-    @MethodSource("getArgumentsForGetCourseByCategoryLike")
-    fun `getCourseByCategoryLike - when courses founded than status 200`(name: String, expectedSize: Int) {
-        val response = webTestClient.get()
-            .uri("/v1/courses/categories/{name}", name)
-            .accept(MediaType.APPLICATION_JSON)
-            .exchange()
-            .expectStatus().isOk
-            .expectBodyList(CourseDTO::class.java)
-            .returnResult().responseBody
-
-        assertThat(response!!.size).isEqualTo(expectedSize)
-    }
-
-
-    @SqlGroup(
-        Sql(scripts = ["/db/test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    )
-    @Test
-    fun `getCourseByCategoryLike - when no courses founded than status 204`() {
-        val category = "example"
-        val response = webTestClient.get()
-            .uri("/v1/courses/categories/{name}", category)
-            .accept(MediaType.APPLICATION_JSON)
-            .exchange()
-            .expectStatus().isNoContent
-            .expectBodyList(CourseDTO::class.java)
-            .returnResult().responseBody
-
-        assertThat(response!!.size).isEqualTo(0)
-    }
-
     @Test
     fun `getAllCourses - when no courses are available, than return list with size 0`() {
         val response = webTestClient.get()
@@ -122,14 +139,19 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     }
 
     @SqlGroup(
-        Sql(scripts = ["/db/test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+        Sql(scripts = ["/db/test-data.sql"], executionPhase = BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = AFTER_TEST_METHOD)
     )
     @Test
     fun `getAllCourses - return list with size 2`() {
         val expectedList = listOf(
-            CourseDTO("testName1", "testCategory1", 1, 1),
-            CourseDTO("testName2", "testCategory2", 2, 2)
+            CourseDTO("testName1", listOf(CourseCategoryDTO(DEVELOPMENT, 1, "testDescription1")), 1, 1),
+            CourseDTO(
+                "testName2", listOf(
+                    CourseCategoryDTO(DEVELOPMENT, 2, "testDescription2"),
+                    CourseCategoryDTO(MANAGEMENT, 3, "testDescription3")
+                ), 2, 2
+            )
         )
 
         val response = webTestClient.get()
@@ -140,15 +162,64 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
             .expectBodyList(CourseDTO::class.java)
             .returnResult().responseBody
 
-        assertThat(expectedList).isEqualTo(response)
+        assertThat(response).isEqualTo(expectedList)
     }
 
     @SqlGroup(
-        Sql(scripts = ["/db/test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+        Sql(scripts = ["/db/test-data.sql"], executionPhase = BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = AFTER_TEST_METHOD)
     )
     @ParameterizedTest
-    @MethodSource("getArgumentsForGetAllCourses")
+    @MethodSource("getAllCoursesWithParamCategory")
+    fun `getAllCourses with param category - first approach list with size 2, second approach list with size 1`(
+        category: Category,
+        expectedList: List<CourseDTO>
+    ) {
+        val uri = UriComponentsBuilder.fromUriString("/v1/courses")
+            .queryParam("category", category).toUriString()
+
+        val response = webTestClient.get()
+            .uri(uri)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isOk
+            .expectBodyList(CourseDTO::class.java)
+            .returnResult().responseBody
+
+        assertThat(response).isEqualTo(expectedList)
+    }
+
+    @SqlGroup(
+        Sql(scripts = ["/db/test-data.sql"], executionPhase = BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = AFTER_TEST_METHOD)
+    )
+    @ParameterizedTest
+    @MethodSource("getAllCoursesWithParamsNameAndCategory")
+    fun `getAllCourses with param name and category - first approach list with size 2, second approach list with size 1`(
+        name: String,
+        category: Category,
+        expectedList: List<CourseDTO>
+    ) {
+        val uri = UriComponentsBuilder.fromUriString("/v1/courses")
+            .queryParam("name", name).queryParam("category", category).toUriString()
+
+        val response = webTestClient.get()
+            .uri(uri)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isOk
+            .expectBodyList(CourseDTO::class.java)
+            .returnResult().responseBody
+
+        assertThat(response).isEqualTo(expectedList)
+    }
+
+    @SqlGroup(
+        Sql(scripts = ["/db/test-data.sql"], executionPhase = BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = AFTER_TEST_METHOD)
+    )
+    @ParameterizedTest
+    @MethodSource("getAllCoursesWithParamName")
     fun `getAllCourses with param name - first approach size is 2, second approach size is 1`(
         name: String,
         courses: List<CourseDTO>
@@ -164,17 +235,18 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
             .expectBodyList(CourseDTO::class.java)
             .returnResult().responseBody
 
-        assertThat(courses).isEqualTo(response)
+        assertThat(response).isEqualTo(courses)
     }
 
     @SqlGroup(
-        Sql(scripts = ["/db/test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+        Sql(scripts = ["/db/test-data.sql"], executionPhase = BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = AFTER_TEST_METHOD)
     )
     @Test
     fun `getCourse - get course with id - 1`() {
         val courseId = 1
-        val expectedCourseDTO = CourseDTO("testName1", "testCategory1", courseId, 1)
+        val expectedCourseDTO =
+            CourseDTO("testName1", listOf(CourseCategoryDTO(DEVELOPMENT, 1, "testDescription1")), courseId, 1)
 
         val response = webTestClient.get()
             .uri("/v1/courses/{id}", courseId)
@@ -184,7 +256,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
             .expectBody(CourseDTO::class.java)
             .returnResult().responseBody
 
-        assertThat(expectedCourseDTO).isEqualTo(response)
+        assertThat(response).isEqualTo(expectedCourseDTO)
     }
 
     @Test
@@ -202,13 +274,14 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     }
 
     @SqlGroup(
-        Sql(scripts = ["/db/test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+        Sql(scripts = ["/db/test-data.sql"], executionPhase = BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = AFTER_TEST_METHOD)
     )
     @Test
     fun `updateCourse - should have status 404, body with the same data, id = null`() {
         val courseId = 10
-        val courseDTO = CourseDTO("testName1", "testCategory1", null, 1)
+        val courseDTO =
+            CourseDTO("testName1", listOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")), null, 1)
 
         val response = webTestClient.put()
             .uri("/v1/courses/{id}", courseId)
@@ -223,14 +296,15 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     }
 
     @SqlGroup(
-        Sql(scripts = ["/db/test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+        Sql(scripts = ["/db/test-data.sql"], executionPhase = BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = AFTER_TEST_METHOD)
     )
     @Test
     fun `updateCourse - should have status 200, body with the another data, id is the same, header location`() {
         val courseId = 1
-        val courseDTO = CourseDTO("testName1Changed", "testCategory1Changed", null, 1)
-        val expectedCourseDTO = CourseDTO("testName1Changed", "testCategory1Changed", courseId, 1)
+        val courseCategoryDTOS = listOf(CourseCategoryDTO(DEVELOPMENT, 1, "testDescription1"))
+        val courseDTO = CourseDTO("testName1Changed", courseCategoryDTOS, null, 1)
+        val expectedCourseDTO = CourseDTO("testName1Changed", courseCategoryDTOS, courseId, 1)
         val expectedLocationHeader = "v1/courses/1"
 
         val response = webTestClient.put()
@@ -249,7 +323,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     @Test
     fun `updateCourse - when name is blank, than status 400, body with the same data`() {
         val courseId = 1
-        val courseDTO = CourseDTO("", "category", null, 1)
+        val courseDTO = CourseDTO("", listOf(CourseCategoryDTO(DEVELOPMENT, 1, "category")), null, 1)
 
         val response = webTestClient.put()
             .uri("/v1/courses/{id}", courseId)
@@ -264,9 +338,9 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     }
 
     @Test
-    fun `updateCourse - when category is blank, than status 400, body with the same data`() {
+    fun `updateCourse - when category is empty, than status 400, in body is error message`() {
         val courseId = 1
-        val courseDTO = CourseDTO("name", "", null, 1)
+        val courseDTO = CourseDTO("name", listOf(), null, 1)
 
         val response = webTestClient.put()
             .uri("/v1/courses/{id}", courseId)
@@ -277,12 +351,12 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
             .expectBody(String::class.java)
             .returnResult().responseBody
 
-        assertThat(response).isEqualTo("CourseDTO.category must not be blank")
+        assertThat(response).isEqualTo("CourseDTO.category must not be empty")
     }
 
     @SqlGroup(
-        Sql(scripts = ["/db/test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+        Sql(scripts = ["/db/test-data.sql"], executionPhase = BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = AFTER_TEST_METHOD)
     )
     @Test
     fun `delete - should have status 200`() {
@@ -295,8 +369,8 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     }
 
     @SqlGroup(
-        Sql(scripts = ["/db/test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+        Sql(scripts = ["/db/test-data.sql"], executionPhase = BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = AFTER_TEST_METHOD)
     )
     @Test
     fun `delete - should have status 404`() {
@@ -309,12 +383,13 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     }
 
     @SqlGroup(
-        Sql(scripts = ["/db/test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+        Sql(scripts = ["/db/test-data.sql"], executionPhase = BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = AFTER_TEST_METHOD)
     )
     @Test
     fun `createCourse - should have status 409(conflict), body with the same data, id = null`() {
-        val courseDTO = CourseDTO("testName1", "testCategory1", null, 1)
+        val courseDTO =
+            CourseDTO("testName1", listOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")), null, 1)
         val response = webTestClient.post()
             .uri("/v1/courses")
             .contentType(MediaType.APPLICATION_JSON)
@@ -328,16 +403,17 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     }
 
     @SqlGroup(
-        Sql(scripts = ["/db/test-data-course-create.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+        Sql(scripts = ["/db/test-data-course-create.sql"], executionPhase = BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = AFTER_TEST_METHOD)
     )
     @Test
     fun `createCourse - should have status 201, header location, body with the same data, id != null`() {
-        val courseDTO = CourseDTO("testName", "testCategory", null, 1)
+        val courseDTO =
+            CourseDTO("testName", listOf(CourseCategoryDTO(DEVELOPMENT, 1, "testDescription")), null, 1)
         val expectedId = 1
         val expectedLocationHeader = "v1/courses/1"
 
-        val result = webTestClient.post()
+        val response = webTestClient.post()
             .uri("v1/courses")
             .bodyValue(courseDTO)
             .accept(MediaType.APPLICATION_JSON)
@@ -347,14 +423,14 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
             .expectBody(CourseDTO::class.java)
             .returnResult().responseBody
 
-        assertThat(result?.id).isEqualTo(expectedId)
-        assertThat(result?.name).isEqualTo(courseDTO.name)
-        assertThat(result?.category).isEqualTo(courseDTO.category)
+        assertThat(response?.id).isEqualTo(expectedId)
+        assertThat(response?.name).isEqualTo(courseDTO.name)
+        assertThat(response?.category).isEqualTo(courseDTO.category)
     }
 
     @Test
     fun `createCourse - create new course with name is blank, should give back the courseDTO with the same data, status 400`() {
-        val courseDTO = CourseDTO("", "testCategory", null, 1)
+        val courseDTO = CourseDTO("", listOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), null, 1)
 
         val response = webTestClient.post()
             .uri("v1/courses")
@@ -370,7 +446,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
 
     @Test
     fun `createCourse - create new course with category is blank, should give back the courseDTO with the same data, status 400`() {
-        val courseDTO = CourseDTO("testName", "", null, 1)
+        val courseDTO = CourseDTO("testName", listOf(), null, 1)
 
         val response = webTestClient.post()
             .uri("v1/courses")

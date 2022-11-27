@@ -1,6 +1,7 @@
 package com.AlMLand.controller
 
 import com.AlMLand.dto.CourseDTO
+import com.AlMLand.dto.enums.Category
 import com.AlMLand.service.CourseService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -45,15 +46,6 @@ class CourseController(private val courseService: CourseService) {
         return ResponseEntity.created(URI("v1/courses/${savedCourseDTO.id}")).body(savedCourseDTO)
     }
 
-    @GetMapping("/categories/{category}")
-    fun getCourseByCategoryLike(@PathVariable category: String): ResponseEntity<List<CourseDTO>> {
-        val courseDTOs = courseService.findCourseByCategoryLike(category)
-        return when (courseDTOs.size) {
-            0 -> ResponseEntity.noContent().build()
-            else -> ResponseEntity.ok(courseDTOs)
-        }
-    }
-
     @GetMapping("{id}")
     fun getCourse(@PathVariable id: Int): ResponseEntity<CourseDTO> {
         val courseDTO = courseService.findCourse(id)
@@ -62,8 +54,11 @@ class CourseController(private val courseService: CourseService) {
     }
 
     @GetMapping
-    fun getAllCourses(@RequestParam(required = false) name: String?): ResponseEntity<List<CourseDTO>> {
-        val courseDTOs = courseService.findAllCourses(name)
+    fun getAllCourses(
+        @RequestParam(required = false) name: String?,
+        @RequestParam(required = false) category: Category?
+    ): ResponseEntity<List<CourseDTO>> {
+        val courseDTOs = courseService.findAllCourses(name, category)
         if (courseDTOs.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(listOf())
         return ResponseEntity.ok(courseDTOs)
     }
