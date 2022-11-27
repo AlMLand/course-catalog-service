@@ -1,0 +1,18 @@
+select * from instructors ;
+select * from instructors as i left join courses as c on i.id = c.instructor_id where c.instructor_id = 2 ;
+
+
+select * from courses ;
+select * from courses as c left join instructors as i on c.instructor_id = i.id where i.id = 2;
+
+
+select * from courses as c
+left join course_coursecategory as ccc on c.id = ccc.course_id
+left join course_categories as cc on ccc.course_category_id = cc.id
+where cc.category = 'DEVELOPMENT';
+
+
+select * from course_categories   as cc
+left join course_coursecategory as ccc on cc.id = ccc.course_category_id
+left join courses as c on ccc.course_id = c.id
+where c.name = 'Angular';
