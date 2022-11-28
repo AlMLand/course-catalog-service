@@ -15,7 +15,7 @@ data class Course(
         inverseJoinColumns = [JoinColumn(name = "course_category_id", referencedColumnName = "id")]
     )
     @field:Column(nullable = false)
-    var category: MutableList<CourseCategory>,
+    var categories: MutableList<CourseCategory>,
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +26,6 @@ data class Course(
     var instructor: Instructor
 ) {
     override fun toString(): String {
-        return "Course(name: $name, category: $category, id: $id, instructor: ${instructor.id})"
+        return "Course(name: $name, category: $categories, id: $id, instructor: ${instructor.id})"
     }
 }

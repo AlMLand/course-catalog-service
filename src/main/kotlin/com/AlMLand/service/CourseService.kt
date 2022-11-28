@@ -43,7 +43,7 @@ class CourseService(
             savedCourse.let {
                 CourseDTO(
                     it.name,
-                    it.category.map { cc -> CourseCategoryDTO(cc.category, cc.id, cc.description) }.toMutableList(),
+                    it.categories.map { cc -> CourseCategoryDTO(cc.category, cc.id, cc.description) }.toMutableList(),
                     it.id,
                     it.instructor.id!!
                 )
@@ -62,7 +62,7 @@ class CourseService(
             .orElseThrow { InstructorNotValidException("This instructor not exists, instructor id: ${courseDTO.instructorId}") }
 
     private fun existsAlready(courseDTO: CourseDTO) =
-        courseRepository.existsFirst1ByNameAndCategoryIn(
+        courseRepository.existsFirst1ByNameAndCategoriesIn(
             courseDTO.name,
             courseDTO.category.map { CourseCategory(it.category, it.id, it.description) })
 
@@ -70,7 +70,7 @@ class CourseService(
         val courseDTO = courseRepository.findByIdOrNull(id)?.let {
             CourseDTO(
                 it.name,
-                it.category.map { cc -> CourseCategoryDTO(cc.category, cc.id, cc.description) }.toMutableList(),
+                it.categories.map { cc -> CourseCategoryDTO(cc.category, cc.id, cc.description) }.toMutableList(),
                 it.id,
                 it.instructor.id!!
             )
@@ -82,19 +82,19 @@ class CourseService(
 
     fun findAllCourses(name: String?, category: Category?): List<CourseDTO> {
         val courses = if (name != null && category != null) {
-            courseRepository.findByNameContainingIgnoreCaseAndCategoryCategory(name, category)
+            courseRepository.findByNameContainingIgnoreCaseAndCategoriesCategory(name, category)
         } else {
             name?.let {
                 courseRepository.findByNameContainingIgnoreCase(name)
             } ?: category?.let {
-                courseRepository.findByCategoryCategory(category)
+                courseRepository.findByCategoriesCategory(category)
             } ?: courseRepository.findAll()
         }
 
         return courses.map {
             CourseDTO(
                 it.name,
-                it.category.map { cc -> CourseCategoryDTO(cc.category, cc.id, cc.description) }.toMutableList(),
+                it.categories.map { cc -> CourseCategoryDTO(cc.category, cc.id, cc.description) }.toMutableList(),
                 it.id,
                 it.instructor.id!!
             )
@@ -106,12 +106,12 @@ class CourseService(
         return if (courseInDB.isPresent) {
             courseInDB.get().let {
                 it.name = courseDTO.name
-                it.category =
+                it.categories =
                     courseDTO.category.map { cc -> CourseCategory(cc.category, cc.id, cc.description) }.toMutableList()
                 courseRepository.save(it)
                 CourseDTO(
                     it.name,
-                    it.category.map { cc -> CourseCategoryDTO(cc.category, cc.id, cc.description) }.toMutableList(),
+                    it.categories.map { cc -> CourseCategoryDTO(cc.category, cc.id, cc.description) }.toMutableList(),
                     it.id,
                     it.instructor.id!!
                 )

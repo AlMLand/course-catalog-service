@@ -19,13 +19,13 @@ interface CourseRepository : CrudRepository<Course, Int> {
     //    @Query(
 //        """
 //        select course from Course course
-//        left join course.category category
-//        where category.category = :category
+//        left join course.categories c
+//        where c.category = :category
 //    """
 //    )
-    fun findByCategoryCategory(category: Category): List<Course>
-    fun existsFirst1ByNameAndCategoryIn(name: String, courseCategory: List<CourseCategory>): Boolean
+    fun findByCategoriesCategory(category: Category): List<Course>
+    fun existsFirst1ByNameAndCategoriesIn(name: String, courseCategory: List<CourseCategory>): Boolean
     fun findByNameContainingIgnoreCase(name: String): List<Course>
-    fun findByNameContainingIgnoreCaseAndCategoryCategory(name: String, category: Category): List<Course>
-    
+    fun findByNameContainingIgnoreCaseAndCategoriesCategory(name: String, category: Category): List<Course>
+
 }

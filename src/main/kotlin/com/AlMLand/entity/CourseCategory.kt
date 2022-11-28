@@ -16,16 +16,16 @@ data class CourseCategory(
 
     var description: String? = null,
 
-    @ManyToMany(mappedBy = "category")
+    @ManyToMany(mappedBy = "categories")
     val courses: MutableList<Course> = mutableListOf()
 ) {
     fun addCourse(course: Course) {
         courses.add(course)
-        course.category.add(this)
+        course.categories.add(this)
     }
 
     fun removeCourse(course: Course) {
         courses.remove(course)
-        course.category.remove(this)
+        course.categories.remove(this)
     }
 }

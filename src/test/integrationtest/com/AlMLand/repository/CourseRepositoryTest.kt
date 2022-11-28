@@ -27,15 +27,15 @@ class CourseRepositoryTest(@Autowired private val courseRepository: CourseReposi
     PostgreSQLContainerInitializer() {
 
     @Test
-    fun `findByNameContainingIgnoreCaseAndCategoryCategory - first approach size is 2, second approach size is 1`() {
+    fun `findByNameContainingIgnoreCaseAndCategoriesCategory - first approach size is 2, second approach size is 1`() {
         assertTrue(
-            courseRepository.findByNameContainingIgnoreCaseAndCategoryCategory(
+            courseRepository.findByNameContainingIgnoreCaseAndCategoriesCategory(
                 "tNam",
                 DEVELOPMENT
             ).size == 2
         )
         assertTrue(
-            courseRepository.findByNameContainingIgnoreCaseAndCategoryCategory(
+            courseRepository.findByNameContainingIgnoreCaseAndCategoriesCategory(
                 "name",
                 MANAGEMENT
             ).size == 1
@@ -43,9 +43,9 @@ class CourseRepositoryTest(@Autowired private val courseRepository: CourseReposi
     }
 
     @Test
-    fun `findByCategoryCategory - should return list with size 2 and 1`() {
-        assertTrue(courseRepository.findByCategoryCategory(DEVELOPMENT).size == 2)
-        assertTrue(courseRepository.findByCategoryCategory(MANAGEMENT).size == 1)
+    fun `findByCategoriesCategory - should return list with size 2 and 1`() {
+        assertTrue(courseRepository.findByCategoriesCategory(DEVELOPMENT).size == 2)
+        assertTrue(courseRepository.findByCategoriesCategory(MANAGEMENT).size == 1)
     }
 
     @Test
@@ -55,9 +55,9 @@ class CourseRepositoryTest(@Autowired private val courseRepository: CourseReposi
     }
 
     @Test
-    fun `existsFirst1ByNameAndCategory - should return - false`() {
+    fun `existsFirst1ByNameAndCategoriesIn - should return - false`() {
         assertFalse(
-            courseRepository.existsFirst1ByNameAndCategoryIn(
+            courseRepository.existsFirst1ByNameAndCategoriesIn(
                 "testNameNotAvailable",
                 listOf(CourseCategory(DEVELOPMENT, 1, "testCategory1"))
             )
@@ -65,9 +65,9 @@ class CourseRepositoryTest(@Autowired private val courseRepository: CourseReposi
     }
 
     @Test
-    fun `existsFirst1ByNameAndCategory - should return - true`() {
+    fun `existsFirst1ByNameAndCategoriesIn - should return - true`() {
         assertTrue(
-            courseRepository.existsFirst1ByNameAndCategoryIn(
+            courseRepository.existsFirst1ByNameAndCategoriesIn(
                 "testName1",
                 listOf(CourseCategory(DEVELOPMENT, 1, "testCategory1"))
             )
