@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service
 class InstructorService(private val instructorRepository: InstructorRepository) {
 
     fun createInstructor(instructorDTO: InstructorDTO): InstructorDTO {
-        if (instructorRepository.existsByName(instructorDTO.name)) return instructorDTO
+        if (instructorRepository.existsByFirstName(instructorDTO.name)) return instructorDTO
         return instructorRepository.save(instructorDTO
-            .let { Instructor(it.name, it.id) }).let { InstructorDTO(it.name, it.id) }
+            .let { Instructor(it.name, it.id) }).let { InstructorDTO(it.firstName, it.id) }
     }
 
 }

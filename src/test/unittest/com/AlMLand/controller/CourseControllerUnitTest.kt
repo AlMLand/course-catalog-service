@@ -16,8 +16,9 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
+import org.springframework.http.HttpStatus.CONFLICT
+import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
+import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 import java.util.stream.Stream
@@ -28,7 +29,7 @@ import java.util.stream.Stream
 class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClient) {
 
     @MockkBean
-    private lateinit var courseService: CourseService
+    private lateinit var service: CourseService
 
     companion object TestUtil {
         @JvmStatic
@@ -80,18 +81,18 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     @Test
     fun `handleAllExceptions - check the controller advice`() {
         val courseId = 1
-        every { courseService.deleteCourse(courseId) } throws IllegalArgumentException()
+        every { service.deleteCourse(courseId) } throws IllegalArgumentException()
 
         webTestClient.delete()
             .uri("/v1/courses/{id}", courseId)
             .exchange()
-            .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+            .expectStatus().isEqualTo(INTERNAL_SERVER_ERROR)
     }
 
     @Test
     fun `delete - when successful, than return status 200`() {
         val courseId = 1
-        every { courseService.deleteCourse(courseId) } returns true
+        every { service.deleteCourse(courseId) } returns true
 
         webTestClient.delete()
             .uri("/v1/courses/{id}", courseId)
@@ -102,7 +103,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     @Test
     fun `delete - when course not found, than status 404`() {
         val courseId = 1
-        every { courseService.deleteCourse(courseId) } returns false
+        every { service.deleteCourse(courseId) } returns false
 
         webTestClient.delete()
             .uri("/v1/courses/{id}", courseId)
@@ -119,7 +120,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
             CourseDTO("updatedName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "updatedCategory")), 1, 1)
         val expectedLocationHeader = "v1/courses/1"
 
-        every { courseService.updateCourses(courseId, courseDTO) } returns updatedCourseDTO
+        every { service.updateCourses(courseId, courseDTO) } returns updatedCourseDTO
 
         val response = webTestClient.put()
             .uri("/v1/courses/{id}", courseId)
@@ -138,11 +139,11 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
         val courseId = 1
         val courseDTO = CourseDTO("name", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), null, 1)
 
-        every { courseService.updateCourses(courseId, courseDTO) } returns courseDTO
+        every { service.updateCourses(courseId, courseDTO) } returns courseDTO
 
         val response = webTestClient.put()
             .uri("/v1/courses/{id}", courseId)
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .bodyValue(courseDTO)
             .exchange()
             .expectStatus().isNotFound
@@ -158,7 +159,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
         val courseId = 1
         val courseDTO = CourseDTO("", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), null, 1)
 
-        every { courseService.updateCourses(courseId, courseDTO) } returns courseDTO
+        every { service.updateCourses(courseId, courseDTO) } returns courseDTO
 
         val response = webTestClient.put()
             .uri("/v1/courses/{id}", courseId)
@@ -176,7 +177,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
         val courseId = 1
         val courseDTO = CourseDTO("name", mutableListOf(), null, 1)
 
-        every { courseService.updateCourses(courseId, courseDTO) } returns courseDTO
+        every { service.updateCourses(courseId, courseDTO) } returns courseDTO
 
         val response = webTestClient.put()
             .uri("/v1/courses/{id}", courseId)
@@ -192,11 +193,11 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
 
     @Test
     fun `getAllCourses without params name, category - when no courses are available, than return list with size 0`() {
-        every { courseService.findAllCourses(null, null) } returns listOf()
+        every { service.findAllCourses(null, null) } returns listOf()
 
         val response = webTestClient.get()
             .uri("/v1/courses")
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isNotFound
             .expectBodyList(CourseDTO::class.java)
@@ -212,11 +213,11 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
             CourseDTO("name2", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "testCategory2")), 2, 1)
         )
 
-        every { courseService.findAllCourses(null, null) } returns expectedList
+        every { service.findAllCourses(null, null) } returns expectedList
 
         val actualList = webTestClient.get()
             .uri("/v1/courses")
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isOk
             .expectBodyList(CourseDTO::class.java)
@@ -233,11 +234,11 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
         courses: List<CourseDTO>
     ) {
 
-        every { courseService.findAllCourses(name, null) } returns courses
+        every { service.findAllCourses(name, null) } returns courses
 
         val response = webTestClient.get()
             .uri("/v1/courses?name=$name")
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isOk
             .expectBodyList(CourseDTO::class.java)
@@ -254,11 +255,11 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
         courses: List<CourseDTO>
     ) {
 
-        every { courseService.findAllCourses(null, category) } returns courses
+        every { service.findAllCourses(null, category) } returns courses
 
         val response = webTestClient.get()
             .uri("/v1/courses?category=$category")
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isOk
             .expectBodyList(CourseDTO::class.java)
@@ -276,11 +277,11 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
         courses: List<CourseDTO>
     ) {
 
-        every { courseService.findAllCourses(name, category) } returns courses
+        every { service.findAllCourses(name, category) } returns courses
 
         val response = webTestClient.get()
             .uri("/v1/courses?name=$name&category=$category")
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isOk
             .expectBodyList(CourseDTO::class.java)
@@ -295,11 +296,11 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
             CourseDTO("testName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), 1, 1)
         val courseId = 1
 
-        every { courseService.findCourse(courseId) } returns expectedCourseDTO
+        every { service.findCourse(courseId) } returns expectedCourseDTO
 
         val actualCourseDTO = webTestClient.get()
             .uri("/v1/courses/{id}", courseId)
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isOk
             .expectBody(CourseDTO::class.java)
@@ -314,11 +315,11 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
             CourseDTO("testName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "defaultCategory")), 1, 1)
         val courseId = 1
 
-        every { courseService.findCourse(courseId) } returns null
+        every { service.findCourse(courseId) } returns null
 
         val responseBody = webTestClient.get()
             .uri("/v1/courses/{id}", courseId)
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isNotFound
             .expectBody()
@@ -333,14 +334,14 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
             CourseDTO("testName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), null, 1)
         val expectedLocationHeader = "v1/courses/1"
 
-        every { courseService.createCourse(any()) } returns courseDTO
+        every { service.createCourse(any()) } returns courseDTO
 
         val response = webTestClient.post()
             .uri("/v1/courses")
             .bodyValue(courseDTO)
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
-            .expectStatus().isEqualTo(HttpStatus.CONFLICT)
+            .expectStatus().isEqualTo(CONFLICT)
             .expectBody(CourseDTO::class.java)
             .returnResult().responseBody
 
@@ -355,12 +356,12 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
             CourseDTO("testName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), 1, 1)
         val expectedLocationHeader = "v1/courses/1"
 
-        every { courseService.createCourse(any()) } returns expectedCourseDTO
+        every { service.createCourse(any()) } returns expectedCourseDTO
 
         val result = webTestClient.post()
             .uri("/v1/courses")
             .bodyValue(courseDTO)
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isCreated
             .expectHeader().location(expectedLocationHeader)
@@ -377,7 +378,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
         val result = webTestClient.post()
             .uri("/v1/courses")
             .bodyValue(courseDTO)
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isBadRequest
             .expectBody(CourseDTO::class.java)
@@ -393,7 +394,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
         val result = webTestClient.post()
             .uri("/v1/courses")
             .bodyValue(courseDTO)
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isBadRequest
             .expectBody(CourseDTO::class.java)

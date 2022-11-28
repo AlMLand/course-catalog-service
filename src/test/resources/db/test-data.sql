@@ -1,7 +1,7 @@
 -- insert test data
 
-insert into instructors(id, name) values (1, 'testInstructor1');
-insert into instructors(id, name) values (2, 'testInstructor2');
+insert into instructors(id, first_name) values (1, 'firstname1');
+insert into instructors(id, first_name) values (2, 'firstname2');
 
 insert into course_categories(id, category, description) values (1, 'DEVELOPMENT', 'testDescription1');
 insert into course_categories(id, category, description) values (2, 'DEVELOPMENT', 'testDescription2');

@@ -15,7 +15,7 @@ import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.http.MediaType
+import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
@@ -24,12 +24,12 @@ import java.util.stream.Stream
 
 @ActiveProfiles("test")
 @WebMvcTest(controllers = [CourseController::class])
-class CourseControllerUnitTest2(
-    @Autowired private val mockMvc: MockMvc,
-    @Autowired private val objectMapper: ObjectMapper
+class CourseControllerUnitTest2 @Autowired constructor(
+    private val mockMvc: MockMvc,
+    private val objectMapper: ObjectMapper
 ) {
     @MockBean
-    private lateinit var courseService: CourseService
+    private lateinit var service: CourseService
 
     companion object TestUtil {
         @JvmStatic
@@ -78,7 +78,7 @@ class CourseControllerUnitTest2(
     @Test
     fun `handleAllExceptions - check the controller advice`() {
         val courseId = 1
-        `when`(courseService.deleteCourse(courseId)).thenThrow(IllegalArgumentException())
+        `when`(service.deleteCourse(courseId)).thenThrow(IllegalArgumentException())
 
         mockMvc.perform(delete("/v1/courses/{id}", courseId))
             .andExpect(status().isInternalServerError)
@@ -87,7 +87,7 @@ class CourseControllerUnitTest2(
     @Test
     fun `delete - when successful, than return status 200`() {
         val courseId = 1
-        `when`(courseService.deleteCourse(courseId)).thenReturn(true)
+        `when`(service.deleteCourse(courseId)).thenReturn(true)
 
         mockMvc.perform(delete("/v1/courses/{id}", courseId))
             .andExpect(status().isOk)
@@ -96,7 +96,7 @@ class CourseControllerUnitTest2(
     @Test
     fun `delete - when course not found, than status 404`() {
         val courseId = 1
-        `when`(courseService.deleteCourse(courseId)).thenReturn(false)
+        `when`(service.deleteCourse(courseId)).thenReturn(false)
 
         mockMvc.perform(delete("/v1/courses/{id}", courseId))
             .andExpect(status().isNotFound)
@@ -111,13 +111,13 @@ class CourseControllerUnitTest2(
             CourseDTO("updatedName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), 1, 1)
         val updatedCourseAsJson = objectMapper.writeValueAsString(updatedCourseDTO)
 
-        `when`(courseService.updateCourses(courseId, courseDTO)).thenReturn(updatedCourseDTO)
+        `when`(service.updateCourses(courseId, courseDTO)).thenReturn(updatedCourseDTO)
 
         val response = mockMvc.perform(
             put("/v1/courses/{id}", courseId)
                 .content(objectMapper.writeValueAsString(courseDTO))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
         )
             .andExpect(status().isOk)
             .andExpect(header().stringValues("Location", "v1/courses/1"))
@@ -132,15 +132,15 @@ class CourseControllerUnitTest2(
         val courseDTO = CourseDTO("name", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), null, 1)
         val courseDTOAsJson = objectMapper.writeValueAsString(courseDTO)
 
-        `when`(courseService.updateCourses(courseId, courseDTO)).thenReturn(courseDTO)
+        `when`(service.updateCourses(courseId, courseDTO)).thenReturn(courseDTO)
 
         val response = mockMvc.perform(
             put("/v1/courses/{id}", courseId)
                 .content(courseDTOAsJson)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
         )
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(status().isNotFound)
             .andReturn().response.contentAsString
 
@@ -155,8 +155,8 @@ class CourseControllerUnitTest2(
         val response = mockMvc.perform(
             put("/v1/courses/{id}", courseId)
                 .content(objectMapper.writeValueAsString(courseDTO))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
         )
             .andExpect(status().isBadRequest)
             .andReturn().response.contentAsString
@@ -172,8 +172,8 @@ class CourseControllerUnitTest2(
         val response = mockMvc.perform(
             put("/v1/courses/{id}", courseId)
                 .content(objectMapper.writeValueAsString(courseDTO))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
         )
             .andExpect(status().isBadRequest)
             .andReturn().response.contentAsString
@@ -183,11 +183,11 @@ class CourseControllerUnitTest2(
 
     @Test
     fun `getAllCourses - when no courses are available, than return list with size 0`() {
-        `when`(courseService.findAllCourses(null, null)).thenReturn(listOf())
+        `when`(service.findAllCourses(null, null)).thenReturn(listOf())
 
         val response = mockMvc.perform(
             get("/v1/courses")
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
         )
             .andExpect(status().isNotFound)
             .andReturn().response.contentAsString
@@ -201,11 +201,11 @@ class CourseControllerUnitTest2(
             CourseDTO("name1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")), 1, 1),
             CourseDTO("name2", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "testCategory2")), 2, 1)
         )
-        `when`(courseService.findAllCourses(null, null)).thenReturn(expectedResponse)
+        `when`(service.findAllCourses(null, null)).thenReturn(expectedResponse)
 
         val actualResponse = mockMvc.perform(
             get("/v1/courses")
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
         )
             .andExpect(status().isOk)
             .andReturn().response.contentAsString
@@ -219,12 +219,12 @@ class CourseControllerUnitTest2(
         name: String,
         courses: List<CourseDTO>
     ) {
-        `when`(courseService.findAllCourses(name, null)).thenReturn(courses)
+        `when`(service.findAllCourses(name, null)).thenReturn(courses)
 
         val response = mockMvc.perform(
             get("/v1/courses")
                 .param("name", name)
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
         )
             .andExpect(status().isOk)
             .andReturn().response.contentAsString
@@ -238,12 +238,12 @@ class CourseControllerUnitTest2(
         category: Category,
         courses: List<CourseDTO>
     ) {
-        `when`(courseService.findAllCourses(null, category)).thenReturn(courses)
+        `when`(service.findAllCourses(null, category)).thenReturn(courses)
 
         val response = mockMvc.perform(
             get("/v1/courses")
                 .param("category", category.name)
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
         )
             .andExpect(status().isOk)
             .andReturn().response.contentAsString
@@ -258,13 +258,13 @@ class CourseControllerUnitTest2(
         category: Category,
         courses: List<CourseDTO>
     ) {
-        `when`(courseService.findAllCourses(name, category)).thenReturn(courses)
+        `when`(service.findAllCourses(name, category)).thenReturn(courses)
 
         val response = mockMvc.perform(
             get("/v1/courses")
                 .param("name", name)
                 .param("category", category.name)
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
         )
             .andExpect(status().isOk)
             .andReturn().response.contentAsString
@@ -277,11 +277,11 @@ class CourseControllerUnitTest2(
         val courseId = 1
         val courseDTO =
             CourseDTO("testName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), courseId, 1)
-        `when`(courseService.findCourse(courseId)).thenReturn(courseDTO)
+        `when`(service.findCourse(courseId)).thenReturn(courseDTO)
 
         val response = mockMvc.perform(
             get("/v1/courses/{id}", courseId)
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
         )
             .andExpect(status().isOk)
             .andReturn().response.contentAsString
@@ -292,11 +292,11 @@ class CourseControllerUnitTest2(
     @Test
     fun `getCourse - get course with id, what is not available in db - status not found`() {
         val courseId = 1
-        `when`(courseService.findCourse(courseId)).thenReturn(null)
+        `when`(service.findCourse(courseId)).thenReturn(null)
 
         val response = mockMvc.perform(
             get("/v1/courses/{id}", courseId)
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
         )
             .andExpect(status().isNotFound)
             .andReturn().response.contentAsString
@@ -310,14 +310,14 @@ class CourseControllerUnitTest2(
             CourseDTO("testName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), null, 1)
         val requestBody = objectMapper.writeValueAsString(courseDTO)
 
-        `when`(courseService.createCourse(courseDTO)).thenReturn(courseDTO)
+        `when`(service.createCourse(courseDTO)).thenReturn(courseDTO)
 
         val result = mockMvc.perform(
             post("/v1/courses")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
                 .content(requestBody)
         )
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(status().isConflict)
             .andReturn()
 
@@ -330,22 +330,19 @@ class CourseControllerUnitTest2(
             CourseDTO("testName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), null, 1)
         val expectedCourseDTO =
             CourseDTO("testName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), 1, 1)
-        val expectedRedirectedUrl = "v1/courses/1"
-        val expectedLocationName = "Location"
-        val expectedLocationValue = "v1/courses/1"
         val requestBody = objectMapper.writeValueAsString(courseDTO)
 
-        `when`(courseService.createCourse(courseDTO)).thenReturn(expectedCourseDTO)
+        `when`(service.createCourse(courseDTO)).thenReturn(expectedCourseDTO)
 
         val response = mockMvc.perform(
             post("/v1/courses")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
                 .content(requestBody)
         )
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(status().isCreated)
-            .andExpect(redirectedUrl(expectedRedirectedUrl))
-            .andExpect(header().stringValues(expectedLocationName, expectedLocationValue))
+            .andExpect(redirectedUrl("v1/courses/1"))
+            .andExpect(header().stringValues("Location", "v1/courses/1"))
             .andReturn()
 
         val responseBody = response.response.contentAsString
@@ -360,7 +357,7 @@ class CourseControllerUnitTest2(
         val response = mockMvc.perform(
             post("/v1/courses")
                 .content(courseAsJson)
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
         )
             .andExpect(status().isBadRequest)
             .andReturn().response.contentAsString
@@ -376,7 +373,7 @@ class CourseControllerUnitTest2(
         val response = mockMvc.perform(
             post("/v1/courses")
                 .content(courseAsJson)
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
         )
             .andExpect(status().isBadRequest)
             .andReturn().response.contentAsString

@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
+import org.springframework.http.HttpStatus.CONFLICT
+import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.util.UriComponentsBuilder
@@ -24,7 +24,7 @@ import java.net.URI
 class CourseCategoryControllerUnitTest(@Autowired private val webTestClient: WebTestClient) {
 
     @MockkBean
-    private lateinit var courseCategoryService: CourseCategoryService
+    private lateinit var service: CourseCategoryService
 
     @Test
     fun `getAllCourseCategories without param courseName - should return the expected list`() {
@@ -33,7 +33,7 @@ class CourseCategoryControllerUnitTest(@Autowired private val webTestClient: Web
             CourseCategoryDTO(MANAGEMENT, 2, "test2")
         )
 
-        every { courseCategoryService.findAllCourseCategories(null) } returns courseCategoryDTOs
+        every { service.findAllCourseCategories(null) } returns courseCategoryDTOs
 
         val response = webTestClient.get()
             .uri(UriComponentsBuilder.fromUri(URI("/v1/categories")).toUriString())
@@ -51,7 +51,7 @@ class CourseCategoryControllerUnitTest(@Autowired private val webTestClient: Web
             CourseCategoryDTO(DEVELOPMENT, 1, "test1")
         )
 
-        every { courseCategoryService.findAllCourseCategories(any()) } returns courseCategoryDTOs
+        every { service.findAllCourseCategories(any()) } returns courseCategoryDTOs
         val uri = UriComponentsBuilder.fromUri(URI("/v1/categories"))
             .queryParam("courseName", "Kotlin").toUriString()
 
@@ -67,7 +67,7 @@ class CourseCategoryControllerUnitTest(@Autowired private val webTestClient: Web
 
     @Test
     fun `getAllCourseCategories without param courseName - should return the empty list`() {
-        every { courseCategoryService.findAllCourseCategories(null) } returns listOf()
+        every { service.findAllCourseCategories(null) } returns listOf()
 
         val response = webTestClient.get()
             .uri(UriComponentsBuilder.fromUri(URI("/v1/categories")).toUriString())
@@ -81,7 +81,7 @@ class CourseCategoryControllerUnitTest(@Autowired private val webTestClient: Web
 
     @Test
     fun `getAllCourseCategories with param courseName - should return the empty list`() {
-        every { courseCategoryService.findAllCourseCategories(any()) } returns listOf()
+        every { service.findAllCourseCategories(any()) } returns listOf()
 
         val uri = UriComponentsBuilder.fromUri(URI("/v1/categories"))
             .queryParam("courseName", "Kotlin").toUriString()
@@ -100,12 +100,12 @@ class CourseCategoryControllerUnitTest(@Autowired private val webTestClient: Web
         val courseCategoryDTO = CourseCategoryDTO(DEVELOPMENT, null, "test")
         val expectedCourseCategoryDTO = CourseCategoryDTO(DEVELOPMENT, 1, "test")
 
-        every { courseCategoryService.createCourseCategory(any()) } returns expectedCourseCategoryDTO
+        every { service.createCourseCategory(any()) } returns expectedCourseCategoryDTO
 
         val response = webTestClient.post()
             .uri("/v1/categories")
             .bodyValue(courseCategoryDTO)
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isCreated
             .expectHeader().location("/v1/categories/1")
@@ -118,14 +118,14 @@ class CourseCategoryControllerUnitTest(@Autowired private val webTestClient: Web
     @Test
     fun `createCourseCategory - when course category is already available in db, than status 409, response dto is equals to request tdo`() {
         val courseCategoryDTO = CourseCategoryDTO(DEVELOPMENT, null, "test")
-        every { courseCategoryService.createCourseCategory(any()) } returns courseCategoryDTO
+        every { service.createCourseCategory(any()) } returns courseCategoryDTO
 
         val response = webTestClient.post()
             .uri("/v1/categories")
             .bodyValue(courseCategoryDTO)
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
-            .expectStatus().isEqualTo(HttpStatus.CONFLICT)
+            .expectStatus().isEqualTo(CONFLICT)
             .expectBody(CourseCategoryDTO::class.java)
             .returnResult().responseBody
 

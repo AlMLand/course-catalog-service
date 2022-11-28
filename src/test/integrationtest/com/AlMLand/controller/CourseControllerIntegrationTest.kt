@@ -13,9 +13,11 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
+import org.springframework.http.HttpStatus.CONFLICT
+import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.annotation.DirtiesContext
+import org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
@@ -35,8 +37,8 @@ import java.util.stream.Stream
 @Testcontainers
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = RANDOM_PORT)
+@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebTestClient) {
     private companion object TestUtil {
         @JvmStatic
@@ -129,7 +131,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     fun `getAllCourses - when no courses are available, than return list with size 0`() {
         val response = webTestClient.get()
             .uri("/v1/courses")
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isNotFound
             .expectBodyList(CourseDTO::class.java)
@@ -156,7 +158,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
 
         val response = webTestClient.get()
             .uri("/v1/courses")
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isOk
             .expectBodyList(CourseDTO::class.java)
@@ -180,7 +182,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
 
         val response = webTestClient.get()
             .uri(uri)
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isOk
             .expectBodyList(CourseDTO::class.java)
@@ -205,7 +207,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
 
         val response = webTestClient.get()
             .uri(uri)
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isOk
             .expectBodyList(CourseDTO::class.java)
@@ -229,7 +231,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
 
         val response = webTestClient.get()
             .uri(uri)
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isOk
             .expectBodyList(CourseDTO::class.java)
@@ -250,7 +252,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
 
         val response = webTestClient.get()
             .uri("/v1/courses/{id}", courseId)
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isOk
             .expectBody(CourseDTO::class.java)
@@ -264,7 +266,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
         val courseId = 1
         val response = webTestClient.get()
             .uri("/v1/courses/{id}", courseId)
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isNotFound
             .expectBody()
@@ -285,7 +287,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
 
         val response = webTestClient.put()
             .uri("/v1/courses/{id}", courseId)
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(APPLICATION_JSON)
             .bodyValue(courseDTO)
             .exchange()
             .expectStatus().isNotFound
@@ -309,7 +311,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
 
         val response = webTestClient.put()
             .uri("/v1/courses/{id}", courseId)
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(APPLICATION_JSON)
             .bodyValue(courseDTO)
             .exchange()
             .expectStatus().isOk
@@ -327,7 +329,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
 
         val response = webTestClient.put()
             .uri("/v1/courses/{id}", courseId)
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(APPLICATION_JSON)
             .bodyValue(courseDTO)
             .exchange()
             .expectStatus().isBadRequest
@@ -344,7 +346,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
 
         val response = webTestClient.put()
             .uri("/v1/courses/{id}", courseId)
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(APPLICATION_JSON)
             .bodyValue(courseDTO)
             .exchange()
             .expectStatus().isBadRequest
@@ -392,10 +394,10 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
             CourseDTO("testName1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")), null, 1)
         val response = webTestClient.post()
             .uri("/v1/courses")
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(APPLICATION_JSON)
             .bodyValue(courseDTO)
             .exchange()
-            .expectStatus().isEqualTo(HttpStatus.CONFLICT)
+            .expectStatus().isEqualTo(CONFLICT)
             .expectBody(courseDTO::class.java)
             .returnResult().responseBody
 
@@ -416,7 +418,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
         val response = webTestClient.post()
             .uri("v1/courses")
             .bodyValue(courseDTO)
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isCreated
             .expectHeader().location(expectedLocationHeader)
@@ -435,7 +437,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
         val response = webTestClient.post()
             .uri("v1/courses")
             .bodyValue(courseDTO)
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isBadRequest
             .expectBody(CourseDTO::class.java)
@@ -451,7 +453,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
         val response = webTestClient.post()
             .uri("v1/courses")
             .bodyValue(courseDTO)
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isBadRequest
             .expectBody(CourseDTO::class.java)

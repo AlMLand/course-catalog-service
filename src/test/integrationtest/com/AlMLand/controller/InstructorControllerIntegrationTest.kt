@@ -6,11 +6,14 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.HttpStatus
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
+import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD
 import org.springframework.test.context.jdbc.SqlGroup
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.testcontainers.containers.PostgreSQLContainer
@@ -21,7 +24,7 @@ import org.testcontainers.utility.DockerImageName
 @Testcontainers
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = RANDOM_PORT)
 class InstructorControllerIntegrationTest(@Autowired private val webTestClient: WebTestClient) {
 
     private companion object TestContainer {
@@ -42,17 +45,17 @@ class InstructorControllerIntegrationTest(@Autowired private val webTestClient: 
     }
 
     @SqlGroup(
-        Sql(scripts = ["/db/test-data-course-create.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-        Sql(scripts = ["/db/clean-up.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+        Sql(scripts = ["/db/test-data-course-create.sql"], executionPhase = BEFORE_TEST_METHOD),
+        Sql(scripts = ["/db/clean-up.sql"], executionPhase = AFTER_TEST_METHOD)
     )
     @Test
-    fun `createInstructor - when instructor with this name exists, than status 409 and the same dto as body`() {
-        val instructorDTO = InstructorDTO("testInstructor1", null)
+    fun `createInstructor - when instructor with this firstname exists, than status 409 and the same dto as body`() {
+        val instructorDTO = InstructorDTO("firstname1", null)
         val response = webTestClient.post()
             .uri("/v1/instructors")
             .bodyValue(instructorDTO)
             .exchange()
-            .expectStatus().isEqualTo(HttpStatus.CONFLICT)
+            .expectStatus().isEqualTo(CONFLICT)
             .expectBody(InstructorDTO::class.java)
             .returnResult().responseBody
         Assertions.assertThat(response).isEqualTo(instructorDTO)

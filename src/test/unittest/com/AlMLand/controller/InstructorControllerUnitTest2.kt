@@ -9,7 +9,7 @@ import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.http.MediaType
+import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
@@ -24,19 +24,19 @@ class InstructorControllerUnitTest2 @Autowired constructor(
 ) {
 
     @MockBean
-    private lateinit var instructorService: InstructorService
+    private lateinit var service: InstructorService
 
     @Test
-    fun `createInstructor - when instructor with this name exists, than status 409 and the same dto as body`() {
+    fun `createInstructor - when instructor with this firstname exists, than status 409 and the same dto as body`() {
         val instructorDTO = InstructorDTO("testName", null)
         val instructorDTOAsJson = objectMapper.writeValueAsString(instructorDTO)
-        `when`(instructorService.createInstructor(instructorDTO)).thenReturn(instructorDTO)
+        `when`(service.createInstructor(instructorDTO)).thenReturn(instructorDTO)
 
         val uri = UriComponentsBuilder.fromUriString("/v1/instructors").toUriString()
         val response = mockMvc.perform(
             post(uri)
                 .content(instructorDTOAsJson)
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
         ).andExpect(status().isConflict)
             .andReturn().response.contentAsString
 
@@ -48,13 +48,13 @@ class InstructorControllerUnitTest2 @Autowired constructor(
         val instructorDTO = InstructorDTO("testName", null)
         val expectedInstructorDTO = InstructorDTO("testName", 1)
 
-        `when`(instructorService.createInstructor(instructorDTO)).thenReturn(expectedInstructorDTO)
+        `when`(service.createInstructor(instructorDTO)).thenReturn(expectedInstructorDTO)
 
         val uri = UriComponentsBuilder.fromUriString("/v1/instructors").toUriString()
         val response = mockMvc.perform(
             post(uri)
                 .content(objectMapper.writeValueAsString(instructorDTO))
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
         ).andExpect(status().isCreated)
             .andExpect { header().exists("Location") }
             .andReturn().response.contentAsString
