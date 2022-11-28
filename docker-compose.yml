@@ -4,7 +4,7 @@ services:
   postgres_15:
     image: postgres:15.1-alpine
     container_name: postgres_15
-    restart: always
+    restart: on-failure
     ports:
       - 5438:5432
     networks:
