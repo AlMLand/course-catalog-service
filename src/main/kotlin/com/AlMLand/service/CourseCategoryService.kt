@@ -23,7 +23,7 @@ class CourseCategoryService(private val repository: CourseCategoryRepository) {
     }
 
     fun findAllCourseCategories(courseName: String?): List<CourseCategoryDTO> {
-        val courseCategories = courseName?.let { repository.findByCourseName(courseName) }
+        val courseCategories = courseName?.let { repository.findByCoursesName(courseName) }
             ?: repository.findAll()
         return courseCategories.map {
             CourseCategoryDTO(it.category, it.id, it.description)

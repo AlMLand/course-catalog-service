@@ -12,7 +12,7 @@ data class CourseDTO(
     @JsonFormat(with = [JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY])
     @get:NotNull(message = "CourseDTO.category must not be null")
     @field:NotEmpty(message = "CourseDTO.category must not be empty")
-    val category: List<CourseCategoryDTO>,
+    val category: MutableList<CourseCategoryDTO>,
 
     val id: Int?,
 

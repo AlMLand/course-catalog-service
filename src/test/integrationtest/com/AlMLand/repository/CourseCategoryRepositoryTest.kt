@@ -21,8 +21,8 @@ import org.springframework.test.context.jdbc.SqlGroup
 class CourseCategoryRepositoryTest(@Autowired private val repository: CourseCategoryRepository) {
 
     @Test
-    fun `findByCourseName - `() {
-        val courseCategories = repository.findByCourseName("testName2")
+    fun `findByCourseName - when search course name, than return list with 2 categories`() {
+        val courseCategories = repository.findByCoursesName("testName2")
         assertTrue(courseCategories.size == 2)
         val categories = courseCategories.map { it.category }
         assertTrue(categories.containsAll(listOf(DEVELOPMENT, MANAGEMENT)))

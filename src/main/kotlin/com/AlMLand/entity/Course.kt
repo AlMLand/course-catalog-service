@@ -15,7 +15,7 @@ data class Course(
         inverseJoinColumns = [JoinColumn(name = "course_category_id", referencedColumnName = "id")]
     )
     @field:Column(nullable = false)
-    var category: List<CourseCategory>,
+    var category: MutableList<CourseCategory>,
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -34,7 +34,7 @@ class CourseService(
             val savedCourse = courseRepository.save(courseDTO.let {
                 Course(
                     it.name,
-                    it.category.map { cc -> CourseCategory(cc.category, cc.id, cc.description) },
+                    it.category.map { cc -> CourseCategory(cc.category, cc.id, cc.description) }.toMutableList(),
                     null,
                     instructor
                 )
@@ -43,7 +43,7 @@ class CourseService(
             savedCourse.let {
                 CourseDTO(
                     it.name,
-                    it.category.map { cc -> CourseCategoryDTO(cc.category, cc.id, cc.description) },
+                    it.category.map { cc -> CourseCategoryDTO(cc.category, cc.id, cc.description) }.toMutableList(),
                     it.id,
                     it.instructor.id!!
                 )
@@ -70,7 +70,7 @@ class CourseService(
         val courseDTO = courseRepository.findByIdOrNull(id)?.let {
             CourseDTO(
                 it.name,
-                it.category.map { cc -> CourseCategoryDTO(cc.category, cc.id, cc.description) },
+                it.category.map { cc -> CourseCategoryDTO(cc.category, cc.id, cc.description) }.toMutableList(),
                 it.id,
                 it.instructor.id!!
             )
@@ -94,7 +94,7 @@ class CourseService(
         return courses.map {
             CourseDTO(
                 it.name,
-                it.category.map { cc -> CourseCategoryDTO(cc.category, cc.id, cc.description) },
+                it.category.map { cc -> CourseCategoryDTO(cc.category, cc.id, cc.description) }.toMutableList(),
                 it.id,
                 it.instructor.id!!
             )
@@ -106,11 +106,12 @@ class CourseService(
         return if (courseInDB.isPresent) {
             courseInDB.get().let {
                 it.name = courseDTO.name
-                it.category = courseDTO.category.map { cc -> CourseCategory(cc.category, cc.id, cc.description) }
+                it.category =
+                    courseDTO.category.map { cc -> CourseCategory(cc.category, cc.id, cc.description) }.toMutableList()
                 courseRepository.save(it)
                 CourseDTO(
                     it.name,
-                    it.category.map { cc -> CourseCategoryDTO(cc.category, cc.id, cc.description) },
+                    it.category.map { cc -> CourseCategoryDTO(cc.category, cc.id, cc.description) }.toMutableList(),
                     it.id,
                     it.instructor.id!!
                 )
