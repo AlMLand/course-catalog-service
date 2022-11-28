@@ -1,17 +1,9 @@
-==================
-GreetingController
-==================
-GET:
-curl -i http://localhost:8080/v1/greetings/alex
-
-
 ====================
 InstructorController
 ====================
 CREATE -> createInstructor :
 curl -i -d '{ "name":"Alex", "id":null }' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/instructors
 curl -i -d '{ "name":"Timur", "id":null }' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/instructors
-
 
 ========================
 CourseCategoryController
