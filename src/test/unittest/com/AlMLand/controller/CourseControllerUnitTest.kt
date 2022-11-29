@@ -2,6 +2,7 @@ package com.AlMLand.controller
 
 import com.AlMLand.dto.CourseCategoryDTO
 import com.AlMLand.dto.CourseDTO
+import com.AlMLand.dto.InstructorIdDTO
 import com.AlMLand.dto.enums.Category
 import com.AlMLand.dto.enums.Category.DEVELOPMENT
 import com.AlMLand.dto.enums.Category.QA
@@ -36,13 +37,28 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
         fun getAllCoursesWithParamsNameAndCategory(): Stream<Arguments> = Stream.of(
             Arguments.arguments(
                 "ame", DEVELOPMENT, 2, listOf(
-                    CourseDTO("name1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "category1")), 1, 1),
-                    CourseDTO("name2", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "category2")), 2, 1)
+                    CourseDTO(
+                        "name1",
+                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "category1")),
+                        1,
+                        InstructorIdDTO("firstname1", "lastname1")
+                    ),
+                    CourseDTO(
+                        "name2",
+                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "category2")),
+                        2,
+                        InstructorIdDTO("firstname2", "lastname2")
+                    )
                 )
             ),
             Arguments.arguments(
                 "na", QA, 1, listOf(
-                    CourseDTO("name4", mutableListOf(CourseCategoryDTO(QA, 3, "category3")), 4, 5)
+                    CourseDTO(
+                        "name4",
+                        mutableListOf(CourseCategoryDTO(QA, 3, "category3")),
+                        4,
+                        InstructorIdDTO("firstname5", "lastname5")
+                    )
                 )
             )
         )
@@ -51,13 +67,28 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
         fun getAllCoursesWithParamCategory(): Stream<Arguments> = Stream.of(
             Arguments.arguments(
                 DEVELOPMENT, 2, listOf(
-                    CourseDTO("name1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "category1")), 1, 1),
-                    CourseDTO("name2", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "category2")), 2, 1)
+                    CourseDTO(
+                        "name1",
+                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "category1")),
+                        1,
+                        InstructorIdDTO("firstname1", "lastname1")
+                    ),
+                    CourseDTO(
+                        "name2",
+                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "category2")),
+                        2,
+                        InstructorIdDTO("firstname2", "lastname2")
+                    )
                 )
             ),
             Arguments.arguments(
                 QA, 1, listOf(
-                    CourseDTO("name4", mutableListOf(CourseCategoryDTO(QA, 3, "category3")), 4, 5)
+                    CourseDTO(
+                        "name4",
+                        mutableListOf(CourseCategoryDTO(QA, 3, "category3")),
+                        4,
+                        InstructorIdDTO("firstname5", "lastname5")
+                    )
                 )
             )
         )
@@ -66,13 +97,28 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
         fun getAllCoursesWithParamName(): Stream<Arguments> = Stream.of(
             Arguments.arguments(
                 "am", 2, listOf(
-                    CourseDTO("name1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "category1")), 1, 1),
-                    CourseDTO("name2", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "category2")), 2, 1)
+                    CourseDTO(
+                        "name1",
+                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "category1")),
+                        1,
+                        InstructorIdDTO("firstname1", "lastname1")
+                    ),
+                    CourseDTO(
+                        "name2",
+                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "category2")),
+                        2,
+                        InstructorIdDTO("firstname2", "lastname2")
+                    )
                 )
             ),
             Arguments.arguments(
                 "e2", 1, listOf(
-                    CourseDTO("name2", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "category")), 2, 1)
+                    CourseDTO(
+                        "name2",
+                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "category")),
+                        2,
+                        InstructorIdDTO("firstname1", "lastname1")
+                    )
                 )
             )
         )
@@ -115,9 +161,19 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     fun `updateCourse - update is successful - status 200, header has location to this course, updated course in body `() {
         val courseId = 1
         val courseDTO =
-            CourseDTO("updatedName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "updatedCategory")), null, 1)
+            CourseDTO(
+                "updatedName",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "updatedCategory")),
+                null,
+                InstructorIdDTO("firstname1", "lastname1")
+            )
         val updatedCourseDTO =
-            CourseDTO("updatedName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "updatedCategory")), 1, 1)
+            CourseDTO(
+                "updatedName",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "updatedCategory")),
+                1,
+                InstructorIdDTO("firstname1", "lastname1")
+            )
         val expectedLocationHeader = "v1/courses/1"
 
         every { service.updateCourses(courseId, courseDTO) } returns updatedCourseDTO
@@ -137,7 +193,12 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     @Test
     fun `updateCourse - course by id is not found - status 404`() {
         val courseId = 1
-        val courseDTO = CourseDTO("name", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), null, 1)
+        val courseDTO = CourseDTO(
+            "name",
+            mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+            null,
+            InstructorIdDTO("firstname1", "lastname1")
+        )
 
         every { service.updateCourses(courseId, courseDTO) } returns courseDTO
 
@@ -157,7 +218,12 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     @Test
     fun `updateCourse - when name is blank, than status 400, body with the same data`() {
         val courseId = 1
-        val courseDTO = CourseDTO("", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), null, 1)
+        val courseDTO = CourseDTO(
+            "",
+            mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+            null,
+            InstructorIdDTO("firstname1", "lastname1")
+        )
 
         every { service.updateCourses(courseId, courseDTO) } returns courseDTO
 
@@ -175,7 +241,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     @Test
     fun `updateCourse - when category is blank, than status 400, body with the same data`() {
         val courseId = 1
-        val courseDTO = CourseDTO("name", mutableListOf(), null, 1)
+        val courseDTO = CourseDTO("name", mutableListOf(), null, InstructorIdDTO("firstname1", "lastname1"))
 
         every { service.updateCourses(courseId, courseDTO) } returns courseDTO
 
@@ -209,8 +275,18 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     @Test
     fun `getAllCourses without params name, category - return list with size 2`() {
         val expectedList = listOf(
-            CourseDTO("name1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")), 1, 1),
-            CourseDTO("name2", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "testCategory2")), 2, 1)
+            CourseDTO(
+                "name1",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")),
+                1,
+                InstructorIdDTO("firstname1", "lastname1")
+            ),
+            CourseDTO(
+                "name2",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "testCategory2")),
+                2,
+                InstructorIdDTO("firstname2", "lastname2")
+            )
         )
 
         every { service.findAllCourses(null, null) } returns expectedList
@@ -293,7 +369,12 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     @Test
     fun `getCourse - get course with id - 1`() {
         val expectedCourseDTO =
-            CourseDTO("testName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), 1, 1)
+            CourseDTO(
+                "testName",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+                1,
+                InstructorIdDTO("firstname1", "lastname1")
+            )
         val courseId = 1
 
         every { service.findCourse(courseId) } returns expectedCourseDTO
@@ -312,7 +393,12 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     @Test
     fun `getCourse - get course with id, what is not available in db - status not found`() {
         val expectedCourseDTO =
-            CourseDTO("testName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "defaultCategory")), 1, 1)
+            CourseDTO(
+                "testName",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "defaultCategory")),
+                1,
+                InstructorIdDTO("firstname1", "lastname1")
+            )
         val courseId = 1
 
         every { service.findCourse(courseId) } returns null
@@ -331,7 +417,12 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     @Test
     fun `createCourse - create new course, should give back the courseDTO with the same data, status 409, id = null`() {
         val courseDTO =
-            CourseDTO("testName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), null, 1)
+            CourseDTO(
+                "testName",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+                null,
+                InstructorIdDTO("firstname1", "lastname1")
+            )
         val expectedLocationHeader = "v1/courses/1"
 
         every { service.createCourse(any()) } returns courseDTO
@@ -351,9 +442,19 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     @Test
     fun `createCourse - create new course, should give back the courseDTO with the same data, status 201, id = 1`() {
         val courseDTO =
-            CourseDTO("testName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), null, 1)
+            CourseDTO(
+                "testName",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+                null,
+                InstructorIdDTO("firstname1", "lastname1")
+            )
         val expectedCourseDTO =
-            CourseDTO("testName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), 1, 1)
+            CourseDTO(
+                "testName",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+                1,
+                InstructorIdDTO("firstname1", "lastname1")
+            )
         val expectedLocationHeader = "v1/courses/1"
 
         every { service.createCourse(any()) } returns expectedCourseDTO
@@ -373,7 +474,12 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
 
     @Test
     fun `createCourse - create new course with name is blank, should give back the courseDTO with the same data, status 400`() {
-        val courseDTO = CourseDTO("", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), null, 1)
+        val courseDTO = CourseDTO(
+            "",
+            mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+            null,
+            InstructorIdDTO("firstname1", "lastname1")
+        )
 
         val result = webTestClient.post()
             .uri("/v1/courses")
@@ -389,7 +495,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
 
     @Test
     fun `createCourse - create new course with category is blank, should give back the courseDTO with the same data, status 400`() {
-        val courseDTO = CourseDTO("testName", mutableListOf(), null, 1)
+        val courseDTO = CourseDTO("testName", mutableListOf(), null, InstructorIdDTO("firstname1", "lastname1"))
 
         val result = webTestClient.post()
             .uri("/v1/courses")

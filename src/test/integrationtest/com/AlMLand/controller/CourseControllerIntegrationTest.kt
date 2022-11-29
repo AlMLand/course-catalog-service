@@ -2,6 +2,7 @@ package com.AlMLand.controller
 
 import com.AlMLand.dto.CourseCategoryDTO
 import com.AlMLand.dto.CourseDTO
+import com.AlMLand.dto.InstructorIdDTO
 import com.AlMLand.dto.enums.Category
 import com.AlMLand.dto.enums.Category.*
 import org.assertj.core.api.Assertions.*
@@ -44,23 +45,28 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
         @JvmStatic
         fun getAllCoursesWithParamsNameAndCategory(): Stream<Arguments> = Stream.of(
             Arguments.arguments(
-                "tnam", DEVELOPMENT, listOf(
-                    CourseDTO("testName1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testDescription1")), 1, 1),
+                "ourseN", DEVELOPMENT, listOf(
                     CourseDTO(
-                        "testName2", mutableListOf(
-                            CourseCategoryDTO(DEVELOPMENT, 2, "testDescription2"),
-                            CourseCategoryDTO(MANAGEMENT, 3, "testDescription3")
-                        ), 2, 2
+                        "courseName1",
+                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "description1")),
+                        1,
+                        InstructorIdDTO("firstName1", "lastName1")
+                    ),
+                    CourseDTO(
+                        "courseName2", mutableListOf(
+                            CourseCategoryDTO(DEVELOPMENT, 2, "description2"),
+                            CourseCategoryDTO(MANAGEMENT, 3, "description3")
+                        ), 2, InstructorIdDTO("firstName2", "lastName2")
                     )
                 )
             ),
             Arguments.arguments(
                 "name", MANAGEMENT, listOf(
                     CourseDTO(
-                        "testName2", mutableListOf(
-                            CourseCategoryDTO(DEVELOPMENT, 2, "testDescription2"),
-                            CourseCategoryDTO(MANAGEMENT, 3, "testDescription3")
-                        ), 2, 2
+                        "courseName2", mutableListOf(
+                            CourseCategoryDTO(DEVELOPMENT, 2, "description2"),
+                            CourseCategoryDTO(MANAGEMENT, 3, "description3")
+                        ), 2, InstructorIdDTO("firstName2", "lastName2")
                     )
                 )
             )
@@ -70,22 +76,27 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
         fun getAllCoursesWithParamCategory(): Stream<Arguments> = Stream.of(
             Arguments.arguments(
                 DEVELOPMENT, listOf(
-                    CourseDTO("testName1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testDescription1")), 1, 1),
                     CourseDTO(
-                        "testName2", mutableListOf(
-                            CourseCategoryDTO(DEVELOPMENT, 2, "testDescription2"),
-                            CourseCategoryDTO(MANAGEMENT, 3, "testDescription3")
-                        ), 2, 2
+                        "courseName1",
+                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "description1")),
+                        1,
+                        InstructorIdDTO("firstName1", "lastName1")
+                    ),
+                    CourseDTO(
+                        "courseName2", mutableListOf(
+                            CourseCategoryDTO(DEVELOPMENT, 2, "description2"),
+                            CourseCategoryDTO(MANAGEMENT, 3, "description3")
+                        ), 2, InstructorIdDTO("firstName2", "lastName2")
                     )
                 )
             ),
             Arguments.arguments(
                 MANAGEMENT, listOf(
                     CourseDTO(
-                        "testName2", mutableListOf(
-                            CourseCategoryDTO(DEVELOPMENT, 2, "testDescription2"),
-                            CourseCategoryDTO(MANAGEMENT, 3, "testDescription3")
-                        ), 2, 2
+                        "courseName2", mutableListOf(
+                            CourseCategoryDTO(DEVELOPMENT, 2, "description2"),
+                            CourseCategoryDTO(MANAGEMENT, 3, "description3")
+                        ), 2, InstructorIdDTO("firstName2", "lastName2")
                     )
                 )
             )
@@ -94,19 +105,29 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
         @JvmStatic
         fun getAllCoursesWithParamName(): Stream<Arguments> = Stream.of(
             Arguments.arguments(
-                "TnA", listOf(
-                    CourseDTO("testName1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testDescription1")), 1, 1),
+                "sen", listOf(
                     CourseDTO(
-                        "testName2", mutableListOf(
-                            CourseCategoryDTO(DEVELOPMENT, 2, "testDescription2"),
-                            CourseCategoryDTO(MANAGEMENT, 3, "testDescription3")
-                        ), 2, 2
+                        "courseName1",
+                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "description1")),
+                        1,
+                        InstructorIdDTO("firstName1", "lastName1")
+                    ),
+                    CourseDTO(
+                        "courseName2", mutableListOf(
+                            CourseCategoryDTO(DEVELOPMENT, 2, "description2"),
+                            CourseCategoryDTO(MANAGEMENT, 3, "description3")
+                        ), 2, InstructorIdDTO("firstName2", "lastName2")
                     )
                 )
             ),
             Arguments.arguments(
-                "tname1", listOf(
-                    CourseDTO("testName1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testDescription1")), 1, 1)
+                "ame1", listOf(
+                    CourseDTO(
+                        "courseName1",
+                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "description1")),
+                        1,
+                        InstructorIdDTO("firstName1", "lastName1")
+                    )
                 )
             )
         )
@@ -147,12 +168,17 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     @Test
     fun `getAllCourses - return list with size 2`() {
         val expectedList = listOf(
-            CourseDTO("testName1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testDescription1")), 1, 1),
             CourseDTO(
-                "testName2", mutableListOf(
-                    CourseCategoryDTO(DEVELOPMENT, 2, "testDescription2"),
-                    CourseCategoryDTO(MANAGEMENT, 3, "testDescription3")
-                ), 2, 2
+                "courseName1",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "description1")),
+                1,
+                InstructorIdDTO("firstName1", "lastName1")
+            ),
+            CourseDTO(
+                "courseName2", mutableListOf(
+                    CourseCategoryDTO(DEVELOPMENT, 2, "description2"),
+                    CourseCategoryDTO(MANAGEMENT, 3, "description3")
+                ), 2, InstructorIdDTO("firstName2", "lastName2")
             )
         )
 
@@ -248,7 +274,12 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     fun `getCourse - get course with id - 1`() {
         val courseId = 1
         val expectedCourseDTO =
-            CourseDTO("testName1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testDescription1")), courseId, 1)
+            CourseDTO(
+                "courseName1",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "description1")),
+                courseId,
+                InstructorIdDTO("firstName1", "lastName1")
+            )
 
         val response = webTestClient.get()
             .uri("/v1/courses/{id}", courseId)
@@ -283,7 +314,12 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     fun `updateCourse - should have status 404, body with the same data, id = null`() {
         val courseId = 10
         val courseDTO =
-            CourseDTO("testName1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")), null, 1)
+            CourseDTO(
+                "courseName1",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")),
+                null,
+                InstructorIdDTO("firstName1", "lastName1")
+            )
 
         val response = webTestClient.put()
             .uri("/v1/courses/{id}", courseId)
@@ -304,9 +340,11 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     @Test
     fun `updateCourse - should have status 200, body with the another data, id is the same, header location`() {
         val courseId = 1
-        val courseCategoryDTOS = mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testDescription1"))
-        val courseDTO = CourseDTO("testName1Changed", courseCategoryDTOS, null, 1)
-        val expectedCourseDTO = CourseDTO("testName1Changed", courseCategoryDTOS, courseId, 1)
+        val courseCategoryDTOS = mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "description1"))
+        val courseDTO =
+            CourseDTO("courseName1Changed", courseCategoryDTOS, null, InstructorIdDTO("firstName1", "lastName1"))
+        val expectedCourseDTO =
+            CourseDTO("courseName1Changed", courseCategoryDTOS, courseId, InstructorIdDTO("firstName1", "lastName1"))
         val expectedLocationHeader = "v1/courses/1"
 
         val response = webTestClient.put()
@@ -325,7 +363,12 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     @Test
     fun `updateCourse - when name is blank, than status 400, body with the same data`() {
         val courseId = 1
-        val courseDTO = CourseDTO("", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "category")), null, 1)
+        val courseDTO = CourseDTO(
+            "",
+            mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "category")),
+            null,
+            InstructorIdDTO("firstName1", "lastName1")
+        )
 
         val response = webTestClient.put()
             .uri("/v1/courses/{id}", courseId)
@@ -342,7 +385,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     @Test
     fun `updateCourse - when category is empty, than status 400, in body is error message`() {
         val courseId = 1
-        val courseDTO = CourseDTO("name", mutableListOf(), null, 1)
+        val courseDTO = CourseDTO("name", mutableListOf(), null, InstructorIdDTO("firstName1", "lastName1"))
 
         val response = webTestClient.put()
             .uri("/v1/courses/{id}", courseId)
@@ -391,7 +434,12 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     @Test
     fun `createCourse - should have status 409(conflict), body with the same data, id = null`() {
         val courseDTO =
-            CourseDTO("testName1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")), null, 1)
+            CourseDTO(
+                "courseName1",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "description1")),
+                null,
+                InstructorIdDTO("firstName1", "lastName1")
+            )
         val response = webTestClient.post()
             .uri("/v1/courses")
             .contentType(APPLICATION_JSON)
@@ -411,7 +459,12 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     @Test
     fun `createCourse - should have status 201, header location, body with the same data, id != null`() {
         val courseDTO =
-            CourseDTO("testName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testDescription")), null, 1)
+            CourseDTO(
+                "testName",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "description")),
+                null,
+                InstructorIdDTO("firstName", "lastName")
+            )
         val expectedId = 1
         val expectedLocationHeader = "v1/courses/1"
 
@@ -432,7 +485,12 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
 
     @Test
     fun `createCourse - create new course with name is blank, should give back the courseDTO with the same data, status 400`() {
-        val courseDTO = CourseDTO("", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), null, 1)
+        val courseDTO = CourseDTO(
+            "",
+            mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "description")),
+            null,
+            InstructorIdDTO("firstName1", "lastName1")
+        )
 
         val response = webTestClient.post()
             .uri("v1/courses")
@@ -448,7 +506,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
 
     @Test
     fun `createCourse - create new course with category is blank, should give back the courseDTO with the same data, status 400`() {
-        val courseDTO = CourseDTO("testName", mutableListOf(), null, 1)
+        val courseDTO = CourseDTO("courseName", mutableListOf(), null, InstructorIdDTO("firstName1", "lastName1"))
 
         val response = webTestClient.post()
             .uri("v1/courses")

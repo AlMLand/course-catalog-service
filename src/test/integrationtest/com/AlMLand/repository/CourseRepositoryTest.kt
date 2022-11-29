@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
@@ -22,7 +23,7 @@ import org.springframework.test.context.jdbc.SqlGroup
 )
 @DataJpaTest
 @ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@AutoConfigureTestDatabase(replace = NONE)
 class CourseRepositoryTest(@Autowired private val courseRepository: CourseRepository) :
     PostgreSQLContainerInitializer() {
 
@@ -30,7 +31,7 @@ class CourseRepositoryTest(@Autowired private val courseRepository: CourseReposi
     fun `findByNameContainingIgnoreCaseAndCategoriesCategory - first approach size is 2, second approach size is 1`() {
         assertTrue(
             courseRepository.findByNameContainingIgnoreCaseAndCategoriesCategory(
-                "tNam",
+                "seNam",
                 DEVELOPMENT
             ).size == 2
         )
@@ -68,8 +69,8 @@ class CourseRepositoryTest(@Autowired private val courseRepository: CourseReposi
     fun `existsFirst1ByNameAndCategoriesIn - should return - true`() {
         assertTrue(
             courseRepository.existsFirst1ByNameAndCategoriesIn(
-                "testName1",
-                listOf(CourseCategory(DEVELOPMENT, 1, "testCategory1"))
+                "courseName1",
+                listOf(CourseCategory(DEVELOPMENT, 1, "description1"))
             )
         )
     }

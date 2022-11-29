@@ -2,6 +2,7 @@ package com.AlMLand.controller
 
 import com.AlMLand.dto.CourseCategoryDTO
 import com.AlMLand.dto.CourseDTO
+import com.AlMLand.dto.InstructorIdDTO
 import com.AlMLand.dto.enums.Category
 import com.AlMLand.dto.enums.Category.DEVELOPMENT
 import com.AlMLand.service.CourseService
@@ -36,12 +37,27 @@ class CourseControllerUnitTest2 @Autowired constructor(
         fun getAllCoursesWithParamsNameAndCategory(): Stream<Arguments> = Stream.of(
             Arguments.arguments(
                 "name", DEVELOPMENT, listOf(
-                    CourseDTO("name1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")), 1, 1),
-                    CourseDTO("name2", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "testCategory2")), 2, 1)
+                    CourseDTO(
+                        "name1",
+                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")),
+                        1,
+                        InstructorIdDTO("firstname1", "lastname1")
+                    ),
+                    CourseDTO(
+                        "name2",
+                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "testCategory2")),
+                        2,
+                        InstructorIdDTO("firstname2", "lastname2")
+                    )
                 )
             ), Arguments.arguments(
                 "name", DEVELOPMENT, listOf(
-                    CourseDTO("name1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")), 1, 1)
+                    CourseDTO(
+                        "name1",
+                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")),
+                        1,
+                        InstructorIdDTO("firstname1", "lastname1")
+                    )
                 )
             )
         )
@@ -50,12 +66,27 @@ class CourseControllerUnitTest2 @Autowired constructor(
         fun getAllCoursesWithParamCategory(): Stream<Arguments> = Stream.of(
             Arguments.arguments(
                 DEVELOPMENT, listOf(
-                    CourseDTO("name1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")), 1, 1),
-                    CourseDTO("name2", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "testCategory2")), 2, 1)
+                    CourseDTO(
+                        "name1",
+                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")),
+                        1,
+                        InstructorIdDTO("firstname1", "lastname1")
+                    ),
+                    CourseDTO(
+                        "name2",
+                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "testCategory2")),
+                        2,
+                        InstructorIdDTO("firstname2", "lastname2")
+                    )
                 )
             ), Arguments.arguments(
                 DEVELOPMENT, listOf(
-                    CourseDTO("name1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")), 1, 1)
+                    CourseDTO(
+                        "name1",
+                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")),
+                        1,
+                        InstructorIdDTO("firstname1", "lastname1")
+                    )
                 )
             )
         )
@@ -64,12 +95,27 @@ class CourseControllerUnitTest2 @Autowired constructor(
         fun getAllCoursesWithParamName(): Stream<Arguments> = Stream.of(
             Arguments.arguments(
                 "na", listOf(
-                    CourseDTO("name1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")), 1, 1),
-                    CourseDTO("name2", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "testCategory2")), 2, 1)
+                    CourseDTO(
+                        "name1",
+                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")),
+                        1,
+                        InstructorIdDTO("firstname1", "lastname1")
+                    ),
+                    CourseDTO(
+                        "name2",
+                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "testCategory2")),
+                        2,
+                        InstructorIdDTO("firstname2", "lastname2")
+                    )
                 )
             ), Arguments.arguments(
                 "em1", listOf(
-                    CourseDTO("name1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")), 1, 1)
+                    CourseDTO(
+                        "name1",
+                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")),
+                        1,
+                        InstructorIdDTO("firstname1", "lastname1")
+                    )
                 )
             )
         )
@@ -106,9 +152,19 @@ class CourseControllerUnitTest2 @Autowired constructor(
     fun `updateCourse - update is successful - status 200, header has location to this course, updated course in body `() {
         val courseId = 1
         val courseDTO =
-            CourseDTO("updatedName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), null, 1)
+            CourseDTO(
+                "updatedName",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+                null,
+                InstructorIdDTO("firstname1", "lastname1")
+            )
         val updatedCourseDTO =
-            CourseDTO("updatedName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), 1, 1)
+            CourseDTO(
+                "updatedName",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+                1,
+                InstructorIdDTO("firstname1", "lastname1")
+            )
         val updatedCourseAsJson = objectMapper.writeValueAsString(updatedCourseDTO)
 
         `when`(service.updateCourses(courseId, courseDTO)).thenReturn(updatedCourseDTO)
@@ -129,7 +185,12 @@ class CourseControllerUnitTest2 @Autowired constructor(
     @Test
     fun `updateCourse - course by id is not found - status 404`() {
         val courseId = 1
-        val courseDTO = CourseDTO("name", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), null, 1)
+        val courseDTO = CourseDTO(
+            "name",
+            mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+            null,
+            InstructorIdDTO("firstname1", "lastname1")
+        )
         val courseDTOAsJson = objectMapper.writeValueAsString(courseDTO)
 
         `when`(service.updateCourses(courseId, courseDTO)).thenReturn(courseDTO)
@@ -150,7 +211,12 @@ class CourseControllerUnitTest2 @Autowired constructor(
     @Test
     fun `updateCourse - when name is blank, than status 400, body with the same data`() {
         val courseId = 1
-        val courseDTO = CourseDTO("", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), null, 1)
+        val courseDTO = CourseDTO(
+            "",
+            mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+            null,
+            InstructorIdDTO("firstname1", "lastname1")
+        )
 
         val response = mockMvc.perform(
             put("/v1/courses/{id}", courseId)
@@ -167,7 +233,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
     @Test
     fun `updateCourse - when category is blank, than status 400, body with the same data`() {
         val courseId = 1
-        val courseDTO = CourseDTO("name", mutableListOf(), null, 1)
+        val courseDTO = CourseDTO("name", mutableListOf(), null, InstructorIdDTO("firstname1", "lastname1"))
 
         val response = mockMvc.perform(
             put("/v1/courses/{id}", courseId)
@@ -198,8 +264,18 @@ class CourseControllerUnitTest2 @Autowired constructor(
     @Test
     fun `getAllCourses - return list with size 2`() {
         val expectedResponse = listOf(
-            CourseDTO("name1", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")), 1, 1),
-            CourseDTO("name2", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "testCategory2")), 2, 1)
+            CourseDTO(
+                "name1",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")),
+                1,
+                InstructorIdDTO("firstname1", "lastname1")
+            ),
+            CourseDTO(
+                "name2",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "testCategory2")),
+                2,
+                InstructorIdDTO("firstname2", "lastname2")
+            )
         )
         `when`(service.findAllCourses(null, null)).thenReturn(expectedResponse)
 
@@ -276,7 +352,12 @@ class CourseControllerUnitTest2 @Autowired constructor(
     fun `getCourse - get course with id - 1`() {
         val courseId = 1
         val courseDTO =
-            CourseDTO("testName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), courseId, 1)
+            CourseDTO(
+                "testName",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+                courseId,
+                InstructorIdDTO("firstname1", "lastname1")
+            )
         `when`(service.findCourse(courseId)).thenReturn(courseDTO)
 
         val response = mockMvc.perform(
@@ -307,7 +388,12 @@ class CourseControllerUnitTest2 @Autowired constructor(
     @Test
     fun `createCourse - create new course, should give back the courseDTO with the same data, status 409, id = null`() {
         val courseDTO =
-            CourseDTO("testName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), null, 1)
+            CourseDTO(
+                "testName",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+                null,
+                InstructorIdDTO("firstname1", "lastname1")
+            )
         val requestBody = objectMapper.writeValueAsString(courseDTO)
 
         `when`(service.createCourse(courseDTO)).thenReturn(courseDTO)
@@ -327,9 +413,19 @@ class CourseControllerUnitTest2 @Autowired constructor(
     @Test
     fun `createCourse - create new course, should give back the courseDTO with the same data, status 201, id = 1`() {
         val courseDTO =
-            CourseDTO("testName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), null, 1)
+            CourseDTO(
+                "testName",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+                null,
+                InstructorIdDTO("firstname1", "lastname1")
+            )
         val expectedCourseDTO =
-            CourseDTO("testName", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), 1, 1)
+            CourseDTO(
+                "testName",
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+                1,
+                InstructorIdDTO("firstname1", "lastname1")
+            )
         val requestBody = objectMapper.writeValueAsString(courseDTO)
 
         `when`(service.createCourse(courseDTO)).thenReturn(expectedCourseDTO)
@@ -351,7 +447,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
 
     @Test
     fun `createCourse - create new course with category is blank, should give back the courseDTO with the same data, status 400`() {
-        val courseDTO = CourseDTO("testName", mutableListOf(), null, 1)
+        val courseDTO = CourseDTO("testName", mutableListOf(), null, InstructorIdDTO("firstname1", "lastname1"))
         val courseAsJson = objectMapper.writeValueAsString(courseDTO)
 
         val response = mockMvc.perform(
@@ -367,7 +463,12 @@ class CourseControllerUnitTest2 @Autowired constructor(
 
     @Test
     fun `createCourse - create new course with name is blank, should give back the courseDTO with the same data, status 400`() {
-        val courseDTO = CourseDTO("", mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")), null, 1)
+        val courseDTO = CourseDTO(
+            "",
+            mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+            null,
+            InstructorIdDTO("firstname1", "lastname1")
+        )
         val courseAsJson = objectMapper.writeValueAsString(courseDTO)
 
         val response = mockMvc.perform(

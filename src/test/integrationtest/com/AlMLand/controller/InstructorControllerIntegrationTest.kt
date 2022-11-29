@@ -1,6 +1,7 @@
 package com.AlMLand.controller
 
 import com.AlMLand.dto.InstructorDTO
+import com.AlMLand.dto.InstructorIdDTO
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -50,7 +51,7 @@ class InstructorControllerIntegrationTest(@Autowired private val webTestClient: 
     )
     @Test
     fun `createInstructor - when instructor with this firstname exists, than status 409 and the same dto as body`() {
-        val instructorDTO = InstructorDTO("firstname1", null)
+        val instructorDTO = InstructorDTO(InstructorIdDTO("firstName", "lastName"))
         val response = webTestClient.post()
             .uri("/v1/instructors")
             .bodyValue(instructorDTO)
@@ -62,15 +63,14 @@ class InstructorControllerIntegrationTest(@Autowired private val webTestClient: 
     }
 
     @Test
-    fun `createInstructor - when create instructor is successful, than status 201, header Location, the new dto with id as body`() {
-        val instructorDTO = InstructorDTO("testInstructor", null)
-        val expectedInstructorDTO = InstructorDTO("testInstructor", 1)
+    fun `createInstructor - when create instructor is successful, than status 201, the new dto with id as body`() {
+        val instructorDTO = InstructorDTO(InstructorIdDTO("firstName1", "lastName1"))
+        val expectedInstructorDTO = InstructorDTO(InstructorIdDTO("firstName1", "lastName1"), true)
         val response = webTestClient.post()
             .uri("/v1/instructors")
             .bodyValue(instructorDTO)
             .exchange()
             .expectStatus().isCreated
-            .expectHeader().location("/v1/instructors/1")
             .expectBody(InstructorDTO::class.java)
             .returnResult().responseBody
         Assertions.assertThat(response).isEqualTo(expectedInstructorDTO)

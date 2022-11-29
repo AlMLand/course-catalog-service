@@ -22,7 +22,7 @@ class CourseCategoryRepositoryTest(@Autowired private val repository: CourseCate
 
     @Test
     fun `findByCourseName - when search course name, than return list with 2 categories`() {
-        val courseCategories = repository.findByCoursesName("testName2")
+        val courseCategories = repository.findByCoursesName("courseName2")
         assertTrue(courseCategories.size == 2)
         val categories = courseCategories.map { it.category }
         assertTrue(categories.containsAll(listOf(DEVELOPMENT, MANAGEMENT)))

@@ -1,6 +1,7 @@
 package com.AlMLand.controller
 
 import com.AlMLand.dto.InstructorDTO
+import com.AlMLand.dto.InstructorIdDTO
 import com.AlMLand.service.InstructorService
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions
@@ -28,7 +29,7 @@ class InstructorControllerUnitTest2 @Autowired constructor(
 
     @Test
     fun `createInstructor - when instructor with this firstname exists, than status 409 and the same dto as body`() {
-        val instructorDTO = InstructorDTO("testName", null)
+        val instructorDTO = InstructorDTO(InstructorIdDTO("firstname1", "lastname1"))
         val instructorDTOAsJson = objectMapper.writeValueAsString(instructorDTO)
         `when`(service.createInstructor(instructorDTO)).thenReturn(instructorDTO)
 
@@ -44,9 +45,9 @@ class InstructorControllerUnitTest2 @Autowired constructor(
     }
 
     @Test
-    fun `createInstructor - when create instructor is successful, than status 201, header Location, the new dto with id as body`() {
-        val instructorDTO = InstructorDTO("testName", null)
-        val expectedInstructorDTO = InstructorDTO("testName", 1)
+    fun `createInstructor - when create instructor is successful, than status 201, the new dto with id as body`() {
+        val instructorDTO = InstructorDTO(InstructorIdDTO("firstname1", "lastname1"))
+        val expectedInstructorDTO = InstructorDTO(InstructorIdDTO("firstname1", "lastname1"), true)
 
         `when`(service.createInstructor(instructorDTO)).thenReturn(expectedInstructorDTO)
 
@@ -56,7 +57,6 @@ class InstructorControllerUnitTest2 @Autowired constructor(
                 .content(objectMapper.writeValueAsString(instructorDTO))
                 .contentType(APPLICATION_JSON)
         ).andExpect(status().isCreated)
-            .andExpect { header().exists("Location") }
             .andReturn().response.contentAsString
 
         Assertions.assertThat(response).isEqualTo(objectMapper.writeValueAsString(expectedInstructorDTO))

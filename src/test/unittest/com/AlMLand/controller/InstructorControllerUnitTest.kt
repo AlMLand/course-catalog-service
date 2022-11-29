@@ -1,6 +1,7 @@
 package com.AlMLand.controller
 
 import com.AlMLand.dto.InstructorDTO
+import com.AlMLand.dto.InstructorIdDTO
 import com.AlMLand.service.InstructorService
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
@@ -25,7 +26,7 @@ class InstructorControllerUnitTest(@Autowired private val webTestClient: WebTest
 
     @Test
     fun `createInstructor - when instructor with this firstname exists, than status 409 and the same dto as body`() {
-        val instructorDTO = InstructorDTO("testName", null)
+        val instructorDTO = InstructorDTO(InstructorIdDTO("firstname1", "lastname1"))
         every { service.createInstructor(instructorDTO) } returns instructorDTO
 
         val uri = UriComponentsBuilder.fromUriString("/v1/instructors").toUriString()
@@ -41,9 +42,9 @@ class InstructorControllerUnitTest(@Autowired private val webTestClient: WebTest
     }
 
     @Test
-    fun `createInstructor - when create instructor is successful, than status 201, header Location, the new dto with id as body`() {
-        val instructorDTO = InstructorDTO("testName", null)
-        val createdInstructorDTO = InstructorDTO("testName", 1)
+    fun `createInstructor - when create instructor is successful, than status 201, the new dto with id as body`() {
+        val instructorDTO = InstructorDTO(InstructorIdDTO("firstname1", "lastname1"))
+        val createdInstructorDTO = InstructorDTO(InstructorIdDTO("firstname1", "lastname1"), true)
         every { service.createInstructor(instructorDTO) } returns createdInstructorDTO
 
         val uri = UriComponentsBuilder.fromUriString("/v1/instructors").toUriString()
@@ -53,7 +54,6 @@ class InstructorControllerUnitTest(@Autowired private val webTestClient: WebTest
             .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isCreated
-            .expectHeader().location("/v1/instructors/1")
             .expectBody(InstructorDTO::class.java)
             .returnResult().responseBody
         Assertions.assertThat(response).isEqualTo(createdInstructorDTO)
