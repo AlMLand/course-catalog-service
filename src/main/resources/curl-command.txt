@@ -2,8 +2,8 @@
 InstructorController
 ====================
 CREATE -> createInstructor :
-curl -i -d '{ "name":"Alex", "id":null }' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/instructors
-curl -i -d '{ "name":"Timur", "id":null }' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/instructors
+curl -i -d '{"instructorId":{"firstName":"Alex", "lastName":"M_land"}, "created":"false"}' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/instructors
+curl -i -d '{"instructorId":{"firstName":"Timur", "lastName":"M_land"}, "created":"false"}' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/instructors
 
 ========================
 CourseCategoryController
@@ -16,10 +16,10 @@ curl -i -d '{"category":"MANAGEMENT", "id":null, "description":"some test manage
 CourseController
 ================
 CREATE -> createCourse :
-curl -i -d '{"id":null, "name":"Kotlin", "category": [{"category":"DEVELOPMENT", "id":"1" ,"description":"some value1"}], "instructorId":"1"}' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/courses
-curl -i -d '{"id":null, "name":"Spring Boot", "category": [{"category":"DEVELOPMENT", "id":"1" ,"description":"some value2"}], "instructorId":"2"}' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/courses
-curl -i -d '{"id":null, "name":"React", "category": [{"category":"DEVELOPMENT", "id":"1" ,"description":"some value3"}], "instructorId":"2"}' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/courses
-curl -i -d '{"id":null, "name":"Angular", "category": [{"category":"DEVELOPMENT", "id":"1" ,"description":"some value3"}, {"category":"MANAGEMENT", "id":"2" ,"description":"some value4"}], "instructorId":"1"}' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/courses
+curl -i -d '{"id":null, "name":"Kotlin", "category": [{"category":"DEVELOPMENT", "id":"1" ,"description":"some value1"}], "instructorId":{"firstName":"Alex", "lastName":"M_land"}}' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/courses
+curl -i -d '{"id":null, "name":"Spring Boot", "category": [{"category":"DEVELOPMENT", "id":"1" ,"description":"some value2"}], "instructorId":{"firstName":"Timur", "lastName":"M_land"}}' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/courses
+curl -i -d '{"id":null, "name":"React", "category": [{"category":"DEVELOPMENT", "id":"1" ,"description":"some value3"}], "instructorId":{"firstName":"Timur", "lastName":"M_land"}}' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/courses
+curl -i -d '{"id":null, "name":"Angular", "category": [{"category":"DEVELOPMENT", "id":"1" ,"description":"some value3"}, {"category":"MANAGEMENT", "id":"2" ,"description":"some value4"}], "instructorId":{"firstName":"Alex", "lastName":"M_land"}}' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/courses
 
 GET -> getCourse :
 curl -i http://localhost:8080/v1/courses/1
@@ -37,7 +37,7 @@ GET -> getAllCourses with parameters name, category  :
 curl -i http://localhost:8080/v1/courses?name=Kotlin&category=DEVELOPMENT
 
 UPDATE -> updateCourse :
-curl -i -d '{"id":null, "name":"Java", "category":[{"category":"MANAGEMENT", "id":2, "description":"some test management"}]}' -H "Content-Type: application/json" -X PUT http://localhost:8080/v1/courses/1
+curl -i -d '{"id":null, "name":"Java", "category":[{"category":"MANAGEMENT", "id":2, "description":"some test management"}], "instructorId":{"firstName":"Timur", "lastName":"M_land"}}' -H "Content-Type: application/json" -X PUT http://localhost:8080/v1/courses/1
 
 DELETE -> deleteCourse :
 curl -i -X DELETE http://localhost:8080/v1/courses/1
