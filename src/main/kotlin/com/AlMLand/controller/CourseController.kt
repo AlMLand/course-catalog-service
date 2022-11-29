@@ -4,6 +4,8 @@ import com.AlMLand.dto.CourseDTO
 import com.AlMLand.dto.enums.Category
 import com.AlMLand.service.CourseService
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatus.CONFLICT
+import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindingResult
 import org.springframework.validation.annotation.Validated
@@ -28,7 +30,7 @@ class CourseController(private val courseService: CourseService) {
     ): ResponseEntity<CourseDTO> {
         val updatedCourseDTO = courseService.updateCourses(id, courseDTO)
         return if (courseDTO == updatedCourseDTO) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(updatedCourseDTO)
+            ResponseEntity.status(NOT_FOUND).body(updatedCourseDTO)
         } else {
             ResponseEntity.status(HttpStatus.OK).location(URI("v1/courses/${updatedCourseDTO.id}"))
                 .body(updatedCourseDTO)
@@ -42,7 +44,7 @@ class CourseController(private val courseService: CourseService) {
     ): ResponseEntity<CourseDTO> {
         if (bindingResult.hasErrors()) return ResponseEntity.badRequest().body(courseDTO)
         val savedCourseDTO = courseService.createCourse(courseDTO)
-        savedCourseDTO.id ?: return ResponseEntity.status(HttpStatus.CONFLICT).body(courseDTO)
+        savedCourseDTO.id ?: return ResponseEntity.status(CONFLICT).body(courseDTO)
         return ResponseEntity.created(URI("v1/courses/${savedCourseDTO.id}")).body(savedCourseDTO)
     }
 
@@ -59,7 +61,7 @@ class CourseController(private val courseService: CourseService) {
         @RequestParam(required = false) category: Category?
     ): ResponseEntity<List<CourseDTO>> {
         val courseDTOs = courseService.findAllCourses(name, category)
-        if (courseDTOs.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(listOf())
+        if (courseDTOs.isEmpty()) return ResponseEntity.status(NOT_FOUND).body(listOf())
         return ResponseEntity.ok(courseDTOs)
     }
 
