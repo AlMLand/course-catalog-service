@@ -2,7 +2,7 @@ package com.AlMLand.controller
 
 import com.AlMLand.dto.InstructorDTO
 import com.AlMLand.service.InstructorService
-import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PostMapping
@@ -12,16 +12,20 @@ import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 import javax.validation.Valid
 
+private const val PATH: String = "/v1/instructors"
+
 @Validated
 @RestController
-@RequestMapping("/v1/instructors")
-class InstructorController(private val instructorService: InstructorService) {
+@RequestMapping(PATH)
+class InstructorController(private val service: InstructorService) {
 
     @PostMapping
-    fun createInstructor(@Valid @RequestBody instructorDTO: InstructorDTO): ResponseEntity<InstructorDTO> {
-        val newInstructorDTO = instructorService.createInstructor(instructorDTO)
-        newInstructorDTO.id ?: return ResponseEntity.status(HttpStatus.CONFLICT).body(instructorDTO)
-        return ResponseEntity.created(URI("/v1/instructors/${newInstructorDTO.id}")).body(newInstructorDTO)
+    fun createInstructor(@Valid @RequestBody dto: InstructorDTO): ResponseEntity<InstructorDTO> {
+        val newDTO = service.createInstructor(dto)
+        return if (!newDTO.created)
+            ResponseEntity.status(CONFLICT).body(newDTO)
+        else
+            ResponseEntity.created(URI(PATH)).body(newDTO)
     }
 
 }

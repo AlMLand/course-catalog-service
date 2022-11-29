@@ -16,6 +16,6 @@ data class CourseDTO(
 
     val id: Int?,
 
-    @field:NotNull(message = "CourseDTO.instructorId must not be null")
-    var instructorId: Int
+    @field:NotNull(message = "CourseDTO.instructorIdDTO must not be null")
+    var instructorId: InstructorIdDTO
 )

@@ -1,9 +1,9 @@
 package com.AlMLand.dto
 
-import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotNull
 
 data class InstructorDTO(
-    @field:NotBlank(message = "Instructor.name must not be blank")
-    var name: String,
-    val id: Int?
+    @field:NotNull(message = "InstructorDTO.instructorId must not be null")
+    val instructorId: InstructorIdDTO,
+    var created: Boolean = false
 )

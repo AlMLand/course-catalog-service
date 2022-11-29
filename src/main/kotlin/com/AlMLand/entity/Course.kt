@@ -23,10 +23,23 @@ data class Course(
     val id: Int?,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, updatable = true)
+    @JoinColumns(
+        JoinColumn(
+            name = "instructor_firstname",
+            referencedColumnName = "first_name",
+            nullable = false,
+            updatable = false
+        ),
+        JoinColumn(
+            name = "instructor_lastname",
+            referencedColumnName = "last_name",
+            nullable = false,
+            updatable = false
+        )
+    )
     var instructor: Instructor
 ) {
     override fun toString(): String {
-        return "Course(name: $name, category: $categories, id: $id, instructor: ${instructor.id})"
+        return "Course(name: $name, category: $categories, id: $id, instructor: ${instructor.instructorId})"
     }
 }
