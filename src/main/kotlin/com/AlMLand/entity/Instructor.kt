@@ -8,11 +8,21 @@ import javax.persistence.CascadeType.ALL
 @Table(name = "instructors")
 data class Instructor(
     @EmbeddedId
-    @field:Column(nullable = false, updatable = false)
+    @field:Column(insertable = true, nullable = false, updatable = false)
     val instructorId: InstructorId,
     @OneToMany(mappedBy = "instructor", cascade = [ALL], orphanRemoval = true)
-    val courses: List<Course> = mutableListOf()
+    val courses: MutableList<Course> = mutableListOf()
 ) {
+    fun addCourse(course: Course) {
+        courses.add(course)
+        course.instructor = this
+    }
+
+    fun removeCourse(course: Course, otherInstructor: Instructor) {
+        courses.remove(course)
+        course.instructor = otherInstructor
+    }
+
     override fun hashCode(): Int {
         return Objects.hash(instructorId)
     }

@@ -5,7 +5,7 @@ import javax.persistence.*
 @Entity
 @Table(name = "courses")
 data class Course(
-    @field:Column(nullable = false, insertable = true, updatable = true)
+    @field:Column(insertable = true, nullable = false, updatable = true)
     var name: String,
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -19,7 +19,7 @@ data class Course(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @field:Column(nullable = false, updatable = false)
+    @field:Column(insertable = true, nullable = false, updatable = false)
     val id: Int?,
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,12 +27,14 @@ data class Course(
         JoinColumn(
             name = "instructor_firstname",
             referencedColumnName = "first_name",
+            insertable = true,
             nullable = false,
             updatable = false
         ),
         JoinColumn(
             name = "instructor_lastname",
             referencedColumnName = "last_name",
+            insertable = true,
             nullable = false,
             updatable = false
         )
