@@ -1,18 +1,34 @@
 select * from instructors ;
 select * from instructors as i left join courses as c on i.id = c.instructor_id where c.instructor_id = 2 ;
 
-
 select * from courses ;
 select * from courses as c left join instructors as i on c.instructor_id = i.id where i.id = 2;
-
 
 select * from courses as c
 left join course_coursecategory as ccc on c.id = ccc.course_id
 left join course_categories as cc on ccc.course_category_id = cc.id
 where cc.category = 'DEVELOPMENT';
 
-
 select * from course_categories   as cc
 left join course_coursecategory as ccc on cc.id = ccc.course_category_id
 left join courses as c on ccc.course_id = c.id
 where c.name = 'Angular';
+
+---------
+
+create view "public".course_categories_view as select id, category, description from "public".course_categories;
+select * from "public".course_categories;
+select * from "public".course_categories_view;
+
+create view "public".course_coursecategory_view as select course_id, course_category_id from "public".course_coursecategory;
+select * from "public".course_coursecategory;
+select * from "public".course_coursecategory_view;
+
+create view "public".courses_view as select id, name, instructor_firstname, instructor_lastname from "public".courses;
+select * from "public".courses;
+select * from "public".courses_view;
+
+create view "public".instructors_view as select first_name, last_name from "public".instructors;
+select * from "public".instructors;
+select * from "public".instructors_view;
+
