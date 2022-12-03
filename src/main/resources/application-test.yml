@@ -8,14 +8,11 @@ spring:
     username: alex
     password: secret
   jpa:
-    database: h2
-    database-platform: org.hibernate.dialect.H2Dialect
+    database: POSTGRESQL
+    database-platform: org.hibernate.dialect.PostgreSQL82Dialect
     generate-ddl: true
     show-sql: true
-  h2:
-    console:
-      enabled: true
-      path: /h2
+
 #  config: # wse budet aktivirovano tolko pri aktivnom profile(ili profiljah), kotorij propisan vnizu
 #    activate:
 #      on-profile:

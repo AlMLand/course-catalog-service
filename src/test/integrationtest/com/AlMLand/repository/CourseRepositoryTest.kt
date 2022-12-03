@@ -16,6 +16,7 @@ import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD
 import org.springframework.test.context.jdbc.SqlGroup
+import java.util.*
 
 @SqlGroup(
     Sql(scripts = ["/db/test-data.sql"], executionPhase = BEFORE_TEST_METHOD),
@@ -60,7 +61,7 @@ class CourseRepositoryTest(@Autowired private val courseRepository: CourseReposi
         assertFalse(
             courseRepository.existsFirst1ByNameAndCategoriesIn(
                 "testNameNotAvailable",
-                listOf(CourseCategory(DEVELOPMENT, 1, "testCategory1"))
+                listOf(CourseCategory(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory1"))
             )
         )
     }
@@ -70,7 +71,7 @@ class CourseRepositoryTest(@Autowired private val courseRepository: CourseReposi
         assertTrue(
             courseRepository.existsFirst1ByNameAndCategoriesIn(
                 "courseName1",
-                listOf(CourseCategory(DEVELOPMENT, 1, "description1"))
+                listOf(CourseCategory(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "description1"))
             )
         )
     }

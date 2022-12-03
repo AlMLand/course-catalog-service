@@ -1,6 +1,7 @@
 package com.AlMLand.entity
 
 import com.AlMLand.dto.enums.Category
+import java.util.*
 import javax.persistence.*
 
 @Entity
@@ -11,9 +12,9 @@ data class CourseCategory(
     var category: Category,
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     @field:Column(insertable = true, nullable = false, updatable = false)
-    val id: Int?,
+    val id: UUID?,
 
     @field:Column(insertable = true, nullable = true, updatable = true)
     var description: String? = null,

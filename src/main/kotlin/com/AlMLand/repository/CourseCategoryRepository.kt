@@ -3,8 +3,9 @@ package com.AlMLand.repository
 import com.AlMLand.dto.enums.Category
 import com.AlMLand.entity.CourseCategory
 import org.springframework.data.repository.CrudRepository
+import java.util.*
 
-interface CourseCategoryRepository : CrudRepository<CourseCategory, Int> {
+interface CourseCategoryRepository : CrudRepository<CourseCategory, UUID> {
 
     fun existsByCategoryAndDescription(category: Category, description: String?): Boolean
 

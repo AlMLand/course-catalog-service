@@ -21,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import java.util.*
 import java.util.stream.Stream
 
 @ActiveProfiles("test")
@@ -39,13 +40,25 @@ class CourseControllerUnitTest2 @Autowired constructor(
                 "name", DEVELOPMENT, listOf(
                     CourseDTO(
                         "name1",
-                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")),
+                        mutableListOf(
+                            CourseCategoryDTO(
+                                DEVELOPMENT,
+                                UUID.fromString("1234-56-78-90-123456"),
+                                "testCategory1"
+                            )
+                        ),
                         1,
                         InstructorIdDTO("firstname1", "lastname1")
                     ),
                     CourseDTO(
                         "name2",
-                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "testCategory2")),
+                        mutableListOf(
+                            CourseCategoryDTO(
+                                DEVELOPMENT,
+                                UUID.fromString("0987-65-43-21-098765"),
+                                "testCategory2"
+                            )
+                        ),
                         2,
                         InstructorIdDTO("firstname2", "lastname2")
                     )
@@ -54,7 +67,13 @@ class CourseControllerUnitTest2 @Autowired constructor(
                 "name", DEVELOPMENT, listOf(
                     CourseDTO(
                         "name1",
-                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")),
+                        mutableListOf(
+                            CourseCategoryDTO(
+                                DEVELOPMENT,
+                                UUID.fromString("1234-56-78-90-123456"),
+                                "testCategory1"
+                            )
+                        ),
                         1,
                         InstructorIdDTO("firstname1", "lastname1")
                     )
@@ -68,13 +87,25 @@ class CourseControllerUnitTest2 @Autowired constructor(
                 DEVELOPMENT, listOf(
                     CourseDTO(
                         "name1",
-                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")),
+                        mutableListOf(
+                            CourseCategoryDTO(
+                                DEVELOPMENT,
+                                UUID.fromString("1234-56-78-90-123456"),
+                                "testCategory1"
+                            )
+                        ),
                         1,
                         InstructorIdDTO("firstname1", "lastname1")
                     ),
                     CourseDTO(
                         "name2",
-                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "testCategory2")),
+                        mutableListOf(
+                            CourseCategoryDTO(
+                                DEVELOPMENT,
+                                UUID.fromString("0987-65-43-21-098765"),
+                                "testCategory2"
+                            )
+                        ),
                         2,
                         InstructorIdDTO("firstname2", "lastname2")
                     )
@@ -83,7 +114,13 @@ class CourseControllerUnitTest2 @Autowired constructor(
                 DEVELOPMENT, listOf(
                     CourseDTO(
                         "name1",
-                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")),
+                        mutableListOf(
+                            CourseCategoryDTO(
+                                DEVELOPMENT,
+                                UUID.fromString("1234-56-78-90-123456"),
+                                "testCategory1"
+                            )
+                        ),
                         1,
                         InstructorIdDTO("firstname1", "lastname1")
                     )
@@ -97,13 +134,25 @@ class CourseControllerUnitTest2 @Autowired constructor(
                 "na", listOf(
                     CourseDTO(
                         "name1",
-                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")),
+                        mutableListOf(
+                            CourseCategoryDTO(
+                                DEVELOPMENT,
+                                UUID.fromString("1234-56-78-90-123456"),
+                                "testCategory1"
+                            )
+                        ),
                         1,
                         InstructorIdDTO("firstname1", "lastname1")
                     ),
                     CourseDTO(
                         "name2",
-                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "testCategory2")),
+                        mutableListOf(
+                            CourseCategoryDTO(
+                                DEVELOPMENT,
+                                UUID.fromString("0987-65-43-21-098765"),
+                                "testCategory2"
+                            )
+                        ),
                         2,
                         InstructorIdDTO("firstname2", "lastname2")
                     )
@@ -112,7 +161,13 @@ class CourseControllerUnitTest2 @Autowired constructor(
                 "em1", listOf(
                     CourseDTO(
                         "name1",
-                        mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")),
+                        mutableListOf(
+                            CourseCategoryDTO(
+                                DEVELOPMENT,
+                                UUID.fromString("1234-56-78-90-123456"),
+                                "testCategory1"
+                            )
+                        ),
                         1,
                         InstructorIdDTO("firstname1", "lastname1")
                     )
@@ -154,14 +209,14 @@ class CourseControllerUnitTest2 @Autowired constructor(
         val courseDTO =
             CourseDTO(
                 "updatedName",
-                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory")),
                 null,
                 InstructorIdDTO("firstname1", "lastname1")
             )
         val updatedCourseDTO =
             CourseDTO(
                 "updatedName",
-                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory")),
                 1,
                 InstructorIdDTO("firstname1", "lastname1")
             )
@@ -187,7 +242,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
         val courseId = 1
         val courseDTO = CourseDTO(
             "name",
-            mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+            mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory")),
             null,
             InstructorIdDTO("firstname1", "lastname1")
         )
@@ -213,7 +268,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
         val courseId = 1
         val courseDTO = CourseDTO(
             "",
-            mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+            mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory")),
             null,
             InstructorIdDTO("firstname1", "lastname1")
         )
@@ -266,13 +321,13 @@ class CourseControllerUnitTest2 @Autowired constructor(
         val expectedResponse = listOf(
             CourseDTO(
                 "name1",
-                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory1")),
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory1")),
                 1,
                 InstructorIdDTO("firstname1", "lastname1")
             ),
             CourseDTO(
                 "name2",
-                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 2, "testCategory2")),
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("0987-65-43-21-098765"), "testCategory2")),
                 2,
                 InstructorIdDTO("firstname2", "lastname2")
             )
@@ -354,7 +409,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
         val courseDTO =
             CourseDTO(
                 "testName",
-                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory")),
                 courseId,
                 InstructorIdDTO("firstname1", "lastname1")
             )
@@ -390,7 +445,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
         val courseDTO =
             CourseDTO(
                 "testName",
-                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory")),
                 null,
                 InstructorIdDTO("firstname1", "lastname1")
             )
@@ -415,14 +470,14 @@ class CourseControllerUnitTest2 @Autowired constructor(
         val courseDTO =
             CourseDTO(
                 "testName",
-                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory")),
                 null,
                 InstructorIdDTO("firstname1", "lastname1")
             )
         val expectedCourseDTO =
             CourseDTO(
                 "testName",
-                mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory")),
                 1,
                 InstructorIdDTO("firstname1", "lastname1")
             )
@@ -465,7 +520,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
     fun `createCourse - create new course with name is blank, should give back the courseDTO with the same data, status 400`() {
         val courseDTO = CourseDTO(
             "",
-            mutableListOf(CourseCategoryDTO(DEVELOPMENT, 1, "testCategory")),
+            mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory")),
             null,
             InstructorIdDTO("firstname1", "lastname1")
         )
