@@ -21,7 +21,7 @@ data class Course(
 
     @Id
     @GeneratedValue(generator = "CUSTOM_UUID")
-    @GenericGenerator(name = "CUSTOM_UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GenericGenerator(name = "CUSTOM_UUID", strategy = "uuid2")
     @field:Column(insertable = true, nullable = false, updatable = false)
     val id: UUID?,
 
