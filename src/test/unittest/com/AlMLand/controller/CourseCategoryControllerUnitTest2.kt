@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.util.*
+import java.util.UUID.fromString
 
 @ActiveProfiles("test")
 @WebMvcTest(controllers = [CourseCategoryController::class])
@@ -31,7 +32,7 @@ class CourseCategoryControllerUnitTest2 @Autowired constructor(
     fun `createCourseCategory - when success, than status 201, location header is available, response dto is equals to expected tdo`() {
         val courseCategory = CourseCategoryDTO(DEVELOPMENT, null, "test")
         val courseCategoryAsJson = objectMapper.writeValueAsString(courseCategory)
-        val createdCourseCategory = CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "test")
+        val createdCourseCategory = CourseCategoryDTO(DEVELOPMENT, fromString("1234-56-78-90-123456"), "test")
         val createdCourseCategoryAsJson = objectMapper.writeValueAsString(createdCourseCategory)
 
         `when`(service.createCourseCategory(courseCategory)).thenReturn(createdCourseCategory)

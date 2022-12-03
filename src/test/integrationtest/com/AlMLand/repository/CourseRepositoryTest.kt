@@ -17,6 +17,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHO
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD
 import org.springframework.test.context.jdbc.SqlGroup
 import java.util.*
+import java.util.UUID.fromString
 
 @SqlGroup(
     Sql(scripts = ["/db/test-data.sql"], executionPhase = BEFORE_TEST_METHOD),
@@ -25,19 +26,19 @@ import java.util.*
 @DataJpaTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = NONE)
-class CourseRepositoryTest(@Autowired private val courseRepository: CourseRepository) :
+class CourseRepositoryTest(@Autowired private val repository: CourseRepository) :
     PostgreSQLContainerInitializer() {
 
     @Test
     fun `findByNameContainingIgnoreCaseAndCategoriesCategory - first approach size is 2, second approach size is 1`() {
         assertTrue(
-            courseRepository.findByNameContainingIgnoreCaseAndCategoriesCategory(
+            repository.findByNameContainingIgnoreCaseAndCategoriesCategory(
                 "seNam",
                 DEVELOPMENT
             ).size == 2
         )
         assertTrue(
-            courseRepository.findByNameContainingIgnoreCaseAndCategoriesCategory(
+            repository.findByNameContainingIgnoreCaseAndCategoriesCategory(
                 "name",
                 MANAGEMENT
             ).size == 1
@@ -46,22 +47,22 @@ class CourseRepositoryTest(@Autowired private val courseRepository: CourseReposi
 
     @Test
     fun `findByCategoriesCategory - should return list with size 2 and 1`() {
-        assertTrue(courseRepository.findByCategoriesCategory(DEVELOPMENT).size == 2)
-        assertTrue(courseRepository.findByCategoriesCategory(MANAGEMENT).size == 1)
+        assertTrue(repository.findByCategoriesCategory(DEVELOPMENT).size == 2)
+        assertTrue(repository.findByCategoriesCategory(MANAGEMENT).size == 1)
     }
 
     @Test
     fun `findByNameContainingIgnoreCase - should return list with size 2`() {
-        assertTrue(courseRepository.findByNameContainingIgnoreCase("nAMe").size == 2)
-        assertTrue(courseRepository.findByNameContainingIgnoreCase("nAMe2").size == 1)
+        assertTrue(repository.findByNameContainingIgnoreCase("nAMe").size == 2)
+        assertTrue(repository.findByNameContainingIgnoreCase("nAMe2").size == 1)
     }
 
     @Test
     fun `existsFirst1ByNameAndCategoriesIn - should return - false`() {
         assertFalse(
-            courseRepository.existsFirst1ByNameAndCategoriesIn(
+            repository.existsFirst1ByNameAndCategoriesIn(
                 "testNameNotAvailable",
-                listOf(CourseCategory(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory1"))
+                listOf(CourseCategory(DEVELOPMENT, fromString("1234-56-78-90-123456"), "testCategory1"))
             )
         )
     }
@@ -69,9 +70,9 @@ class CourseRepositoryTest(@Autowired private val courseRepository: CourseReposi
     @Test
     fun `existsFirst1ByNameAndCategoriesIn - should return - true`() {
         assertTrue(
-            courseRepository.existsFirst1ByNameAndCategoriesIn(
+            repository.existsFirst1ByNameAndCategoriesIn(
                 "courseName1",
-                listOf(CourseCategory(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "description1"))
+                listOf(CourseCategory(DEVELOPMENT, fromString("1234-56-78-90-123456"), "description1"))
             )
         )
     }

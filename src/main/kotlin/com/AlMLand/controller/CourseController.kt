@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import java.net.URI
+import java.util.*
 import javax.validation.Valid
 
 @Validated
@@ -19,13 +20,13 @@ import javax.validation.Valid
 class CourseController(private val courseService: CourseService) {
 
     @DeleteMapping("{id}")
-    fun deleteCourse(@PathVariable id: Int): ResponseEntity<Any> {
+    fun deleteCourse(@PathVariable id: UUID): ResponseEntity<Any> {
         return if (courseService.deleteCourse(id)) ResponseEntity.ok().build() else ResponseEntity.notFound().build()
     }
 
     @PutMapping("{id}")
     fun updateCourse(
-        @PathVariable id: Int,
+        @PathVariable id: UUID,
         @Valid @RequestBody courseDTO: CourseDTO
     ): ResponseEntity<CourseDTO> {
         val updatedCourseDTO = courseService.updateCourses(id, courseDTO)
@@ -49,7 +50,7 @@ class CourseController(private val courseService: CourseService) {
     }
 
     @GetMapping("{id}")
-    fun getCourse(@PathVariable id: Int): ResponseEntity<CourseDTO> {
+    fun getCourse(@PathVariable id: UUID): ResponseEntity<CourseDTO> {
         val courseDTO = courseService.findCourse(id)
         courseDTO ?: return ResponseEntity.notFound().build()
         return ResponseEntity.ok(courseDTO)

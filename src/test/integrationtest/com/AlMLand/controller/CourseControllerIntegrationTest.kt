@@ -34,6 +34,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
 import java.net.URI
 import java.util.*
+import java.util.UUID.fromString
 import java.util.stream.Stream
 
 @Testcontainers
@@ -52,18 +53,18 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
                         mutableListOf(
                             CourseCategoryDTO(
                                 DEVELOPMENT,
-                                UUID.fromString("1234-56-78-90-123456"),
+                                fromString("1234-56-78-90-123456"),
                                 "description1"
                             )
                         ),
-                        1,
+                        fromString("1111-11-11-11-111111"),
                         InstructorIdDTO("firstName1", "lastName1")
                     ),
                     CourseDTO(
                         "courseName2", mutableListOf(
-                            CourseCategoryDTO(DEVELOPMENT, UUID.fromString("0987-65-43-21-098765"), "description2"),
-                            CourseCategoryDTO(MANAGEMENT, UUID.fromString("4444-22-22-22-666666"), "description3")
-                        ), 2, InstructorIdDTO("firstName2", "lastName2")
+                            CourseCategoryDTO(DEVELOPMENT, fromString("0987-65-43-21-098765"), "description2"),
+                            CourseCategoryDTO(MANAGEMENT, fromString("4444-22-22-22-666666"), "description3")
+                        ), fromString("2222-22-22-22-222222"), InstructorIdDTO("firstName2", "lastName2")
                     )
                 )
             ),
@@ -71,9 +72,9 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
                 "name", MANAGEMENT, listOf(
                     CourseDTO(
                         "courseName2", mutableListOf(
-                            CourseCategoryDTO(DEVELOPMENT, UUID.fromString("0987-65-43-21-098765"), "description2"),
-                            CourseCategoryDTO(MANAGEMENT, UUID.fromString("4444-22-22-22-666666"), "description3")
-                        ), 2, InstructorIdDTO("firstName2", "lastName2")
+                            CourseCategoryDTO(DEVELOPMENT, fromString("0987-65-43-21-098765"), "description2"),
+                            CourseCategoryDTO(MANAGEMENT, fromString("4444-22-22-22-666666"), "description3")
+                        ), fromString("2222-22-22-22-222222"), InstructorIdDTO("firstName2", "lastName2")
                     )
                 )
             )
@@ -88,18 +89,18 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
                         mutableListOf(
                             CourseCategoryDTO(
                                 DEVELOPMENT,
-                                UUID.fromString("1234-56-78-90-123456"),
+                                fromString("1234-56-78-90-123456"),
                                 "description1"
                             )
                         ),
-                        1,
+                        fromString("1111-11-11-11-111111"),
                         InstructorIdDTO("firstName1", "lastName1")
                     ),
                     CourseDTO(
                         "courseName2", mutableListOf(
-                            CourseCategoryDTO(DEVELOPMENT, UUID.fromString("0987-65-43-21-098765"), "description2"),
-                            CourseCategoryDTO(MANAGEMENT, UUID.fromString("4444-22-22-22-666666"), "description3")
-                        ), 2, InstructorIdDTO("firstName2", "lastName2")
+                            CourseCategoryDTO(DEVELOPMENT, fromString("0987-65-43-21-098765"), "description2"),
+                            CourseCategoryDTO(MANAGEMENT, fromString("4444-22-22-22-666666"), "description3")
+                        ), fromString("2222-22-22-22-222222"), InstructorIdDTO("firstName2", "lastName2")
                     )
                 )
             ),
@@ -107,9 +108,9 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
                 MANAGEMENT, listOf(
                     CourseDTO(
                         "courseName2", mutableListOf(
-                            CourseCategoryDTO(DEVELOPMENT, UUID.fromString("0987-65-43-21-098765"), "description2"),
-                            CourseCategoryDTO(MANAGEMENT, UUID.fromString("4444-22-22-22-666666"), "description3")
-                        ), 2, InstructorIdDTO("firstName2", "lastName2")
+                            CourseCategoryDTO(DEVELOPMENT, fromString("0987-65-43-21-098765"), "description2"),
+                            CourseCategoryDTO(MANAGEMENT, fromString("4444-22-22-22-666666"), "description3")
+                        ), fromString("2222-22-22-22-222222"), InstructorIdDTO("firstName2", "lastName2")
                     )
                 )
             )
@@ -124,18 +125,18 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
                         mutableListOf(
                             CourseCategoryDTO(
                                 DEVELOPMENT,
-                                UUID.fromString("1234-56-78-90-123456"),
+                                fromString("1234-56-78-90-123456"),
                                 "description1"
                             )
                         ),
-                        1,
+                        fromString("1111-11-11-11-111111"),
                         InstructorIdDTO("firstName1", "lastName1")
                     ),
                     CourseDTO(
                         "courseName2", mutableListOf(
-                            CourseCategoryDTO(DEVELOPMENT, UUID.fromString("0987-65-43-21-098765"), "description2"),
-                            CourseCategoryDTO(MANAGEMENT, UUID.fromString("4444-22-22-22-666666"), "description3")
-                        ), 2, InstructorIdDTO("firstName2", "lastName2")
+                            CourseCategoryDTO(DEVELOPMENT, fromString("0987-65-43-21-098765"), "description2"),
+                            CourseCategoryDTO(MANAGEMENT, fromString("4444-22-22-22-666666"), "description3")
+                        ), fromString("2222-22-22-22-222222"), InstructorIdDTO("firstName2", "lastName2")
                     )
                 )
             ),
@@ -146,11 +147,11 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
                         mutableListOf(
                             CourseCategoryDTO(
                                 DEVELOPMENT,
-                                UUID.fromString("1234-56-78-90-123456"),
+                                fromString("1234-56-78-90-123456"),
                                 "description1"
                             )
                         ),
-                        1,
+                        fromString("1111-11-11-11-111111"),
                         InstructorIdDTO("firstName1", "lastName1")
                     )
                 )
@@ -195,15 +196,15 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
         val expectedList = listOf(
             CourseDTO(
                 "courseName1",
-                mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "description1")),
-                1,
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, fromString("1234-56-78-90-123456"), "description1")),
+                fromString("1111-11-11-11-111111"),
                 InstructorIdDTO("firstName1", "lastName1")
             ),
             CourseDTO(
                 "courseName2", mutableListOf(
-                    CourseCategoryDTO(DEVELOPMENT, UUID.fromString("0987-65-43-21-098765"), "description2"),
-                    CourseCategoryDTO(MANAGEMENT, UUID.fromString("4444-22-22-22-666666"), "description3")
-                ), 2, InstructorIdDTO("firstName2", "lastName2")
+                    CourseCategoryDTO(DEVELOPMENT, fromString("0987-65-43-21-098765"), "description2"),
+                    CourseCategoryDTO(MANAGEMENT, fromString("4444-22-22-22-666666"), "description3")
+                ), fromString("2222-22-22-22-222222"), InstructorIdDTO("firstName2", "lastName2")
             )
         )
 
@@ -297,11 +298,11 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     )
     @Test
     fun `getCourse - get course with id - 1`() {
-        val courseId = 1
+        val courseId = fromString("1111-11-11-11-111111")
         val expectedCourseDTO =
             CourseDTO(
                 "courseName1",
-                mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "description1")),
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, fromString("1234-56-78-90-123456"), "description1")),
                 courseId,
                 InstructorIdDTO("firstName1", "lastName1")
             )
@@ -319,7 +320,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
 
     @Test
     fun `getCourse - get course with id, what is not available in db - status not found`() {
-        val courseId = 1
+        val courseId = "00001111-0011-0011-0011-000000111111"
         val response = webTestClient.get()
             .uri("/v1/courses/{id}", courseId)
             .accept(APPLICATION_JSON)
@@ -337,11 +338,11 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     )
     @Test
     fun `updateCourse - should have status 404, body with the same data, id = null`() {
-        val courseId = 10
+        val courseId = "00001111-0011-0011-0011-000000111199"
         val courseDTO =
             CourseDTO(
                 "courseName1",
-                mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory1")),
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, fromString("1234-56-78-90-123456"), "testCategory1")),
                 null,
                 InstructorIdDTO("firstName1", "lastName1")
             )
@@ -364,14 +365,13 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     )
     @Test
     fun `updateCourse - should have status 200, body with the another data, id is the same, header location`() {
-        val courseId = 1
+        val courseId = fromString("1111-11-11-11-111111")
         val courseCategoryDTOS =
-            mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "description1"))
+            mutableListOf(CourseCategoryDTO(DEVELOPMENT, fromString("1234-56-78-90-123456"), "description1"))
         val courseDTO =
             CourseDTO("courseName1Changed", courseCategoryDTOS, null, InstructorIdDTO("firstName1", "lastName1"))
         val expectedCourseDTO =
             CourseDTO("courseName1Changed", courseCategoryDTOS, courseId, InstructorIdDTO("firstName1", "lastName1"))
-        val expectedLocationHeader = "v1/courses/1"
 
         val response = webTestClient.put()
             .uri("/v1/courses/{id}", courseId)
@@ -379,7 +379,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
             .bodyValue(courseDTO)
             .exchange()
             .expectStatus().isOk
-            .expectHeader().location(expectedLocationHeader)
+            .expectHeader().location("v1/courses/00001111-0011-0011-0011-000000111111")
             .expectBody(courseDTO::class.java)
             .returnResult().responseBody
 
@@ -388,10 +388,10 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
 
     @Test
     fun `updateCourse - when name is blank, than status 400, body with the same data`() {
-        val courseId = 1
+        val courseId = "00001111-0011-0011-0011-000000111111"
         val courseDTO = CourseDTO(
             "",
-            mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "category")),
+            mutableListOf(CourseCategoryDTO(DEVELOPMENT, fromString("1234-56-78-90-123456"), "category")),
             null,
             InstructorIdDTO("firstName1", "lastName1")
         )
@@ -410,7 +410,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
 
     @Test
     fun `updateCourse - when category is empty, than status 400, in body is error message`() {
-        val courseId = 1
+        val courseId = "00001111-0011-0011-0011-000000111111"
         val courseDTO = CourseDTO("name", mutableListOf(), null, InstructorIdDTO("firstName1", "lastName1"))
 
         val response = webTestClient.put()
@@ -431,7 +431,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     )
     @Test
     fun `delete - should have status 200`() {
-        val courseId = 1
+        val courseId = "00001111-0011-0011-0011-000000111111"
 
         webTestClient.delete()
             .uri("/v1/courses/{id}", courseId)
@@ -445,7 +445,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     )
     @Test
     fun `delete - should have status 404`() {
-        val courseId = 10
+        val courseId = "00001111-0011-0011-0011-000000111155"
 
         webTestClient.delete()
             .uri("/v1/courses/{id}", courseId)
@@ -462,7 +462,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
         val courseDTO =
             CourseDTO(
                 "courseName1",
-                mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "description1")),
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, fromString("1234-56-78-90-123456"), "description1")),
                 null,
                 InstructorIdDTO("firstName1", "lastName1")
             )
@@ -487,12 +487,10 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
         val courseDTO =
             CourseDTO(
                 "testName",
-                mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "description")),
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, fromString("1234-56-78-90-123456"), "description")),
                 null,
                 InstructorIdDTO("firstName", "lastName")
             )
-        val expectedId = 1
-        val expectedLocationHeader = "v1/courses/1"
 
         val response = webTestClient.post()
             .uri("v1/courses")
@@ -500,11 +498,11 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
             .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isCreated
-            .expectHeader().location(expectedLocationHeader)
+            .expectHeader().exists("Location")
             .expectBody(CourseDTO::class.java)
             .returnResult().responseBody
 
-        assertThat(response?.id).isEqualTo(expectedId)
+        assertThat(response?.id).isNotNull
         assertThat(response?.name).isEqualTo(courseDTO.name)
         assertThat(response?.category).isEqualTo(courseDTO.category)
     }
@@ -513,7 +511,7 @@ class CourseControllerIntegrationTest(@Autowired private val webTestClient: WebT
     fun `createCourse - create new course with name is blank, should give back the courseDTO with the same data, status 400`() {
         val courseDTO = CourseDTO(
             "",
-            mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "description")),
+            mutableListOf(CourseCategoryDTO(DEVELOPMENT, fromString("1234-56-78-90-123456"), "description")),
             null,
             InstructorIdDTO("firstName1", "lastName1")
         )

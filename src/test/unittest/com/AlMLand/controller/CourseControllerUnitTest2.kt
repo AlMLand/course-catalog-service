@@ -47,7 +47,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
                                 "testCategory1"
                             )
                         ),
-                        1,
+                        UUID.fromString("1111-11-11-11-111111"),
                         InstructorIdDTO("firstname1", "lastname1")
                     ),
                     CourseDTO(
@@ -59,7 +59,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
                                 "testCategory2"
                             )
                         ),
-                        2,
+                        UUID.fromString("2222-22-22-22-222222"),
                         InstructorIdDTO("firstname2", "lastname2")
                     )
                 )
@@ -74,7 +74,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
                                 "testCategory1"
                             )
                         ),
-                        1,
+                        UUID.fromString("1111-11-11-11-111111"),
                         InstructorIdDTO("firstname1", "lastname1")
                     )
                 )
@@ -94,7 +94,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
                                 "testCategory1"
                             )
                         ),
-                        1,
+                        UUID.fromString("1111-11-11-11-111111"),
                         InstructorIdDTO("firstname1", "lastname1")
                     ),
                     CourseDTO(
@@ -106,7 +106,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
                                 "testCategory2"
                             )
                         ),
-                        2,
+                        UUID.fromString("2222-22-22-22-222222"),
                         InstructorIdDTO("firstname2", "lastname2")
                     )
                 )
@@ -121,7 +121,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
                                 "testCategory1"
                             )
                         ),
-                        1,
+                        UUID.fromString("1111-11-11-11-111111"),
                         InstructorIdDTO("firstname1", "lastname1")
                     )
                 )
@@ -141,7 +141,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
                                 "testCategory1"
                             )
                         ),
-                        1,
+                        UUID.fromString("1111-11-11-11-111111"),
                         InstructorIdDTO("firstname1", "lastname1")
                     ),
                     CourseDTO(
@@ -153,7 +153,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
                                 "testCategory2"
                             )
                         ),
-                        2,
+                        UUID.fromString("2222-22-22-22-222222"),
                         InstructorIdDTO("firstname2", "lastname2")
                     )
                 )
@@ -168,7 +168,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
                                 "testCategory1"
                             )
                         ),
-                        1,
+                        UUID.fromString("1111-11-11-11-111111"),
                         InstructorIdDTO("firstname1", "lastname1")
                     )
                 )
@@ -178,7 +178,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
 
     @Test
     fun `handleAllExceptions - check the controller advice`() {
-        val courseId = 1
+        val courseId = UUID.fromString("1111-11-11-11-111111")
         `when`(service.deleteCourse(courseId)).thenThrow(IllegalArgumentException())
 
         mockMvc.perform(delete("/v1/courses/{id}", courseId))
@@ -187,7 +187,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
 
     @Test
     fun `delete - when successful, than return status 200`() {
-        val courseId = 1
+        val courseId = UUID.fromString("1111-11-11-11-111111")
         `when`(service.deleteCourse(courseId)).thenReturn(true)
 
         mockMvc.perform(delete("/v1/courses/{id}", courseId))
@@ -196,7 +196,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
 
     @Test
     fun `delete - when course not found, than status 404`() {
-        val courseId = 1
+        val courseId = UUID.fromString("1111-11-11-11-111111")
         `when`(service.deleteCourse(courseId)).thenReturn(false)
 
         mockMvc.perform(delete("/v1/courses/{id}", courseId))
@@ -205,7 +205,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
 
     @Test
     fun `updateCourse - update is successful - status 200, header has location to this course, updated course in body `() {
-        val courseId = 1
+        val courseId = UUID.fromString("1111-11-11-11-111111")
         val courseDTO =
             CourseDTO(
                 "updatedName",
@@ -217,7 +217,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
             CourseDTO(
                 "updatedName",
                 mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory")),
-                1,
+                UUID.fromString("1111-11-11-11-111111"),
                 InstructorIdDTO("firstname1", "lastname1")
             )
         val updatedCourseAsJson = objectMapper.writeValueAsString(updatedCourseDTO)
@@ -231,7 +231,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
                 .accept(APPLICATION_JSON)
         )
             .andExpect(status().isOk)
-            .andExpect(header().stringValues("Location", "v1/courses/1"))
+            .andExpect(header().stringValues("Location", "v1/courses/00001111-0011-0011-0011-000000111111"))
             .andReturn().response.contentAsString
 
         assertThat(response).isEqualTo(updatedCourseAsJson)
@@ -239,7 +239,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
 
     @Test
     fun `updateCourse - course by id is not found - status 404`() {
-        val courseId = 1
+        val courseId = UUID.fromString("1111-11-11-11-111111")
         val courseDTO = CourseDTO(
             "name",
             mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory")),
@@ -265,7 +265,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
 
     @Test
     fun `updateCourse - when name is blank, than status 400, body with the same data`() {
-        val courseId = 1
+        val courseId = UUID.fromString("1111-11-11-11-111111")
         val courseDTO = CourseDTO(
             "",
             mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory")),
@@ -287,7 +287,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
 
     @Test
     fun `updateCourse - when category is blank, than status 400, body with the same data`() {
-        val courseId = 1
+        val courseId = "00001111-0011-0011-0011-000000111111"
         val courseDTO = CourseDTO("name", mutableListOf(), null, InstructorIdDTO("firstname1", "lastname1"))
 
         val response = mockMvc.perform(
@@ -322,13 +322,13 @@ class CourseControllerUnitTest2 @Autowired constructor(
             CourseDTO(
                 "name1",
                 mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory1")),
-                1,
+                UUID.fromString("1111-11-11-11-111111"),
                 InstructorIdDTO("firstname1", "lastname1")
             ),
             CourseDTO(
                 "name2",
                 mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("0987-65-43-21-098765"), "testCategory2")),
-                2,
+                UUID.fromString("2222-22-22-22-222222"),
                 InstructorIdDTO("firstname2", "lastname2")
             )
         )
@@ -405,7 +405,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
 
     @Test
     fun `getCourse - get course with id - 1`() {
-        val courseId = 1
+        val courseId = UUID.fromString("1111-11-11-11-111111")
         val courseDTO =
             CourseDTO(
                 "testName",
@@ -427,7 +427,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
 
     @Test
     fun `getCourse - get course with id, what is not available in db - status not found`() {
-        val courseId = 1
+        val courseId = UUID.fromString("1111-11-11-11-111111")
         `when`(service.findCourse(courseId)).thenReturn(null)
 
         val response = mockMvc.perform(
@@ -478,7 +478,7 @@ class CourseControllerUnitTest2 @Autowired constructor(
             CourseDTO(
                 "testName",
                 mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory")),
-                1,
+                UUID.fromString("1111-11-11-11-111111"),
                 InstructorIdDTO("firstname1", "lastname1")
             )
         val requestBody = objectMapper.writeValueAsString(courseDTO)
@@ -492,8 +492,8 @@ class CourseControllerUnitTest2 @Autowired constructor(
         )
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(status().isCreated)
-            .andExpect(redirectedUrl("v1/courses/1"))
-            .andExpect(header().stringValues("Location", "v1/courses/1"))
+            .andExpect(redirectedUrl("v1/courses/00001111-0011-0011-0011-000000111111"))
+            .andExpect(header().stringValues("Location", "v1/courses/00001111-0011-0011-0011-000000111111"))
             .andReturn()
 
         val responseBody = response.response.contentAsString

@@ -4,8 +4,9 @@ import com.AlMLand.dto.enums.Category
 import com.AlMLand.entity.Course
 import com.AlMLand.entity.CourseCategory
 import org.springframework.data.repository.CrudRepository
+import java.util.*
 
-interface CourseRepository : CrudRepository<Course, Int> {
+interface CourseRepository : CrudRepository<Course, UUID> {
     //    @Query(
 //        """
 //        select * from courses as c

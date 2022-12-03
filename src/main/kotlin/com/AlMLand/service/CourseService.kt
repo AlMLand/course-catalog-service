@@ -15,6 +15,7 @@ import com.AlMLand.repository.InstructorRepository
 import mu.KLogging
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class CourseService(
@@ -70,7 +71,7 @@ class CourseService(
             dto.name,
             dto.category.map { CourseCategory(it.category, it.id, it.description) })
 
-    fun findCourse(id: Int): CourseDTO? {
+    fun findCourse(id: UUID): CourseDTO? {
         val courseDTO = courseRepository.findByIdOrNull(id)?.let {
             CourseDTO(
                 it.name,
@@ -105,7 +106,7 @@ class CourseService(
         }
     }
 
-    fun updateCourses(id: Int, dto: CourseDTO): CourseDTO {
+    fun updateCourses(id: UUID, dto: CourseDTO): CourseDTO {
         val courseInDB = courseRepository.findById(id)
         return if (courseInDB.isPresent) {
             courseInDB.get().let {
@@ -126,7 +127,7 @@ class CourseService(
         }
     }
 
-    fun deleteCourse(id: Int): Boolean {
+    fun deleteCourse(id: UUID): Boolean {
         return if (courseRepository.existsById(id)) {
             courseRepository.deleteById(id)
             true

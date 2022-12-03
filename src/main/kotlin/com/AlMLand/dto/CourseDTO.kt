@@ -1,6 +1,7 @@
 package com.AlMLand.dto
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import java.util.*
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
@@ -14,7 +15,7 @@ data class CourseDTO(
     @field:NotEmpty(message = "CourseDTO.category must not be empty")
     val category: MutableList<CourseCategoryDTO>,
 
-    val id: Int?,
+    val id: UUID?,
 
     @field:NotNull(message = "CourseDTO.instructorIdDTO must not be null")
     var instructorId: InstructorIdDTO

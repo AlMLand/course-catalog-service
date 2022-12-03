@@ -23,6 +23,7 @@ import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 import java.util.*
+import java.util.UUID.*
 import java.util.stream.Stream
 
 @ActiveProfiles("test")
@@ -43,11 +44,11 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
                         mutableListOf(
                             CourseCategoryDTO(
                                 DEVELOPMENT,
-                                UUID.fromString("1234-56-78-90-123456"),
+                                fromString("1234-56-78-90-123456"),
                                 "category1"
                             )
                         ),
-                        1,
+                        fromString("1111-11-11-11-111111"),
                         InstructorIdDTO("firstname1", "lastname1")
                     ),
                     CourseDTO(
@@ -55,11 +56,11 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
                         mutableListOf(
                             CourseCategoryDTO(
                                 DEVELOPMENT,
-                                UUID.fromString("0987-65-43-21-098765"),
+                                fromString("0987-65-43-21-098765"),
                                 "category2"
                             )
                         ),
-                        2,
+                        fromString("2222-22-22-22-222222"),
                         InstructorIdDTO("firstname2", "lastname2")
                     )
                 )
@@ -68,8 +69,8 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
                 "na", QA, 1, listOf(
                     CourseDTO(
                         "name4",
-                        mutableListOf(CourseCategoryDTO(QA, UUID.fromString("4444-22-22-22-666666"), "category3")),
-                        4,
+                        mutableListOf(CourseCategoryDTO(QA, fromString("4444-22-22-22-666666"), "category3")),
+                        fromString("4444-44-44-44-444444"),
                         InstructorIdDTO("firstname5", "lastname5")
                     )
                 )
@@ -85,11 +86,11 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
                         mutableListOf(
                             CourseCategoryDTO(
                                 DEVELOPMENT,
-                                UUID.fromString("1234-56-78-90-123456"),
+                                fromString("1234-56-78-90-123456"),
                                 "category1"
                             )
                         ),
-                        1,
+                        fromString("1111-11-11-11-111111"),
                         InstructorIdDTO("firstname1", "lastname1")
                     ),
                     CourseDTO(
@@ -97,11 +98,11 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
                         mutableListOf(
                             CourseCategoryDTO(
                                 DEVELOPMENT,
-                                UUID.fromString("0987-65-43-21-098765"),
+                                fromString("0987-65-43-21-098765"),
                                 "category2"
                             )
                         ),
-                        2,
+                        fromString("2222-22-22-22-222222"),
                         InstructorIdDTO("firstname2", "lastname2")
                     )
                 )
@@ -110,8 +111,8 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
                 QA, 1, listOf(
                     CourseDTO(
                         "name4",
-                        mutableListOf(CourseCategoryDTO(QA, UUID.fromString("4444-22-22-22-666666"), "category3")),
-                        4,
+                        mutableListOf(CourseCategoryDTO(QA, fromString("4444-22-22-22-666666"), "category3")),
+                        fromString("4444-44-44-44-444444"),
                         InstructorIdDTO("firstname5", "lastname5")
                     )
                 )
@@ -127,11 +128,11 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
                         mutableListOf(
                             CourseCategoryDTO(
                                 DEVELOPMENT,
-                                UUID.fromString("1234-56-78-90-123456"),
+                                fromString("1234-56-78-90-123456"),
                                 "category1"
                             )
                         ),
-                        1,
+                        fromString("1111-11-11-11-111111"),
                         InstructorIdDTO("firstname1", "lastname1")
                     ),
                     CourseDTO(
@@ -139,11 +140,11 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
                         mutableListOf(
                             CourseCategoryDTO(
                                 DEVELOPMENT,
-                                UUID.fromString("0987-65-43-21-098765"),
+                                fromString("0987-65-43-21-098765"),
                                 "category2"
                             )
                         ),
-                        2,
+                        fromString("2222-22-22-22-222222"),
                         InstructorIdDTO("firstname2", "lastname2")
                     )
                 )
@@ -155,11 +156,11 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
                         mutableListOf(
                             CourseCategoryDTO(
                                 DEVELOPMENT,
-                                UUID.fromString("0987-65-43-21-098765"),
+                                fromString("0987-65-43-21-098765"),
                                 "category"
                             )
                         ),
-                        2,
+                        fromString("2222-22-22-22-222222"),
                         InstructorIdDTO("firstname1", "lastname1")
                     )
                 )
@@ -169,7 +170,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
 
     @Test
     fun `handleAllExceptions - check the controller advice`() {
-        val courseId = 1
+        val courseId = fromString("1111-11-11-11-111111")
         every { service.deleteCourse(courseId) } throws IllegalArgumentException()
 
         webTestClient.delete()
@@ -180,7 +181,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
 
     @Test
     fun `delete - when successful, than return status 200`() {
-        val courseId = 1
+        val courseId = fromString("1111-11-11-11-111111")
         every { service.deleteCourse(courseId) } returns true
 
         webTestClient.delete()
@@ -191,7 +192,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
 
     @Test
     fun `delete - when course not found, than status 404`() {
-        val courseId = 1
+        val courseId = fromString("1111-11-11-11-111111")
         every { service.deleteCourse(courseId) } returns false
 
         webTestClient.delete()
@@ -202,14 +203,14 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
 
     @Test
     fun `updateCourse - update is successful - status 200, header has location to this course, updated course in body `() {
-        val courseId = 1
+        val courseId = fromString("1111-11-11-11-111111")
         val courseDTO =
             CourseDTO(
                 "updatedName",
                 mutableListOf(
                     CourseCategoryDTO(
                         DEVELOPMENT,
-                        UUID.fromString("1234-56-78-90-123456"),
+                        fromString("1234-56-78-90-123456"),
                         "updatedCategory"
                     )
                 ),
@@ -222,14 +223,13 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
                 mutableListOf(
                     CourseCategoryDTO(
                         DEVELOPMENT,
-                        UUID.fromString("1234-56-78-90-123456"),
+                        fromString("1234-56-78-90-123456"),
                         "updatedCategory"
                     )
                 ),
-                1,
+                fromString("1111-11-11-11-111111"),
                 InstructorIdDTO("firstname1", "lastname1")
             )
-        val expectedLocationHeader = "v1/courses/1"
 
         every { service.updateCourses(courseId, courseDTO) } returns updatedCourseDTO
 
@@ -238,7 +238,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
             .bodyValue(courseDTO)
             .exchange()
             .expectStatus().isOk
-            .expectHeader().location(expectedLocationHeader)
+            .expectHeader().location("v1/courses/00001111-0011-0011-0011-000000111111")
             .expectBody(courseDTO::class.java)
             .returnResult().responseBody
 
@@ -247,10 +247,10 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
 
     @Test
     fun `updateCourse - course by id is not found - status 404`() {
-        val courseId = 1
+        val courseId = fromString("1111-11-11-11-111111")
         val courseDTO = CourseDTO(
             "name",
-            mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory")),
+            mutableListOf(CourseCategoryDTO(DEVELOPMENT, fromString("1234-56-78-90-123456"), "testCategory")),
             null,
             InstructorIdDTO("firstname1", "lastname1")
         )
@@ -272,10 +272,10 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
 
     @Test
     fun `updateCourse - when name is blank, than status 400, body with the same data`() {
-        val courseId = 1
+        val courseId = fromString("1111-11-11-11-111111")
         val courseDTO = CourseDTO(
             "",
-            mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory")),
+            mutableListOf(CourseCategoryDTO(DEVELOPMENT, fromString("1234-56-78-90-123456"), "testCategory")),
             null,
             InstructorIdDTO("firstname1", "lastname1")
         )
@@ -295,7 +295,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
 
     @Test
     fun `updateCourse - when category is blank, than status 400, body with the same data`() {
-        val courseId = 1
+        val courseId = fromString("1111-11-11-11-111111")
         val courseDTO = CourseDTO("name", mutableListOf(), null, InstructorIdDTO("firstname1", "lastname1"))
 
         every { service.updateCourses(courseId, courseDTO) } returns courseDTO
@@ -332,14 +332,14 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
         val expectedList = listOf(
             CourseDTO(
                 "name1",
-                mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory1")),
-                1,
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, fromString("1234-56-78-90-123456"), "testCategory1")),
+                fromString("1111-11-11-11-111111"),
                 InstructorIdDTO("firstname1", "lastname1")
             ),
             CourseDTO(
                 "name2",
-                mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("0987-65-43-21-098765"), "testCategory2")),
-                2,
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, fromString("0987-65-43-21-098765"), "testCategory2")),
+                fromString("2222-22-22-22-222222"),
                 InstructorIdDTO("firstname2", "lastname2")
             )
         )
@@ -426,11 +426,11 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
         val expectedCourseDTO =
             CourseDTO(
                 "testName",
-                mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory")),
-                1,
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, fromString("1234-56-78-90-123456"), "testCategory")),
+                fromString("1111-11-11-11-111111"),
                 InstructorIdDTO("firstname1", "lastname1")
             )
-        val courseId = 1
+        val courseId = fromString("1111-11-11-11-111111")
 
         every { service.findCourse(courseId) } returns expectedCourseDTO
 
@@ -453,14 +453,14 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
                 mutableListOf(
                     CourseCategoryDTO(
                         DEVELOPMENT,
-                        UUID.fromString("1234-56-78-90-123456"),
+                        fromString("1234-56-78-90-123456"),
                         "defaultCategory"
                     )
                 ),
-                1,
+                fromString("1111-11-11-11-111111"),
                 InstructorIdDTO("firstname1", "lastname1")
             )
-        val courseId = 1
+        val courseId = fromString("1111-11-11-11-111111")
 
         every { service.findCourse(courseId) } returns null
 
@@ -480,7 +480,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
         val courseDTO =
             CourseDTO(
                 "testName",
-                mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory")),
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, fromString("1234-56-78-90-123456"), "testCategory")),
                 null,
                 InstructorIdDTO("firstname1", "lastname1")
             )
@@ -505,18 +505,17 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
         val courseDTO =
             CourseDTO(
                 "testName",
-                mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory")),
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, fromString("1234-56-78-90-123456"), "testCategory")),
                 null,
                 InstructorIdDTO("firstname1", "lastname1")
             )
         val expectedCourseDTO =
             CourseDTO(
                 "testName",
-                mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory")),
-                1,
+                mutableListOf(CourseCategoryDTO(DEVELOPMENT, fromString("1234-56-78-90-123456"), "testCategory")),
+                fromString("1111-11-11-11-111111"),
                 InstructorIdDTO("firstname1", "lastname1")
             )
-        val expectedLocationHeader = "v1/courses/1"
 
         every { service.createCourse(any()) } returns expectedCourseDTO
 
@@ -526,7 +525,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
             .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus().isCreated
-            .expectHeader().location(expectedLocationHeader)
+            .expectHeader().location("v1/courses/00001111-0011-0011-0011-000000111111")
             .expectBody(CourseDTO::class.java)
             .returnResult()
 
@@ -537,7 +536,7 @@ class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClie
     fun `createCourse - create new course with name is blank, should give back the courseDTO with the same data, status 400`() {
         val courseDTO = CourseDTO(
             "",
-            mutableListOf(CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "testCategory")),
+            mutableListOf(CourseCategoryDTO(DEVELOPMENT, fromString("1234-56-78-90-123456"), "testCategory")),
             null,
             InstructorIdDTO("firstname1", "lastname1")
         )

@@ -18,6 +18,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 import java.util.*
+import java.util.UUID.fromString
 
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
@@ -30,8 +31,8 @@ class CourseCategoryControllerUnitTest(@Autowired private val webTestClient: Web
     @Test
     fun `getAllCourseCategories without param courseName - should return the expected list`() {
         val courseCategoryDTOs = listOf(
-            CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "test1"),
-            CourseCategoryDTO(MANAGEMENT, UUID.fromString("0987-65-43-21-098765"), "test2")
+            CourseCategoryDTO(DEVELOPMENT, fromString("1234-56-78-90-123456"), "test1"),
+            CourseCategoryDTO(MANAGEMENT, fromString("0987-65-43-21-098765"), "test2")
         )
 
         every { service.findAllCourseCategories(null) } returns courseCategoryDTOs
@@ -49,7 +50,7 @@ class CourseCategoryControllerUnitTest(@Autowired private val webTestClient: Web
     @Test
     fun `getAllCourseCategories with param courseName - should return the expected list`() {
         val courseCategoryDTOs = listOf(
-            CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "test1")
+            CourseCategoryDTO(DEVELOPMENT, fromString("1234-56-78-90-123456"), "test1")
         )
 
         every { service.findAllCourseCategories(any()) } returns courseCategoryDTOs
@@ -99,7 +100,7 @@ class CourseCategoryControllerUnitTest(@Autowired private val webTestClient: Web
     @Test
     fun `createCourseCategory - when success, than status 201, location header is available, response dto is equals to expected tdo`() {
         val courseCategoryDTO = CourseCategoryDTO(DEVELOPMENT, null, "test")
-        val expectedCourseCategoryDTO = CourseCategoryDTO(DEVELOPMENT, UUID.fromString("1234-56-78-90-123456"), "test")
+        val expectedCourseCategoryDTO = CourseCategoryDTO(DEVELOPMENT, fromString("1234-56-78-90-123456"), "test")
 
         every { service.createCourseCategory(any()) } returns expectedCourseCategoryDTO
 
