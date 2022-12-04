@@ -14,46 +14,45 @@ import java.net.URI
 import java.util.*
 import javax.validation.Valid
 
+private const val PATH = "v1/courses"
+
 @Validated
 @RestController
-@RequestMapping("v1/courses")
-class CourseController(private val courseService: CourseService) {
+@RequestMapping(PATH)
+class CourseController(private val service: CourseService) {
 
     @DeleteMapping("{id}")
-    fun deleteCourse(@PathVariable id: UUID): ResponseEntity<Any> {
-        return if (courseService.deleteCourse(id)) ResponseEntity.ok().build() else ResponseEntity.notFound().build()
-    }
+    fun deleteCourse(@PathVariable id: UUID): ResponseEntity<Any> =
+        if (service.deleteCourse(id)) ResponseEntity.ok().build() else ResponseEntity.notFound().build()
 
     @PutMapping("{id}")
     fun updateCourse(
         @PathVariable id: UUID,
-        @Valid @RequestBody courseDTO: CourseDTO
+        @Valid @RequestBody dto: CourseDTO
     ): ResponseEntity<CourseDTO> {
-        val updatedCourseDTO = courseService.updateCourses(id, courseDTO)
-        return if (courseDTO == updatedCourseDTO) {
-            ResponseEntity.status(NOT_FOUND).body(updatedCourseDTO)
-        } else {
-            ResponseEntity.status(HttpStatus.OK).location(URI("v1/courses/${updatedCourseDTO.id}"))
-                .body(updatedCourseDTO)
-        }
+        val updatedDTO = service.updateCourses(id, dto)
+        return if (dto == updatedDTO) ResponseEntity.status(NOT_FOUND).body(updatedDTO)
+        else ResponseEntity.status(HttpStatus.OK).location(URI("$PATH/${updatedDTO.id}"))
+            .body(updatedDTO)
     }
 
     @PostMapping
     fun createCourse(
-        @Validated @RequestBody courseDTO: CourseDTO,
+        @Validated @RequestBody dto: CourseDTO,
         bindingResult: BindingResult
     ): ResponseEntity<CourseDTO> {
-        if (bindingResult.hasErrors()) return ResponseEntity.badRequest().body(courseDTO)
-        val savedCourseDTO = courseService.createCourse(courseDTO)
-        savedCourseDTO.id ?: return ResponseEntity.status(CONFLICT).body(courseDTO)
-        return ResponseEntity.created(URI("v1/courses/${savedCourseDTO.id}")).body(savedCourseDTO)
+        return if (bindingResult.hasErrors()) ResponseEntity.badRequest().body(dto)
+        else {
+            val savedDTO = service.createCourse(dto)
+            savedDTO.id ?: return ResponseEntity.status(CONFLICT).body(dto)
+            ResponseEntity.created(URI("$PATH/${savedDTO.id}")).body(savedDTO)
+        }
     }
 
     @GetMapping("{id}")
     fun getCourse(@PathVariable id: UUID): ResponseEntity<CourseDTO> {
-        val courseDTO = courseService.findCourse(id)
-        courseDTO ?: return ResponseEntity.notFound().build()
-        return ResponseEntity.ok(courseDTO)
+        val dto = service.findCourse(id)
+        return dto?.let { ResponseEntity.ok(dto) } ?: ResponseEntity.notFound().build()
     }
 
     @GetMapping
@@ -61,9 +60,9 @@ class CourseController(private val courseService: CourseService) {
         @RequestParam(required = false) name: String?,
         @RequestParam(required = false) category: Category?
     ): ResponseEntity<List<CourseDTO>> {
-        val courseDTOs = courseService.findAllCourses(name, category)
-        if (courseDTOs.isEmpty()) return ResponseEntity.status(NOT_FOUND).body(listOf())
-        return ResponseEntity.ok(courseDTOs)
+        val courseDTOs = service.findAllCourses(name, category)
+        return if (courseDTOs.isEmpty()) ResponseEntity.status(NOT_FOUND).body(listOf())
+        else ResponseEntity.ok(courseDTOs)
     }
 
 }

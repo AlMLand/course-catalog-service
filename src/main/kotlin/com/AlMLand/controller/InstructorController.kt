@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 import javax.validation.Valid
 
-private const val PATH: String = "/v1/instructors"
+private const val PATH = "/v1/instructors"
 
 @Validated
 @RestController
@@ -22,10 +22,8 @@ class InstructorController(private val service: InstructorService) {
     @PostMapping
     fun createInstructor(@Valid @RequestBody dto: InstructorDTO): ResponseEntity<InstructorDTO> {
         val newDTO = service.createInstructor(dto)
-        return if (!newDTO.created)
-            ResponseEntity.status(CONFLICT).body(newDTO)
-        else
-            ResponseEntity.created(URI(PATH)).body(newDTO)
+        return if (!newDTO.created) ResponseEntity.status(CONFLICT).body(newDTO)
+        else ResponseEntity.created(URI(PATH)).body(newDTO)
     }
 
 }
