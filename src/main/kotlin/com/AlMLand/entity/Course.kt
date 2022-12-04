@@ -1,6 +1,7 @@
 package com.AlMLand.entity
 
 import org.hibernate.annotations.GenericGenerator
+import org.hibernate.annotations.Type
 import java.util.*
 import javax.persistence.*
 
@@ -20,9 +21,10 @@ data class Course(
     var categories: MutableList<CourseCategory>,
 
     @Id
+    @Type(type = "uuid-char")
     @GeneratedValue(generator = "CUSTOM_UUID")
     @GenericGenerator(name = "CUSTOM_UUID", strategy = "uuid2")
-    @field:Column(insertable = true, nullable = false, updatable = false)
+    @field:Column(insertable = true, nullable = false, updatable = false, length = 36)
     val id: UUID?,
 
     @ManyToOne(fetch = FetchType.LAZY)
