@@ -6,11 +6,13 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: alex
     password: secret
+  liquibase:
+    enabled: true
   jpa:
     database: POSTGRESQL
     database-platform: org.hibernate.dialect.PostgreSQL82Dialect
     hibernate:
-      ddl-auto: 'update'
+      ddl-auto: 'none'
     show-sql: true
     # fix for the postgres db issue - not implemented method
     properties:
