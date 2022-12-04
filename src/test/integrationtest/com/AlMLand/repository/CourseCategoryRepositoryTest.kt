@@ -1,7 +1,6 @@
 package com.AlMLand.repository
 
-import com.AlMLand.dto.enums.Category.DEVELOPMENT
-import com.AlMLand.dto.enums.Category.MANAGEMENT
+import com.AlMLand.dto.enums.Category.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,6 +10,7 @@ import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD
 import org.springframework.test.context.jdbc.SqlGroup
+import java.util.*
 
 @SqlGroup(
     Sql(scripts = ["/db/test-data.sql"], executionPhase = BEFORE_TEST_METHOD),
@@ -19,6 +19,14 @@ import org.springframework.test.context.jdbc.SqlGroup
 @DataJpaTest
 @ActiveProfiles("dev")
 class CourseCategoryRepositoryTest(@Autowired private val repository: CourseCategoryRepository) {
+
+    @Test
+    fun `findByCategoryAndDescription - get first course category from test data list`() {
+        assertEquals(
+            UUID.fromString("30303030-3132-3334-2d30-3035362d3030"),
+            repository.findIdByCategoryAndDescription(DEVELOPMENT, "description1")
+        )
+    }
 
     @Test
     fun `findByCourseName - when search course name, than return list with 2 categories`() {

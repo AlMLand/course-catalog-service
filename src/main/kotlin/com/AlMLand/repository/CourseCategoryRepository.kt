@@ -2,11 +2,13 @@ package com.AlMLand.repository
 
 import com.AlMLand.dto.enums.Category
 import com.AlMLand.entity.CourseCategory
+import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import java.util.*
 
 interface CourseCategoryRepository : CrudRepository<CourseCategory, UUID> {
-
+    @Query("select cc.id from CourseCategory cc where cc.category = :category and cc.description = :description")
+    fun findIdByCategoryAndDescription(category: Category, description: String?): UUID?
     fun existsByCategoryAndDescription(category: Category, description: String?): Boolean
 
     //    @Query(
@@ -18,5 +20,4 @@ interface CourseCategoryRepository : CrudRepository<CourseCategory, UUID> {
 //    """, nativeQuery = true
 //    )
     fun findByCoursesName(name: String): List<CourseCategory>
-
 }
