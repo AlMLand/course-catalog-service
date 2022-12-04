@@ -1,19 +1,20 @@
 package com.AlMLand.entity
 
 import com.AlMLand.dto.enums.Category
+import org.hibernate.annotations.Type
 import java.util.*
 import javax.persistence.*
 
 @Entity
 @Table(name = "course_categories")
 data class CourseCategory(
-    @field:Enumerated(EnumType.STRING)
     @field:Column(insertable = true, nullable = false, updatable = true)
     var category: Category,
 
     @Id
     @GeneratedValue
-    @field:Column(insertable = true, nullable = false, updatable = false)
+    @Type(type = "uuid-char")
+    @field:Column(insertable = true, nullable = false, updatable = false, length = 36)
     val id: UUID?,
 
     @field:Column(insertable = true, nullable = true, updatable = true)
