@@ -1,5 +1,9 @@
 package com.AlMLand.exception
 
+import com.AlMLand.exception.customexceptions.CategoryNotExistsException
+import com.AlMLand.exception.customexceptions.CategoryNotValidException
+import com.AlMLand.exception.customexceptions.CustomExceptionMessage
+import com.AlMLand.exception.customexceptions.InstructorNotValidException
 import mu.KLogging
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -29,21 +33,18 @@ class GlobalErrorHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(value = [Exception::class])
     fun handleAllExceptions(exception: Exception): ResponseEntity<Any> {
-        logger.error("Exception observed: ${exception.message}", exception)
-        return ResponseEntity.internalServerError().body(exception.message)
+        val errorMessage = exception.message ?: "no error message available"
+        logger.error("Exception observed: $errorMessage", exception)
+        return ResponseEntity.internalServerError().body(errorMessage)
     }
 
-    @ExceptionHandler(value = [InstructorNotValidException::class, CategoryNotValidException::class])
-    fun <T : RuntimeException> handleNotPresentOfInstructorOrCategory(exception: T): ResponseEntity<Any> {
-        when (exception) {
-            is InstructorNotValidException -> logger.error(
-                "InstructorNotValidException observed: ${exception.message}", exception
-            )
-
-            is CategoryNotValidException -> logger.error(
-                "CategoryNotValidException observed: ${exception.message}", exception
-            )
-        }
-        return ResponseEntity.badRequest().body(exception.message)
+    @ExceptionHandler(
+        value = [InstructorNotValidException::class, CategoryNotValidException::class,
+            CategoryNotExistsException::class]
+    )
+    fun <T : CustomExceptionMessage> handleNotPresentOfInstructorOrCategory(exception: T): ResponseEntity<Any> {
+        val errorMessage = exception.getErrorMessage()
+        logger.error(errorMessage, exception)
+        return ResponseEntity.badRequest().body(errorMessage)
     }
 }
