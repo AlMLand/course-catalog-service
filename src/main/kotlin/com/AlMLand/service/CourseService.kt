@@ -7,8 +7,8 @@ import com.AlMLand.dto.enums.Category
 import com.AlMLand.entity.Course
 import com.AlMLand.entity.CourseCategory
 import com.AlMLand.entity.Instructor
-import com.AlMLand.exception.CategoryNotValidException
-import com.AlMLand.exception.InstructorNotValidException
+import com.AlMLand.exception.customexceptions.CategoryNotValidException
+import com.AlMLand.exception.customexceptions.InstructorNotValidException
 import com.AlMLand.repository.CourseCategoryRepository
 import com.AlMLand.repository.CourseRepository
 import com.AlMLand.repository.InstructorRepository
@@ -30,10 +30,10 @@ class CourseService(
         return if (existsAlready(dto)) {
             dto
         } else {
-            val instructor = getInstructorWhenValid(dto)
+            val instructor = getInstructor(dto)
             categoryValidation(dto)
 
-            val savedCourse = courseRepository.save(dto.let {
+            val course = courseRepository.save(dto.let {
                 Course(
                     it.name,
                     it.category.map { cc -> CourseCategory(cc.category, cc.id, cc.description) }.toMutableList(),
@@ -41,8 +41,8 @@ class CourseService(
                     instructor
                 )
             })
-            logger.info { "saved course: $savedCourse" }
-            savedCourse.let {
+            logger.info { "saved course: $course" }
+            course.let {
                 CourseDTO(
                     it.name,
                     it.categories.map { cc -> CourseCategoryDTO(cc.category, cc.id, cc.description) }.toMutableList(),
@@ -59,7 +59,7 @@ class CourseService(
             throw CategoryNotValidException("Category with id: ${it.id}, not exists")
     }
 
-    private fun getInstructorWhenValid(dto: CourseDTO): Instructor =
+    private fun getInstructor(dto: CourseDTO): Instructor =
         instructorRepository.findByInstructorId_FirstNameAndInstructorId_LastName(
             dto.instructorId.firstName,
             dto.instructorId.lastName
@@ -72,7 +72,7 @@ class CourseService(
             dto.category.map { CourseCategory(it.category, it.id, it.description) })
 
     fun findCourse(id: UUID): CourseDTO? {
-        val courseDTO = courseRepository.findByIdOrNull(id)?.let {
+        val dto = courseRepository.findByIdOrNull(id)?.let {
             CourseDTO(
                 it.name,
                 it.categories.map { cc -> CourseCategoryDTO(cc.category, cc.id, cc.description) }.toMutableList(),
@@ -80,8 +80,8 @@ class CourseService(
                 it.instructor.instructorId.let { iid -> InstructorIdDTO(iid.firstName, iid.lastName) }
             )
         }
-        logger.info { "founded course as courseDTO: $courseDTO" }
-        return courseDTO
+        logger.info { "founded course as courseDTO: $dto" }
+        return dto
     }
 
 
@@ -113,7 +113,7 @@ class CourseService(
                 it.name = dto.name
                 it.categories =
                     dto.category.map { cc -> CourseCategory(cc.category, cc.id, cc.description) }.toMutableList()
-                it.instructor = getInstructorWhenValid(dto)
+                it.instructor = getInstructor(dto)
                 courseRepository.save(it)
                 CourseDTO(
                     it.name,
