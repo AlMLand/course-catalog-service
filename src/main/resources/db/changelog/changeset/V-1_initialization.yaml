@@ -1,0 +1,138 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: amorland
+      changes:
+        - createTable:
+            tableName: course_categories
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: category
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+        - createTable:
+            tableName: course_coursecategory
+            columns:
+              - column:
+                  name: course_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: id
+                    referencedTableName: courses
+              - column:
+                  name: course_category_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: id
+                    referencedTableName: course_categories
+        - createTable:
+            tableName: instructors
+            columns:
+              - column:
+                  name: first_name
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+        - createTable:
+            tableName: courses
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: instructor_firstname
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: first_name
+                    referencedTableName: instructors
+              - column:
+                  name: instructor_lastname
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: last_name
+                    referencedTableName: instructors
+        - createTable:
+            tableName: courses_view
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: instructor_firstname
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: instructor_lastname
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: course_categories_view
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: category
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+        - createTable:
+            tableName: instructors_view
+            columns:
+              - column:
+                  name: first_name
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
