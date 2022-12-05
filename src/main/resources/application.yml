@@ -20,10 +20,6 @@ spring:
         jdbc:
           lob:
             non_contextual_creation: true
-  h2:
-    console:
-      enabled: true
-      path: /h2
 
 # default profile message
 message: hallo from default profile
