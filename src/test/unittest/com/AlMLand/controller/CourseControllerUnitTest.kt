@@ -20,13 +20,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.MediaType.APPLICATION_JSON
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 import java.util.*
 import java.util.UUID.*
 import java.util.stream.Stream
 
-@ActiveProfiles("test")
 @AutoConfigureWebTestClient
 @WebMvcTest(controllers = [CourseController::class])
 class CourseControllerUnitTest(@Autowired private val webTestClient: WebTestClient) {

@@ -12,11 +12,9 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.MediaType.APPLICATION_JSON
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.util.UriComponentsBuilder
 
-@ActiveProfiles("test")
 @AutoConfigureWebTestClient
 @WebMvcTest(controllers = [InstructorController::class])
 class InstructorControllerUnitTest(@Autowired private val webTestClient: WebTestClient) {

@@ -15,7 +15,6 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.MediaType.APPLICATION_JSON
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.web.util.UriComponentsBuilder
@@ -23,7 +22,6 @@ import java.net.URI
 import java.util.*
 import java.util.UUID.fromString
 
-@ActiveProfiles("test")
 @AutoConfigureWebTestClient
 @WebMvcTest(controllers = [CourseCategoryController::class])
 class CourseCategoryControllerUnitTest(@Autowired private val webTestClient: WebTestClient) {
