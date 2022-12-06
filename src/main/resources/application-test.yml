@@ -6,3 +6,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQL82Dialect
     generate-ddl: true
     show-sql: true
+
+management:
+  endpoints:
+    enabled-by-default: false
