@@ -1,19 +1,8 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb-for-kotlin-course
-    # when testcontainers run
     driver-class-name: org.postgresql.Driver
-    # when tests without testcontainers run, back to embedded H2
-    #    driver-class-name: org.h2.Driver
-    username: alex
-    password: secret
   jpa:
     database: POSTGRESQL
     database-platform: org.hibernate.dialect.PostgreSQL82Dialect
     generate-ddl: true
     show-sql: true
-
-#  config: # wse budet aktivirovano tolko pri aktivnom profile(ili profiljah), kotorij propisan vnizu
-#    activate:
-#      on-profile:
-#        - test
