@@ -6,6 +6,7 @@ import com.AlMLand.entity.Instructor;
 import com.AlMLand.entity.InstructorId;
 import com.AlMLand.repository.InstructorRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class InstructorServiceJava {
@@ -19,6 +20,7 @@ public class InstructorServiceJava {
         this.repository = repository;
     }
 
+    @Transactional
     public InstructorDTO createInstructor(final InstructorDTO dto) {
         if (repository.existsByInstructorId_FirstNameAndInstructorId_LastName(dto.getInstructorId().getFirstName(),
                 dto.getInstructorId().getLastName())) {
@@ -35,5 +37,5 @@ public class InstructorServiceJava {
     private Instructor toEntity(final InstructorDTO dto) {
         return new Instructor(new InstructorId(dto.getInstructorId().getFirstName(), dto.getInstructorId().getLastName()));
     }
-    
+
 }

@@ -6,10 +6,12 @@ import com.AlMLand.entity.Instructor
 import com.AlMLand.entity.InstructorId
 import com.AlMLand.repository.InstructorRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class InstructorService(private val repository: InstructorRepository) {
 
+    @Transactional
     fun createInstructor(dto: InstructorDTO): InstructorDTO {
         return if (repository.existsByInstructorId_FirstNameAndInstructorId_LastName(
                 dto.instructorId.firstName,

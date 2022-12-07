@@ -15,6 +15,7 @@ import com.AlMLand.repository.InstructorRepository
 import mu.KLogging
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 @Service
@@ -26,6 +27,7 @@ class CourseService(
 
     private companion object : KLogging()
 
+    @Transactional
     fun createCourse(dto: CourseDTO): CourseDTO {
         return if (existsAlready(dto)) {
             dto
@@ -71,6 +73,7 @@ class CourseService(
             dto.name,
             dto.category.map { CourseCategory(it.category, it.id, it.description) })
 
+    @Transactional(readOnly = true)
     fun findCourse(id: UUID): CourseDTO? {
         val dto = courseRepository.findByIdOrNull(id)?.let {
             CourseDTO(
@@ -84,7 +87,7 @@ class CourseService(
         return dto
     }
 
-
+    @Transactional(readOnly = true)
     fun findAllCourses(name: String?, category: Category?): List<CourseDTO> {
         val courses = if (name != null && category != null) {
             courseRepository.findByNameContainingIgnoreCaseAndCategoriesCategory(name, category)
@@ -106,6 +109,7 @@ class CourseService(
         }
     }
 
+    @Transactional
     fun updateCourses(id: UUID, dto: CourseDTO): CourseDTO {
         val courseInDB = courseRepository.findById(id)
         return if (courseInDB.isPresent) {
@@ -127,6 +131,7 @@ class CourseService(
         }
     }
 
+    @Transactional
     fun deleteCourse(id: UUID): Boolean {
         return if (courseRepository.existsById(id)) {
             courseRepository.deleteById(id)
