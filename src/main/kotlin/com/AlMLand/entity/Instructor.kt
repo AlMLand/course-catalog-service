@@ -6,7 +6,7 @@ import javax.persistence.CascadeType.ALL
 
 @Entity
 @Table(name = "instructors")
-data class Instructor(
+data class Instructor @JvmOverloads constructor(
     @EmbeddedId
     @field:Column(insertable = true, nullable = false, updatable = false)
     val instructorId: InstructorId,
