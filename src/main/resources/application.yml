@@ -28,7 +28,10 @@ management:
       exposure:
         include:
           - info
+          - beans
   endpoint:
+    beans:
+      enabled: true
     info:
       enabled: true
   info:
@@ -78,7 +81,10 @@ management:
 #      exposure:
 #        include:
 #          - info
+#          - beans
 #  endpoint:
+#    beans:
+#      enabled: true
 #    info:
 #      enabled: true
 #  info:
