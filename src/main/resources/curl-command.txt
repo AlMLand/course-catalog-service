@@ -4,6 +4,7 @@ InstructorController
 CREATE -> createInstructor :
 curl -i -d '{"instructorId":{"firstName":"Alex", "lastName":"M_land"}, "created":"false"}' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/instructors
 curl -i -d '{"instructorId":{"firstName":"Timur", "lastName":"M_land"}, "created":"false"}' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/instructors
+curl -i -d '{"instructorId":{"firstName":"Elvira", "lastName":"M_land"}, "created":"false"}' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/instructors
 
 ========================
 CourseCategoryController

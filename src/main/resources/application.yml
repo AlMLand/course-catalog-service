@@ -42,6 +42,9 @@ management:
     os:
       enabled: true
 
+attribute-encryptor:
+  secret: ${ENCRYPTOR_SECRET}
+  algorithm: ${ENCRYPTOR_ALGORITHM}
 
 
 ####### example multiple profiles #######

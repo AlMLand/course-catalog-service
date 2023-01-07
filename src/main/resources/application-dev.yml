@@ -37,3 +37,7 @@ management:
       enabled: true
     os:
       enabled: true
+
+attribute-encryptor:
+  secret: ${ENCRYPTOR_SECRET}
+  algorithm: ${ENCRYPTOR_ALGORITHM}
