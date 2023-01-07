@@ -10,3 +10,7 @@ spring:
 management:
   endpoints:
     enabled-by-default: false
+
+attribute-encryptor:
+  secret: ${ENCRYPTOR_SECRET}
+  algorithm: ${ENCRYPTOR_ALGORITHM}

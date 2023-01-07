@@ -16,8 +16,9 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 repositories {
     mavenCentral()
 }
+
 // for testcontainers
-extra["testcontainersVersion"] = "1.17.6"
+ext["testcontainersVersion"] = "1.17.6"
 // for testcontainers
 dependencyManagement {
     imports {
@@ -30,19 +31,16 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator:3.0.0")
-    // logging
-    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
-
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4") // logging
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     // liquibase
     implementation("org.liquibase:liquibase-core:4.17.2")
-
     runtimeOnly("com.h2database:h2")
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
     testImplementation("com.ninja-squad:springmockk:3.1.1")
     // for testcontainers
     testImplementation("org.testcontainers:junit-jupiter")
