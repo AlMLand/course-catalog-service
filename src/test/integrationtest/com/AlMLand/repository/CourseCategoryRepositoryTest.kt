@@ -17,13 +17,13 @@ import java.util.*
     Sql(scripts = ["/db/clean-up.sql"], executionPhase = AFTER_TEST_METHOD)
 )
 @DataJpaTest
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 class CourseCategoryRepositoryTest(@Autowired private val repository: CourseCategoryRepository) {
 
     @Test
     fun `findByCategoryAndDescription - get first course category from test data list`() {
         assertEquals(
-            UUID.fromString("30303030-3132-3334-2d30-3035362d3030"),
+            UUID.fromString("00001234-0056-0078-0090-000000123456"),
             repository.findIdByCategoryAndDescription(DEVELOPMENT, "description1")
         )
     }
