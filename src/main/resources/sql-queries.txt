@@ -32,3 +32,10 @@ create view "public".instructors_view as select first_name, last_name from "publ
 select * from "public".instructors;
 select * from "public".instructors_view;
 
+################################################################################################
+
+update instructors i1 set first_name = i2.first_name from (select pgp_sym_encrypt(first_name, 'my_custom_secret', 'cipher-algo=aes256')::text as first_name from instructors) i2 where i1.first_name = 'Alex';
+update instructors i1 set last_name = i2.last_name from (select pgp_sym_encrypt(last_name, 'my_custom_secret', 'cipher-algo=aes256')::text as last_name from instructors) i2 where i1.last_name = 'M_land';
+
+update mytable t1 set area_code = t2.area_code from (select pgp_sym_encrypt(area_code,'Password', 'compress-algo=1, cipher-algo=aes256')
+ as area_code,area_name from mytable) t2 where t1.area_name = t2.area_name;
