@@ -49,7 +49,10 @@ class DbAttributeEncryptor(
             } finally {
                 lock.unlock()
             }
-        } else convertToDatabaseColumn(attribute)
+        } else {
+            logger.error("Reentrant try lock value is too small")
+            throw RuntimeException("Attribute: $attribute is not encrypted, time out. The count of waiting threads: ${lock.queueLength}")
+        }
 
     override fun convertToEntityAttribute(dbData: String?): String =
         if (isUnlocked()) {
@@ -71,7 +74,10 @@ class DbAttributeEncryptor(
             } finally {
                 lock.unlock()
             }
-        } else convertToEntityAttribute(dbData)
+        } else {
+            logger.error("Reentrant try lock value is too small")
+            throw RuntimeException("Attribute: $dbData is not decrypted, time out. The count of waiting threads: ${lock.queueLength}")
+        }
 
-    private fun isUnlocked() = lock.tryLock(1000, MILLISECONDS)
+    private fun isUnlocked() = lock.tryLock(5000, MILLISECONDS)
 }
