@@ -79,5 +79,5 @@ class DbAttributeEncryptor(
             throw RuntimeException("Attribute: $dbData is not decrypted, time out. The count of waiting threads: ${lock.queueLength}")
         }
 
-    private fun isUnlocked() = lock.tryLock(5000, MILLISECONDS)
+    private fun isUnlocked() = lock.tryLock(2000, MILLISECONDS)
 }
