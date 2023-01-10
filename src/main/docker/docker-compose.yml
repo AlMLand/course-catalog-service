@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  postgres_15:
+    image: postgres:15.1-alpine
+    restart: on-failure
+    ports:
+      - '5438:5432'
+    networks:
+      - course-catalog-network
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_15-testdb-for-kotlin-course:/var/lib/postgresql/data
+  course-catalog-service:
+    image:
+      ${PROJECT_NAME}:${PROJECT_VERSION}
+    ports:
+      - '8080:8080'
+    depends_on:
+      - postgres_15
+    volumes:
+      - ./docker-logs:/workspace/course-catalog-service/logs
+    networks:
+      - course-catalog-network
+
+volumes:
+  postgres_15-testdb-for-kotlin-course:
+
+networks:
+  course-catalog-network:
