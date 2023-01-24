@@ -2,9 +2,11 @@ package com.AlMLand.entity
 
 import com.AlMLand.dto.enums.Category
 import org.hibernate.annotations.Type
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.util.*
 import javax.persistence.*
 
+@EntityListeners(AuditingEntityListener::class)
 @Entity
 @Table(name = "course_categories")
 data class CourseCategory(
@@ -22,7 +24,7 @@ data class CourseCategory(
 
     @ManyToMany(mappedBy = "categories")
     val courses: MutableList<Course> = mutableListOf()
-) {
+) : AuditableEntity() {
     fun addCourse(course: Course) {
         courses.add(course)
         course.categories.add(this)

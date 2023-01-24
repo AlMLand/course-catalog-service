@@ -1,18 +1,21 @@
 package com.AlMLand.entity
 
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.util.*
 import javax.persistence.*
 import javax.persistence.CascadeType.ALL
 
+@EntityListeners(AuditingEntityListener::class)
 @Entity
 @Table(name = "instructors")
 data class Instructor @JvmOverloads constructor(
     @EmbeddedId
     @field:Column(insertable = true, nullable = false, updatable = false)
     val instructorId: InstructorId,
+
     @OneToMany(mappedBy = "instructor", cascade = [ALL], orphanRemoval = true)
-    val courses: MutableList<Course> = mutableListOf()
-) {
+    val courses: MutableList<Course> = mutableListOf(),
+) : AuditableEntity() {
     fun addCourse(course: Course) {
         courses.add(course)
         course.instructor = this
@@ -33,6 +36,9 @@ data class Instructor @JvmOverloads constructor(
     }
 
     override fun toString(): String {
-        return "Instructor(firstname: ${instructorId.firstName}, lastname: ${instructorId.lastName})"
+        return """
+            Instructor(firstname: ${instructorId.firstName}, lastname: ${instructorId.lastName}),
+            created at: $createDate, last modified at: $lastModifiedDate
+        """.trimIndent()
     }
 }
