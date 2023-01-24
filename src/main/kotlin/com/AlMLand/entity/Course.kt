@@ -2,9 +2,11 @@ package com.AlMLand.entity
 
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Type
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.util.*
 import javax.persistence.*
 
+@EntityListeners(AuditingEntityListener::class)
 @Entity
 @Table(name = "courses")
 data class Course(
@@ -45,8 +47,11 @@ data class Course(
         )
     )
     var instructor: Instructor
-) {
+) : AuditableEntity() {
     override fun toString(): String {
-        return "Course(name: $name, category: $categories, id: $id, instructor: ${instructor.instructorId})"
+        return """
+            Course(name: $name, category: $categories, id: $id, instructor: ${instructor.instructorId}),
+            created at: $createDate, last modified at: $lastModifiedDate
+        """.trimIndent()
     }
 }
