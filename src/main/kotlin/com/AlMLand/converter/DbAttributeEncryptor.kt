@@ -58,10 +58,10 @@ class DbAttributeEncryptor  (
         }
 
     private fun runtimeExceptionHandling(re: Throwable): Nothing = when (re) {
-        is IllegalBlockSizeException -> throw RuntimeException("illegal block size exception...")
-        is BadPaddingException -> throw RuntimeException("bad padding exception...")
-        is InvalidKeyException -> throw RuntimeException("invalid key exception...")
-        else -> throw RuntimeException("surprise exception...")
+        is IllegalBlockSizeException -> throw RuntimeException("illegal block size exception...", re)
+        is BadPaddingException -> throw RuntimeException("bad padding exception...", re)
+        is InvalidKeyException -> throw RuntimeException("invalid key exception...", re)
+        else -> throw RuntimeException("surprise exception...", re)
     }
 
     private fun decode(cipher: Cipher, toConvert: String) =
