@@ -52,13 +52,13 @@ databaseChangeLog:
             columns:
               - column:
                   name: first_name
-                  type: varchar(255)
+                  type: bytea #varchar(555)
                   constraints:
                     primaryKey: true
                     nullable: false
               - column:
                   name: last_name
-                  type: varchar(255)
+                  type: bytea #varchar(555)
                   constraints:
                     primaryKey: true
                     nullable: false
