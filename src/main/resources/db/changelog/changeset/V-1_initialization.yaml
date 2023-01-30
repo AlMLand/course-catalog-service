@@ -83,7 +83,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: name
-                  type: bytea #varchar(255)
+                  type: varchar(255)
                   constraints:
                     nullable: false
               - column:
@@ -131,7 +131,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: name
-                  type: bytea #varchar(255)
+                  type: varchar(255)
                   constraints:
                     nullable: false
         - createTable:
