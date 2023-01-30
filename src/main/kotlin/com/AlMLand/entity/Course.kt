@@ -1,5 +1,6 @@
 package com.AlMLand.entity
 
+import org.hibernate.annotations.ColumnTransformer
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Type
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
@@ -10,6 +11,10 @@ import javax.persistence.*
 @Entity
 @Table(name = "courses")
 data class Course(
+    @field:ColumnTransformer(
+        read = "pgp_sym_decrypt(name, 'mySecretKey')::text",
+        write = "pgp_sym_encrypt(?, 'mySecretKey')"
+    )
     @field:Column(insertable = true, nullable = false, updatable = true)
     var name: String,
 
