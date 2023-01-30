@@ -12,7 +12,7 @@ import javax.persistence.*
 @Table(name = "courses")
 data class Course(
     @field:ColumnTransformer(
-        read = "pgp_sym_decrypt(name, 'mySecretKey')::text",
+        read = "pgp_sym_decrypt(name, 'mySecretKey')",
         write = "pgp_sym_encrypt(?, 'mySecretKey')"
     )
     @field:Column(insertable = true, nullable = false, updatable = true)
