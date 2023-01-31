@@ -32,8 +32,11 @@ create view "public".instructors_view as select first_name, last_name from "publ
 select * from "public".instructors;
 select * from "public".instructors_view;
 
+---------
 
 update instructors i1 set first_name = i2.first_name from (select pgp_sym_encrypt(first_name, 'my_custom_secret', 'cipher-algo=aes256')::text as first_name from instructors) i2 where i1.first_name = 'Alex';
 update instructors i1 set last_name = i2.last_name from (select pgp_sym_encrypt(last_name, 'my_custom_secret', 'cipher-algo=aes256')::text as last_name from instructors) i2 where i1.last_name = 'M_land';
 
 select pgp_sym_decrypt(name, 'mySecretKey') as name from courses;
+diese zeile zum updaten from all rows:
+update courses c1 set name = c2.name from (select pgp_sym_encrypt(name, 'jRyQ2xiIaghGfHk1')::text as name from courses) c2 where c1.name = convert_from(pgp_sym_decrypt(c2.name::bytea, 'jRyQ2xiIaghGfHk1')::bytea, 'UTF-8');

@@ -3,7 +3,9 @@ package com.AlMLand.entity
 import org.hibernate.annotations.ColumnTransformer
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Type
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import org.springframework.stereotype.Component
 import java.util.*
 import javax.persistence.*
 
@@ -12,8 +14,8 @@ import javax.persistence.*
 @Table(name = "courses")
 data class Course(
     @field:ColumnTransformer(
-        read = "convert_from(pgp_sym_decrypt(name::bytea, 'mySecretKey')::bytea, 'UTF-8')",
-        write = "pgp_sym_encrypt(?, 'mySecretKey')"
+        read = "convert_from(pgp_sym_decrypt(name::bytea, '\${secret-key.sensible-data}')::bytea, 'UTF-8')",
+        write = "pgp_sym_encrypt(?, '\${secret-key.sensible-data}')"
     )
     @field:Column(insertable = true, nullable = false, updatable = true)
     var name: String,

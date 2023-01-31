@@ -14,4 +14,3 @@ data class InstructorId(
     @field:Column(name = "last_name", nullable = false, updatable = false)
     val lastName: String
 ) : Serializable
-// CREATE EXTENSION pgcrypto;
