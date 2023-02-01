@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: db/changelog/changeset/V-1_initialization.yaml
+  - include:
+      file: db/changelog/changeset/V-2_create_extension_pgcrypto.yaml

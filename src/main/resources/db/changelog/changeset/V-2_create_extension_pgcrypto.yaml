@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: almland
+      dbms: postgresql
+      changes:
+        - sql:
+            comment: Create extension "pgcrypto", decrypt available names.
+            sql: >
+              create extension if not exists "pgcrypto";
+              update courses c1 set name = c2.name from (select pgp_sym_encrypt(name, '${SECRET_CRYPTO_KEY}')::text as name from courses) c2 where c1.name = convert_from(pgp_sym_decrypt(c2.name::bytea, '${SECRET_CRYPTO_KEY}')::bytea, 'UTF-8');

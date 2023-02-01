@@ -3,24 +3,25 @@ package com.AlMLand.entity
 import org.hibernate.annotations.ColumnTransformer
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Type
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import org.springframework.stereotype.Component
 import java.util.*
 import javax.persistence.*
+import javax.persistence.FetchType.LAZY
 
-@EntityListeners(AuditingEntityListener::class)
+@EntityListeners(AuditingEntityListener::class, CourseEntityLoggingListener::class)
 @Entity
 @Table(name = "courses")
 data class Course(
     @field:ColumnTransformer(
-        read = "convert_from(pgp_sym_decrypt(name::bytea, '\${secret-key.sensible-data}')::bytea, 'UTF-8')",
-        write = "pgp_sym_encrypt(?, '\${secret-key.sensible-data}')"
+        read = "convert_from(pgp_sym_decrypt(name::bytea, 'jRyQ2xiIaghGfHk1')::bytea, 'UTF-8')",
+        write = "pgp_sym_encrypt(?, 'jRyQ2xiIaghGfHk1')"
     )
     @field:Column(insertable = true, nullable = false, updatable = true)
     var name: String,
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = LAZY)
     @JoinTable(
         name = "course_coursecategory",
         joinColumns = [JoinColumn(name = "course_id", referencedColumnName = "id")],
@@ -36,7 +37,7 @@ data class Course(
     @field:Column(insertable = true, nullable = false, updatable = false, length = 36)
     val id: UUID?,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumns(
         JoinColumn(
             name = "instructor_firstname",
@@ -60,5 +61,15 @@ data class Course(
             Course(name: $name, category: $categories, id: $id, instructor: ${instructor.instructorId}),
             created at: $createDate, last modified at: $lastModifiedDate
         """.trimIndent()
+    }
+}
+
+class CourseEntityLoggingListener {
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java)
+    }
+    @PostLoad
+    private fun log(course: Course) {
+        logger.info("LOG course name loaded from database: ${course.name}")
     }
 }

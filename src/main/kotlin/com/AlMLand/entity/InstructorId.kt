@@ -1,6 +1,5 @@
 package com.AlMLand.entity
 
-import org.hibernate.annotations.ColumnTransformer
 import java.io.Serializable
 import javax.persistence.Column
 import javax.persistence.Embeddable
