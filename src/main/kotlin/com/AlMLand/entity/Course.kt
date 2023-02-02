@@ -4,11 +4,21 @@ import org.hibernate.annotations.ColumnTransformer
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Type
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import java.util.*
-import javax.persistence.*
+import java.util.UUID
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.EntityListeners
 import javax.persistence.FetchType.LAZY
+import javax.persistence.GeneratedValue
+import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.JoinColumns
+import javax.persistence.JoinTable
+import javax.persistence.ManyToMany
+import javax.persistence.ManyToOne
+import javax.persistence.PostLoad
+import javax.persistence.Table
 
 @EntityListeners(AuditingEntityListener::class, CourseEntityLoggingListener::class)
 @Entity
@@ -68,6 +78,7 @@ class CourseEntityLoggingListener {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java)
     }
+
     @PostLoad
     private fun log(course: Course) {
         logger.info("LOG course name loaded from database: ${course.name}")

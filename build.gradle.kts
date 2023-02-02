@@ -30,6 +30,16 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator:3.0.0")
+
+    /////////////////////////////////////////
+    implementation("org.springframework.boot:spring-boot-starter-aop:3.0.2")
+    // implementation("org.aspectj:aspectjrt:1.9.19") // runtimeOnly
+    // implementation("org.aspectj:aspectjweaver:1.9.19") // runtimeOnly
+    // implementation("org.springframework:spring-aop:6.0.4")
+    // implementation("org.springframework:spring-aspects:6.0.4")
+    implementation("org.springframework:spring-instrument:6.0.4")
+    ////////////////////////////////////////
+
     // logging
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
 
@@ -68,11 +78,6 @@ tasks.withType<Test> {
 
 sourceSets {
     test {
-        // after GRADLE 7.1
         java.setSrcDirs(listOf("src/test/integrationtest", "src/test/unittest"))
-        // before GRADLE 7.1
-        /*withConvention(KotlinSourceSet::class) {
-            kotlin.setSrcDirs(listOf("src/test/integrationtest", "src/test/unittest"))
-        }*/
     }
 }

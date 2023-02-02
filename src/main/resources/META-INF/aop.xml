@@ -1,0 +1,9 @@
+<aspectj>
+    <aspects>
+        <aspect name="com.AlMLand.aop.ColumnTransformerAspect"/>
+    </aspects>
+    <weaver options="-verbose -showWeaveInfo">
+        <include within="org.hibernate.cfg..*"/>
+        <!--        <include within="org.hibernate.cfg.Ejb3Column"/>-->
+    </weaver>
+</aspectj>
