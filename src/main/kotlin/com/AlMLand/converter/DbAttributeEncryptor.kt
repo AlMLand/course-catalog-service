@@ -1,5 +1,7 @@
 package com.AlMLand.converter
 
+import com.AlMLand.converter.exception.AttributeNotDecryptedException
+import com.AlMLand.converter.exception.AttributeNotEncryptedException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.security.InvalidKeyException
@@ -11,13 +13,16 @@ import javax.crypto.Cipher
 import javax.crypto.Cipher.DECRYPT_MODE
 import javax.crypto.Cipher.ENCRYPT_MODE
 import javax.crypto.IllegalBlockSizeException
+import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import javax.persistence.AttributeConverter
+import kotlin.text.Charsets.UTF_8
 
 @Component
-class DbAttributeEncryptor  (
-    @Value("\${attribute-encryptor.secret}") private val secret: String,
-    @Value("\${attribute-encryptor.algorithm}") private val algorithm: String
+class DbAttributeEncryptor(
+    @Value("\${crypto.secret}") private val secret: String,
+    @Value("\${crypto.algorithm}") private val algorithm: String,
+    @Value("\${crypto.transformation}") private val transformation: String
 ) : AttributeConverter<String, String> {
     companion object {
         private val lock = ReentrantLock()
@@ -34,13 +39,14 @@ class DbAttributeEncryptor  (
                     lock.unlock()
                 }
             } else {
-                throw RuntimeException("Attribute: $it is not encrypted. Reentrant try lock value is too small. The count of waiting threads: ${lock.queueLength}")
+                throw AttributeNotEncryptedException("Attribute: $it is not encrypted. Reentrant try lock value is too small. The count of waiting threads: ${lock.queueLength}")
             }
         }
 
-    private fun encode(cipher: Cipher, toConvert: String): String? = Base64.getEncoder().encodeToString(
-        cipher.doFinal(toConvert.encodeToByteArray())
-    )
+    private fun encode(cipher: Cipher, toConvert: String): String = Base64.getEncoder()
+        .encodeToString(
+            cipher.doFinal(toConvert.toByteArray())
+        )
 
     override fun convertToEntityAttribute(dbData: String?): String? =
         dbData?.let {
@@ -53,7 +59,7 @@ class DbAttributeEncryptor  (
                     lock.unlock()
                 }
             } else {
-                throw RuntimeException("Attribute: $it is not decrypted. Reentrant try lock value is too small. The count of waiting threads: ${lock.queueLength}")
+                throw AttributeNotDecryptedException("Attribute: $it is not decrypted. Reentrant try lock value is too small. The count of waiting threads: ${lock.queueLength}")
             }
         }
 
@@ -65,13 +71,18 @@ class DbAttributeEncryptor  (
     }
 
     private fun decode(cipher: Cipher, toConvert: String) =
-        String(cipher.doFinal(Base64.getDecoder().decode(toConvert)))
+        String(
+            cipher.doFinal(
+                Base64.getDecoder().decode(toConvert)
+            )
+        )
 
-    private fun cipherInstance(secretKeySpec: SecretKeySpec, mode: Int): Cipher = Cipher.getInstance(algorithm).apply {
-        init(mode, secretKeySpec)
-    }
+    private fun cipherInstance(secretKeySpec: SecretKeySpec, mode: Int): Cipher =
+        Cipher.getInstance(transformation).also {
+            it.init(mode, secretKeySpec, IvParameterSpec(ByteArray(16)))
+        }
 
-    private fun initSecretKeySpec() = SecretKeySpec(secret.encodeToByteArray(), algorithm)
+    private fun initSecretKeySpec() = SecretKeySpec(secret.toByteArray(UTF_8), algorithm)
 
     private fun isUnlocked() = lock.tryLock(2000, MILLISECONDS)
 }

@@ -5,6 +5,7 @@ import org.hibernate.annotations.Type
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.util.*
 import javax.persistence.*
+import javax.persistence.FetchType.LAZY
 
 @EntityListeners(AuditingEntityListener::class)
 @Entity
@@ -13,7 +14,7 @@ data class Course(
     @field:Column(insertable = true, nullable = false, updatable = true)
     var name: String,
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = LAZY)
     @JoinTable(
         name = "course_coursecategory",
         joinColumns = [JoinColumn(name = "course_id", referencedColumnName = "id")],
@@ -29,7 +30,7 @@ data class Course(
     @field:Column(insertable = true, nullable = false, updatable = false, length = 36)
     val id: UUID?,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumns(
         JoinColumn(
             name = "instructor_firstname",

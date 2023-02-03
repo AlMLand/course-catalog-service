@@ -34,7 +34,15 @@ select * from "public".instructors_view;
 
 ################################################################################################
 
-update instructors i1 set first_name = i2.first_name from (select pgp_sym_encrypt(first_name, 'my_custom_secret', 'cipher-algo=aes256')::text as first_name from instructors) i2 where i1.first_name = 'Alex';
+update courses c1 set name = c2.name from (select encode(encrypt(name::bytea, '${CRYPTO_SECRET}'::bytea, 'aes-cbc/pad:pkcs'), 'base64') as name from courses) c2 where c1.name = convert_from(decrypt(decode(name, 'base64')::bytea, '${CRYPTO_SECRET}'::bytea, 'aes-cbc/pad:pkcs'), 'UTF-8');
+select convert_from(decrypt(decode(name, 'base64')::bytea, '${CRYPTO_SECRET}'::bytea, 'aes-cbc/pad:pkcs'), 'UTF-8') from courses;
+
+
+update courses c1 set name = c2.name from (select encode(encrypt(name::bytea, 'my_custom_secret'::bytea, 'aes-cbc/pad:pkcs'), 'base64') as name from courses) c2;
+
+update courses c1 set name = c2.name from (select encrypt(name::bytea, 'my_custom_secret'::bytea, 'aes-cbc/pad:pkcs')::text as name from courses) c2;
+update courses c1 set name = c2.name from (select convert_to(encrypt(name::bytea, 'my_custom_secret'::bytea, 'aes')::text, 'UTF-8') as name from courses) c2;
+
 update instructors i1 set last_name = i2.last_name from (select pgp_sym_encrypt(last_name, 'my_custom_secret', 'cipher-algo=aes256')::text as last_name from instructors) i2 where i1.last_name = 'M_land';
 
 update mytable t1 set area_code = t2.area_code from (select pgp_sym_encrypt(area_code,'Password', 'compress-algo=1, cipher-algo=aes256')

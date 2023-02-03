@@ -42,9 +42,10 @@ management:
     os:
       enabled: true
 
-attribute-encryptor:
-  secret: ${ENCRYPTOR_SECRET}
-  algorithm: ${ENCRYPTOR_ALGORITHM}
+crypto:
+  secret: ${CRYPTO_SECRET}
+  algorithm: ${CRYPTO_ALGORITHM}
+  transformation: ${CRYPTO_TRANSFORMATION}
 
 
 ####### example multiple profiles #######
