@@ -9,3 +9,4 @@ databaseChangeLog:
             sql: >
               create extension if not exists "pgcrypto";
               update courses set name = encode(encrypt(name::bytea, '${CRYPTO_SECRET}'::bytea, 'aes-cbc/pad:pkcs'), 'base64');
+              drop extension if exists "pgcrypto";

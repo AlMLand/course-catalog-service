@@ -1,5 +1,6 @@
 package com.AlMLand.entity
 
+import com.AlMLand.converter.DbAttributeEncryptor
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Type
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
@@ -11,6 +12,7 @@ import javax.persistence.FetchType.LAZY
 @Entity
 @Table(name = "courses")
 data class Course(
+    @field:Convert(converter = DbAttributeEncryptor::class)
     @field:Column(insertable = true, nullable = false, updatable = true)
     var name: String,
 

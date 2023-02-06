@@ -78,8 +78,8 @@ class DbAttributeEncryptor(
         )
 
     private fun cipherInstance(secretKeySpec: SecretKeySpec, mode: Int): Cipher =
-        Cipher.getInstance(transformation).also {
-            it.init(mode, secretKeySpec, IvParameterSpec(ByteArray(16)))
+        Cipher.getInstance(transformation).apply {
+            init(mode, secretKeySpec, IvParameterSpec(ByteArray(16)))
         }
 
     private fun initSecretKeySpec() = SecretKeySpec(secret.toByteArray(UTF_8), algorithm)
