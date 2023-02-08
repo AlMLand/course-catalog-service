@@ -14,17 +14,17 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres_15-testdb-for-kotlin-course:/var/lib/postgresql/data
-  course-catalog-service:
-    image:
-      ${PROJECT_NAME}:${PROJECT_VERSION}
-    ports:
-      - '8080:8080'
-    depends_on:
-      - postgres_15
-    volumes:
-      - ./docker-logs:/workspace/course-catalog-service/logs
-    networks:
-      - course-catalog-network
+#  course-catalog-service:
+#    image:
+#      ${PROJECT_NAME}:${PROJECT_VERSION}
+#    ports:
+#      - '8080:8080'
+#    depends_on:
+#      - postgres_15
+#    volumes:
+#      - ./docker-logs:/workspace/course-catalog-service/logs
+#    networks:
+#      - course-catalog-network
 
 volumes:
   postgres_15-testdb-for-kotlin-course:

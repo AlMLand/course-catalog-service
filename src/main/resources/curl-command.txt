@@ -50,3 +50,11 @@ curl -i -d '{"id":null, "name":"Java", "category":[{"category":"MANAGEMENT", "id
 
 DELETE -> deleteCourse :
 curl -i -X DELETE http://localhost:8080/v1/courses/place for X or Y
+
+================================
+CourseNameCategoryDescController
+================================
+
+GET -> findAll
+
+curl -i http://localhost:8080/v1/namesdescriptions/all

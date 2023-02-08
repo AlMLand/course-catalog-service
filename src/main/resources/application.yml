@@ -2,7 +2,7 @@ spring:
   application:
     name: course-catalog-service
   datasource:
-    url: jdbc:postgresql://host.docker.internal:5438/testdb-for-kotlin-course
+    url: jdbc:postgresql://localhost:5438/testdb-for-kotlin-course
     driver-class-name: org.postgresql.Driver
     username: alex
     password: secret

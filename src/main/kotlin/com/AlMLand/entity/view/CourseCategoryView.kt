@@ -16,7 +16,7 @@ data class CourseCategoryView(
     @Id
     @GeneratedValue
     @Type(type = "uuid-char")
-    @field:Column(insertable = true, nullable = false, updatable = false, length = 36)
+    @field:Column(insertable = true, nullable = true, updatable = true)
     val id: UUID,
 
     @field:Column(nullable = true, updatable = true)

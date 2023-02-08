@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      author: amorland
+      id: 1
+      changes:
+        - sql:
+            comment: add view with distinct query
+            dbms: postgresql
+            sql: >
+              create or replace view name_description_distinct as select distinct gen_random_uuid() as id, c.name, cc.description from courses as c left join course_coursecategory as ccc on c.id = ccc.course_id left join course_categories as cc on ccc.course_category_id = cc.id;
+
+
+#              create or replace view name_description_distinct as select distinct c.name, cc.description from courses as c left join course_coursecategory as ccc on c.id = ccc.course_id left join course_categories as cc on ccc.course_category_id = cc.id;
