@@ -30,6 +30,16 @@ databaseChangeLog:
                   type: TIMESTAMP WITHOUT TIME ZONE
                   constraints:
                     nullable: false
+              - column:
+                  name: created_by
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_modified_by
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
         - createTable:
             tableName: course_coursecategory
             columns:
@@ -72,6 +82,16 @@ databaseChangeLog:
                   type: TIMESTAMP WITHOUT TIME ZONE
                   constraints:
                     nullable: false
+              - column:
+                  name: created_by
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_modified_by
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
         - createTable:
             tableName: courses
             columns:
@@ -108,6 +128,16 @@ databaseChangeLog:
               - column:
                   name: last_modified_date
                   type: TIMESTAMP WITHOUT TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_modified_by
+                  type: varchar(255)
                   constraints:
                     nullable: false
         - createTable:

@@ -14,7 +14,7 @@ data class Instructor @JvmOverloads constructor(
     val instructorId: InstructorId,
 
     @OneToMany(mappedBy = "instructor", cascade = [ALL], orphanRemoval = true)
-    val courses: MutableList<Course> = mutableListOf(),
+    val courses: MutableList<Course> = mutableListOf()
 ) : AuditableEntity() {
     fun addCourse(course: Course) {
         courses.add(course)
@@ -26,19 +26,11 @@ data class Instructor @JvmOverloads constructor(
         course.instructor = otherInstructor
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(instructorId)
-    }
-
-    override fun equals(other: Any?): Boolean {
-        return if (other == null || other !is Instructor) false
-        else this.instructorId == other.instructorId
-    }
-
     override fun toString(): String {
         return """
             Instructor(firstname: ${instructorId.firstName}, lastname: ${instructorId.lastName}),
-            created at: $createDate, last modified at: $lastModifiedDate
+            created at: $createDate, created by: $createdBy,
+            last modified at: $lastModifiedDate, last modified by: $lastModifiedBy
         """.trimIndent()
     }
 }
