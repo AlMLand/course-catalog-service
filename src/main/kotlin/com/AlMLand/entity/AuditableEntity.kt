@@ -1,5 +1,6 @@
 package com.AlMLand.entity
 
+import org.hibernate.envers.Audited
 import org.springframework.data.annotation.CreatedBy
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedBy
@@ -8,6 +9,7 @@ import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.MappedSuperclass
 
+@Audited
 @MappedSuperclass
 open class AuditableEntity {
     @get:CreatedDate

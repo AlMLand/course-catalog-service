@@ -3,12 +3,6 @@ databaseChangeLog:
       id: 1
       author: amorland
       changes:
-        #        - createSequence:
-        #            dataType: int
-        #            ordered: true
-        #            schemaName: public
-        #            sequenceName: hibernate_sequence
-        #            startValue: 1
         - createTable:
             tableName: revinfo
             columns:
@@ -114,7 +108,7 @@ databaseChangeLog:
             tableName: instructors_aud
             columns:
               - column:
-                  name: id
+                  name: auditing_sequence
                   type: integer
                   autoIncrement: true
                   startWith: 1
@@ -140,6 +134,18 @@ databaseChangeLog:
               - column:
                   name: revtype
                   type: smallint
+              - column:
+                  name: create_date
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  name: last_modified_date
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  name: created_by
+                  type: varchar(255)
+              - column:
+                  name: last_modified_by
+                  type: varchar(255)
         - createTable:
             tableName: courses
             columns:
@@ -192,7 +198,7 @@ databaseChangeLog:
             tableName: courses_aud
             columns:
               - column:
-                  name: myid
+                  name: auditing_sequence
                   type: integer
                   autoIncrement: true
                   constraints:
@@ -220,6 +226,18 @@ databaseChangeLog:
                   type: varchar(255)
               - column:
                   name: instructor_lastname
+                  type: varchar(255)
+              - column:
+                  name: create_date
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  name: last_modified_date
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  name: created_by
+                  type: varchar(255)
+              - column:
+                  name: last_modified_by
                   type: varchar(255)
         - createTable:
             tableName: courses_view
