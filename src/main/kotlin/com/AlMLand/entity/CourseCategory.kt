@@ -6,6 +6,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.util.*
 import javax.persistence.*
 
+
 @EntityListeners(AuditingEntityListener::class)
 @Entity
 @Table(name = "course_categories")

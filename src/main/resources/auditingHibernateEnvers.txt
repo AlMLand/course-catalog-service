@@ -1,0 +1,6 @@
+- dependency
+- annotations on classes
+- application.yaml -> jpa.hibernate.ddl-auto: create-drop -> look the AUD tables
+- check sequences, with command -> \ds
+- create sequence in postgres, with command -> create sequence hibernate_sequence;
+- write liquibase tables

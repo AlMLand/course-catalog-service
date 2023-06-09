@@ -31,6 +31,8 @@ class CourseRepositoryTest(@Autowired private val repository: CourseRepository) 
 
     @Test
     fun `findByNameContainingIgnoreCaseAndCategoriesCategory - first approach size is 2, second approach size is 1`() {
+        println("AAAAAAAAAAAAAAAAAAA")
+        Thread.sleep(10000000)
         assertTrue(
             repository.findByNameContainingIgnoreCaseAndCategoriesCategory(
                 "seNam",

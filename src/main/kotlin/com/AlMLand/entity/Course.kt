@@ -2,10 +2,13 @@ package com.AlMLand.entity
 
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Type
+import org.hibernate.envers.Audited
+import org.hibernate.envers.NotAudited
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.util.*
 import javax.persistence.*
 
+@Audited
 @EntityListeners(AuditingEntityListener::class)
 @Entity
 @Table(name = "courses")
@@ -13,6 +16,7 @@ data class Course(
     @field:Column(insertable = true, nullable = false, updatable = true)
     var name: String,
 
+    @NotAudited
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "course_coursecategory",

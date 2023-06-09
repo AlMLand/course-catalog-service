@@ -35,6 +35,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.liquibase:liquibase-core:4.17.2")
+    implementation("org.hibernate:hibernate-envers:5.6.12.Final")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
 
     runtimeOnly("com.h2database:h2")

@@ -1,10 +1,12 @@
 package com.AlMLand.entity
 
+import org.hibernate.envers.Audited
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.util.*
 import javax.persistence.*
 import javax.persistence.CascadeType.ALL
 
+@Audited
 @EntityListeners(AuditingEntityListener::class)
 @Entity
 @Table(name = "instructors")
