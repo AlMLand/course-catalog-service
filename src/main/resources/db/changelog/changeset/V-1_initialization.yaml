@@ -111,21 +111,14 @@ databaseChangeLog:
                   name: auditing_sequence
                   type: integer
                   autoIncrement: true
-                  startWith: 1
                   constraints:
                     primaryKey: true
               - column:
                   name: first_name
                   type: varchar(255)
-                  constraints:
-                    nullable: false
-                    foreignKeyName: rev
-                    referencedTableName: revinfo
               - column:
                   name: last_name
                   type: varchar(255)
-                  constraints:
-                    nullable: false
               - column:
                   name: rev
                   type: integer
@@ -206,15 +199,11 @@ databaseChangeLog:
               - column:
                   name: id
                   type: varchar(36)
-                  constraints:
-                    nullable: false
               - column:
                   name: rev
                   type: integer
                   constraints:
                     nullable: false
-                    foreignKeyName: rev
-                    referencedTableName: revinfo
               - column:
                   name: revtype
                   type: smallint
