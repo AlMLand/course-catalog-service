@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: amorland
+      dbms: postgresql
+      changes:
+        - sql:
+            comment: added the sequence, needed from hibernate envers.
+            sql: >
+              create sequence hibernate_sequence;

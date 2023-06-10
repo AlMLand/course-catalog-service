@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: db/changelog/changeset/V-1_initialization.yaml
+  - include:
+      file: db/changelog/changeset/V-2_hibernate_sequence.yaml

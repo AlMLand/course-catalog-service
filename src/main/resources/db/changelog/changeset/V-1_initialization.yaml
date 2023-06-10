@@ -52,6 +52,11 @@ databaseChangeLog:
                   type: varchar(255)
                   constraints:
                     nullable: false
+              - column:
+                  name: version
+                  type: bigint
+                  constraints:
+                    nullable: false
         - createTable:
             tableName: course_coursecategory
             columns:
@@ -102,6 +107,11 @@ databaseChangeLog:
               - column:
                   name: last_modified_by
                   type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: bigint
                   constraints:
                     nullable: false
         - createTable:
@@ -185,6 +195,11 @@ databaseChangeLog:
               - column:
                   name: last_modified_by
                   type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: bigint
                   constraints:
                     nullable: false
         - createTable:

@@ -8,6 +8,7 @@ import org.springframework.data.annotation.LastModifiedDate
 import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.MappedSuperclass
+import javax.persistence.Version
 
 @Audited
 @MappedSuperclass
@@ -27,4 +28,8 @@ open class AuditableEntity {
     @LastModifiedBy
     @Column(nullable = false, updatable = true)
     lateinit var lastModifiedBy: String
+
+    @Version
+    @Column(nullable = false, updatable = true)
+    var version: Long = 0
 }
