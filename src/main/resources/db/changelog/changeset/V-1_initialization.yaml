@@ -15,6 +15,8 @@ databaseChangeLog:
               - column:
                   name: revtstmp
                   type: bigint
+                  constraints:
+                    nullable: false
         - createTable:
             tableName: course_categories
             columns:
@@ -123,12 +125,17 @@ databaseChangeLog:
                   autoIncrement: true
                   constraints:
                     primaryKey: true
+                    nullable: false
               - column:
                   name: first_name
                   type: varchar(255)
+                  constraints:
+                    nullable: false
               - column:
                   name: last_name
                   type: varchar(255)
+                  constraints:
+                    nullable: false
               - column:
                   name: rev
                   type: integer
@@ -137,18 +144,28 @@ databaseChangeLog:
               - column:
                   name: revtype
                   type: smallint
+                  constraints:
+                    nullable: false
               - column:
                   name: create_date
                   type: TIMESTAMP WITHOUT TIME ZONE
+                  constraints:
+                    nullable: false
               - column:
                   name: last_modified_date
                   type: TIMESTAMP WITHOUT TIME ZONE
+                  constraints:
+                    nullable: false
               - column:
                   name: created_by
                   type: varchar(255)
+                  constraints:
+                    nullable: false
               - column:
                   name: last_modified_by
                   type: varchar(255)
+                  constraints:
+                    nullable: false
         - createTable:
             tableName: courses
             columns:
@@ -211,9 +228,12 @@ databaseChangeLog:
                   autoIncrement: true
                   constraints:
                     primaryKey: true
+                    nullable: false
               - column:
                   name: id
                   type: varchar(36)
+                  constraints:
+                    nullable: false
               - column:
                   name: rev
                   type: integer
@@ -222,27 +242,43 @@ databaseChangeLog:
               - column:
                   name: revtype
                   type: smallint
+                  constraints:
+                    nullable: false
               - column:
                   name: name
                   type: varchar(255)
+                  constraints:
+                    nullable: false
               - column:
                   name: instructor_firstname
                   type: varchar(255)
+                  constraints:
+                    nullable: false
               - column:
                   name: instructor_lastname
                   type: varchar(255)
+                  constraints:
+                    nullable: false
               - column:
                   name: create_date
                   type: TIMESTAMP WITHOUT TIME ZONE
+                  constraints:
+                    nullable: false
               - column:
                   name: last_modified_date
                   type: TIMESTAMP WITHOUT TIME ZONE
+                  constraints:
+                    nullable: false
               - column:
                   name: created_by
                   type: varchar(255)
+                  constraints:
+                    nullable: false
               - column:
                   name: last_modified_by
                   type: varchar(255)
+                  constraints:
+                    nullable: false
         - createTable:
             tableName: courses_view
             columns:
